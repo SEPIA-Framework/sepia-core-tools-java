@@ -1,0 +1,20 @@
+{
+    "language": "en",
+    "type": "good_answers",
+    "text": "this is the answer man",
+    "repetition": 0,
+    "mood": 5,
+    "characters": ["rude", "cool"],
+    "user": "fakeuser@example.com",
+    "source": "import",
+    "public_answer": false,
+    "local_answer": false,
+    "explicit_answer": true,
+    "user_location": "1, 2",
+    "machine_translated": false,
+    "translated_from": "das ist die Antwort Alter",
+    "environment": "all",
+    "tags": ["a", "b"],
+    "data": null,
+    "date": "31.12.1999 23:59:59"
+}

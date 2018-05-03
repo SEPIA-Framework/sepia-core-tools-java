@@ -1,0 +1,469 @@
+package net.b07z.sepia.server.core.tools;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Random;
+
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+/**
+ * Converters mostly from "something" to JSON and other helper methods like type conversions and even a random generator.
+ * 
+ * @author Florian Quirin
+ *
+ */
+public class Converters {
+	
+	/**
+	 * Take a sentence (or multiple) and remove all special characters so you can use it as a database ID. 
+	 * @param sentence - a sentence or multiple separated by "."
+	 * @return clean string that can be used as ID
+	 */
+	public static String makeIDfromSentence(String sentence){
+		String id = sentence.replaceAll("\\.\\s", "__");
+		id = id
+			.replaceAll("\\s+", "_")
+			.replaceAll("İ", "i")
+			.toLowerCase()
+			.replaceAll("ö", "oe").replaceAll("ä", "ae").replaceAll("ü", "ue")
+			.replaceAll("\\W", "")
+			.trim();
+		//TODO: what if it is empty now?
+		
+		return id;
+	}
+	
+	/**
+	 * Remove all non-alphabetic and non-digit characters
+	 */
+	public static String cleanString(String text){
+		return (text.replaceAll("[^\\p{IsAlphabetic}^\\p{IsDigit}]", "").trim());
+	}
+
+	/**
+	 * Create the "cmd_summary" from "command" and "params" that can be used to call the Answer-API.
+	 * @param command - command class string
+	 * @param params - JSONObject with parameters for command
+	 * @return "cmd_summary" string
+	 */
+	public static String makeCommandSummary(String command, JSONObject params){
+		if (command == null || command.isEmpty() || params == null){
+			return "";
+		}
+		String seperator = ";;";
+		String cmd_summary = command + seperator;
+		String add = "";
+		try{
+			for(Iterator<?> iterator = params.keySet().iterator(); iterator.hasNext();) {
+				String k = iterator.next().toString().trim();
+			    String p = k.replaceAll("^<|>$", "").trim();
+			    String v = params.get(k).toString().trim();
+			    if (!p.isEmpty() && !v.isEmpty()){
+					add += p + "=" + v + seperator;
+				}
+			}
+		}catch (Exception e){
+			add = "";
+		}
+		cmd_summary += add.trim();
+		return cmd_summary;
+	}
+	
+	/**
+	 * Convert to UTF-8 url string.
+	 * @param in
+	 * @return
+	 */
+	public static String url_utf8(String in){
+		try {
+			return URLEncoder.encode(in, StandardCharsets.UTF_8.toString());
+		} catch (UnsupportedEncodingException e) {
+			return "";
+		}
+	}
+	
+	/**
+	 * Take an object where you are SURE! it is a valid double, either in string or double format, round it to 1% precision 
+	 * and convert it back to string without trailing zeros.
+	 * @param val - value to round, is object but MUST BE a valid double
+	 * @param round_to_int - ignore precision and round to integer?
+	 * @return rounded double as string or empty
+	 */
+	public static String smartRound(Object val, boolean round_to_int){
+		double v = obj_2_double(val);
+		if (v == Double.NEGATIVE_INFINITY){
+			System.err.println(DateTime.getLogDate() + " ERROR - Converters.java smartRound(..) FAILED! with: " + val.toString());
+			return "";
+		}else{
+			try {
+				String r;
+				if (v >= 100 || round_to_int){
+					r = Double.toString(Math.round(v));
+				}else if (v >= 10){
+					r = Double.toString(Math.round(v * 10.0d)/10.0d);
+				}else if (v >= 1){
+					r = Double.toString(Math.round(v * 100.0d)/100.0d);
+				}else{
+					//TODO: fix this - it should do 0.071124754000 -> 0.0711
+					r = Double.toString(v);
+				}
+				r = r.replaceFirst("(\\.|,)(.*)(0+$)", "$1$2").trim().replaceFirst("(\\.|,)$", "").trim();
+				return r;
+			}catch (Exception e){
+				return "";
+			}
+		}
+	}
+	
+	/**
+	 * Convert a string to a long. If it fails the long will be -1. Best used for System.time checks.
+	 * @param in - string in long-format to convert
+	 * @return long value or -1. If -1 is important to you DON'T use this method
+	 */
+	public static long str_2_long(String in){
+		try {
+			return Long.parseLong(in);
+		} catch (Exception e){
+			return -1;
+		}
+	}
+	/**
+	 * Convert an unknown object that holds a double (real double or string double) to double.
+	 * @param in - string to convert, must be in double format
+	 * @return double value or NEGATIVE_INFINITY. If NEGATIVE_INFINITY is important to you DON'T use this method
+	 */
+	public static double obj_2_double(Object in){
+		try {
+			return Double.parseDouble((String.valueOf(in)));
+		} catch (Exception e){
+			return Double.NEGATIVE_INFINITY;
+		}
+	}
+	/**
+	 * Convert an unknown object that holds a double (real double or string double) to long.
+	 * @param in - string to convert, must be in double format
+	 * @return long value or -1. If -1 is important to you DON'T use this method
+	 */
+	public static long obj_2_long(Object in){
+		try {
+			return (long) Double.parseDouble((String.valueOf(in)));
+		} catch (Exception e){
+			return -1;
+		}
+	}
+	/**
+	 * Convert an unknown object that holds an integer/double (real type or as string) to an integer.
+	 * Removes all non-numbers (except .,+-) in the string!
+	 * @param in - string to convert, must be in double format
+	 * @return int value or -1. If -1 is important to you DON'T use this method or check if it was there before
+	 */
+	public static int obj_2_int(Object in){
+		try {
+			return (int) Double.parseDouble((String.valueOf(in).replaceAll("[^\\d\\.,\\-\\+]", "")));
+		} catch (Exception e){
+			return -1;
+		}
+	}
+	
+	/**
+	 * Convert from string to JSON Object
+	 * @param s - String to parse
+	 * @return JSONObject
+	 */
+	public static JSONObject str_2_JSON(String s){
+		JSONParser parser = new JSONParser();
+		JSONObject result;
+		try {
+			result = (JSONObject) parser.parse(s);
+			return result;
+		} catch (ParseException e) {
+			return null;
+			//e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Convert a default (SEPIA) data string to a JSON object.<br>
+	 * The data string has been replaced in most cases with JSON when possible.
+	 * @param dataString - standard (for this framework) formatted data string, e.g. &#60city&#62Berlin&#60country&#62Germany
+	 * @return JSONObject with keys mapped or empty JSONObject
+	 */
+	public static JSONObject dataString_2_JSON(String dataString){
+		String[] s1 = dataString.split("<");
+		String[] s2;
+		if (s1.length > 1){
+			JSONObject js = new JSONObject();
+			for (String s : s1){
+				s2 = s.split(">",2);
+				if (s2.length == 2){
+					JSON.add(js, s2[0], s2[1]);
+				}
+			}
+			return js;
+		
+		}else{
+			return new JSONObject();
+		}
+	}
+	/**
+	 * Get attribute (city, first name, whatever ...) from a data string in standard format (&#60city&#62Berlin&#60country&#62Germany).
+	 * Data strings are the short version of certain account entries like addresses, contacts, names (first, last, nick...) etc. and
+	 * might be used inside the database itself or created during the read process. If nothing is found returns empty string.
+	 * @param dataString - standard (for this framework) formatted data string
+	 * @param key - key string to search for. NOTE: if the key contains a dot "." like "uname.firstN" everything before WILL BE REMOVED!
+	 * @return value to key or empty string
+	 */
+	@Deprecated
+	public static String dataStringGetAttribute(String dataString, String key){
+		String value;
+		if (key.contains(".")){
+			key = key.replaceFirst(".*\\.", "").trim();
+		}
+		if (dataString != null && dataString.contains("<"+ key +">")){
+			value = dataString.replaceAll(".*<"+ key +">(.*?)(<.*|$)", "$1").trim();
+			return value;
+		}else{
+			return "";
+		}
+	}
+	/**
+	 * Add attribute (city, first name, ...) to data string. See getAttribute(...) for more info.
+	 * If the data string is null or empty a new one is created. 
+	 * @param dataString - standard (for this framework) formatted data string
+	 * @param key - key string (attribute) to add or replace. NOTE: if the key contains a dot "." like "uname.firstN" everything before WILL BE REMOVED!
+	 * @param value - value to add for this attribute
+	 * @return modified/updated data string
+	 */
+	@Deprecated
+	public static String dataStringSetAttribute(String dataString, String key, String value){
+		if (key.contains(".")){
+			key = key.replaceFirst(".*\\.", "").trim();
+		}
+		if (dataString != null && dataString.contains("<"+ key +">")){
+			dataString = dataString.replaceAll("(<"+ key +">).*?(<.*|$)", "$1" + value + "$2").trim();
+		}else if (dataString != null && !dataString.isEmpty()){
+			dataString += "<"+ key +">" + value;
+		}else{
+			dataString = "<"+ key +">" + value;
+		}
+		return dataString;
+	}/**
+	 * Add attributes in a HashMap (city, first name, ...) to data string. See getAttribute(...) for more info.
+	 * If the data string is null or empty a new one is created. 
+	 * @param dataString - standard (for this framework) formatted data string
+	 * @param map - HashMap<String, Object> used to fill the data string
+	 * @return modified/updated data string
+	 */
+	@Deprecated
+	public static String dataStringSetAttribute(String dataString, HashMap<String, Object> map){
+		if (map != null){
+			for (Map.Entry<String, Object> entry : map.entrySet()) {
+				String k = entry.getKey();
+				Object o = entry.getValue();
+				if (k != null && o != null){
+					dataString = dataStringSetAttribute(dataString, k, o.toString());
+				}
+			}
+		}
+		return dataString;
+	}
+	
+	/**
+	 * Converts a HashMap&lt;String,String&gt; to a JSONObject
+	 * 
+	 * @param m - hashMap&lt;String, String&gt;
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static JSONObject hashMap_StrStr_2_JSON(HashMap<String, String> m){
+		JSONObject params = new JSONObject();
+		for (Map.Entry<String, String> entry : m.entrySet()) {
+			String p = entry.getKey();
+			String v = entry.getValue();
+			//System.out.println(entry.getKey() + "/" + entry.getValue());
+			params.put(p, v);
+		}
+		return params;
+	}
+	/**
+	 * Converts a HashMap&lt;String,Long&gt; to a JSONObject
+	 * 
+	 * @param m - hashMap&lt;String, Long&gt;
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static JSONObject hashMap_StrLng_2_JSON(HashMap<String, Long> m){
+		JSONObject params = new JSONObject();
+		for (Map.Entry<String, Long> entry : m.entrySet()) {
+			String p = entry.getKey();
+			Long v = entry.getValue();
+			//System.out.println(entry.getKey() + "/" + entry.getValue());
+			params.put(p, v);
+		}
+		return params;
+	}
+	/**
+	 * Converts a HashMap&lt;String,Object&gt; to a JSONObject
+	 * 
+	 * @param m - hashMap&lt;String, Object&gt;
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static JSONObject hashMap_StrObj_2_JSON(HashMap<String, Object> m){
+		JSONObject params = new JSONObject();
+		for (Map.Entry<String, Object> entry : m.entrySet()) {
+			String p = entry.getKey();
+			Object v = entry.getValue();
+			//System.out.println(entry.getKey() + "/" + entry.getValue());
+			params.put(p, v);
+		}
+		return params;
+	}
+	
+	/**
+	 * Converts a HashMap&lt;String,String&gt; to a single string separated by ";;"
+	 * 
+	 * @param m - hashMap&lt;String, String&gt;
+	 * @return
+	 */
+	public static String hashMap_StrStr_2_Str(HashMap<String, String> m){
+		String result="";
+		for (Map.Entry<String, String> entry : m.entrySet()) {
+			String p = entry.getKey();
+			String v = entry.getValue();
+			result += p + "=" + v + ";;";
+		}
+		return result.trim();
+	}
+	
+	/**
+	 * Convert JSONObject to HashMap&lt;String,String&gt; by transferring all TOP-LEVEL key-value pairs. All values should be at least convertible to "String".
+	 * Nested values are converted to strings.
+	 * @param jsonObject - simple JSON object
+	 * @return HashMap&lt;String,String&gt; (can be empty)
+	 */
+	@SuppressWarnings("unchecked")
+	public static Map<String, String> Json2HashMap_SS(JSONObject jsonObject) {
+		Map<String,String> params = new HashMap<>();
+		if (jsonObject == null) {
+			return params;
+		} else {
+			for (Object entry : jsonObject.entrySet()) {
+				Map.Entry<String, Object> entryObj = (Map.Entry<String, Object>) entry;
+				params.put(entryObj.getKey(), entryObj.getValue().toString());
+			}
+		}
+		return params;
+	}
+	/**
+	 * Convert JSONObject to HashMap&lt;String,Object&gt; by transferring all TOP-LEVEL key-value pairs.
+	 * Nested JSONObjects remain what they are.
+	 * @param jsonObject - simple JSON object
+	 * @return HashMap&lt;String,String&gt; (can be empty)
+	 */
+	@SuppressWarnings("unchecked")
+	public static Map<String, Object> Json2HashMap(JSONObject jsonObject) {
+		Map<String, Object> params = new HashMap<>();
+		if (jsonObject == null) {
+			return params;
+		}else{
+			for (Object entry : jsonObject.entrySet()) {
+				Map.Entry<String, Object> entryObj = (Map.Entry<String, Object>) entry;
+				params.put(entryObj.getKey(), entryObj.getValue());
+			}
+		}
+		return params;
+	}
+	
+	/**
+	 * Makes an unchecked (cause you can't check it, can you?) cast from Object to HashMap&#60String, Object&#62.
+	 * @param input - object that is supposed to be the expected HashMap 
+	 * @return HashMap or null
+	 */
+	@SuppressWarnings("unchecked")
+	public static HashMap<String, Object> object2HashMap_SO(Object input){
+		try {
+			HashMap<String, Object> output = (HashMap<String, Object>) input;
+			return output;
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+	}
+	/**
+	 * Makes an unchecked (cause you can't check it, can you?) cast from Object to ArrayList&#60Object&#62.
+	 * @param input - object that is supposed to be the expected ArrayList 
+	 * @return ArrayList or null
+	 */
+	@SuppressWarnings("unchecked")
+	public static ArrayList<Object> object2ArrayList_O(Object input){
+		try {
+			ArrayList<Object> output = (ArrayList<Object>) input;
+			return output;
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+	}
+	/**
+	 * Makes an unchecked (cause you can't check it, can you?) cast from Object to ArrayList&#60String&#62.
+	 * @param input - object that is supposed to be the expected ArrayList 
+	 * @return ArrayList or null
+	 */
+	@SuppressWarnings("unchecked")
+	public static ArrayList<String> object2ArrayList_S(Object input){
+		try {
+			ArrayList<String> output = (ArrayList<String>) input;
+			return output;
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
+	 * Removes HTML code from an answer - no guarantee and no completeness! Plz check carefully!
+	 * I'd prefer to let the specific client do this.
+	 * 
+	 * @param input - string to relieve from HTML code
+	 * @return
+	 */
+	public static String removeHTML(String input){
+		String out = input;
+		out = out.replaceAll("(<div .*?>|<a .*?>|<p .*?>|<span .*?>|<img .*?>)", "");
+		out = out.replaceAll("(<div>|<a>|<img>|<p>|<span>)", " ");
+		out = out.replaceAll("(</div>|</a>|</img>|<br>|</p>|</span>)", " ");
+		out = out.replaceAll("( )+", " ");
+		return out;
+	}
+	
+	/**
+	 * Get a random number between start (inclusive) and end. End must be >= start.
+	 * @param start - start with this number (inclusive)
+	 * @param end - end with this number (exclusive)
+	 * @return random integer in range
+	 */
+	public static int randomInt(int start, int end){
+		if (end < start){
+			end = start+1;
+		}
+		int res = new Random().nextInt(end-start) + start;
+		return res;
+	}
+	/**
+	 * Get a random value of 10, 100 or 1000 with a higher probability of hitting 10 (4) and 100 (2) than 1000 (1).
+	 * @return random integer either 10, 100 or 1000
+	 */
+	public static int random_10_100_1000(){
+		int[] sel = {10,10,10,10,100,100,1000};
+		int n = new Random().nextInt(sel.length);
+		return sel[n];
+	}
+}

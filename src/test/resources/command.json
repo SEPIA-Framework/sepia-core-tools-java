@@ -1,0 +1,44 @@
+{
+  "command": "test",
+  "sentences": 
+    [
+      {
+        "public": true,
+        "language": "en",
+        "explicit": false,
+        "text": "Hello, <user>, how are you?",
+        "tagged_text" : "",
+        "translated_from" : null,
+        "params": {},
+        "cmd_summary": "foo",
+        "machine_translated": false,
+        "data": {},
+        "local" : false,
+        "source": null,
+        "replies": [],
+        "environment" : null,
+        "date": "2016-05-31T11:10:43",
+        "user": "myuser",
+        "user_location": "5,8.2"
+      },
+      {
+        "public": true,
+        "language": "de",
+        "explicit": false,
+        "text": "Hallo, <user>, wie geht es Dir?",
+        "translated_from": "Hello, <user>, how are you?",
+        "tagged_text" : "",
+        "params": {},
+        "cmd_summary": "foo",
+        "machine_translated": true,
+        "data": {},
+        "local" : false,
+        "source" : null,
+        "replies": [],
+        "environment" : null,
+        "date": "2016-05-31T11:10:43",
+        "user" : null,
+        "user_location" : null
+      }
+    ]
+}
