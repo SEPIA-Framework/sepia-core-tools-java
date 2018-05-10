@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 
 import net.b07z.sepia.server.core.server.ConfigDefaults;
+import net.b07z.sepia.server.core.tools.JSON;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -16,6 +17,7 @@ import org.json.simple.JSONObject;
 public class Answer {
 
 	//database types to organize commands
+	public static final String ANSWERS_INDEX = "answers";
 	public static final String ANSWERS_TYPE = "all";
 	
 	// NOTE: keep in sync with answers-mapping.json! Only this way we can use Jackson to automatically 
@@ -241,6 +243,9 @@ public class Answer {
 		return importAnswerJSON(json.toJSONString());
 	}
 
+	/**
+	 * Return object as JSON formatted string (or throw error).
+	 */
 	public String toJsonString() {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
@@ -249,6 +254,13 @@ public class Answer {
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException("Error serializing " + this + " to JSON", e);
 		}
+	}
+	/**
+	 * Convert object first to JSON string and then to JSONObject. Kind of stupid I know, but ...<br>
+	 * Throws error on parsing exception.
+	 */
+	public JSONObject toJson(){
+		return JSON.parseStringOrFail(toJsonString());
 	}
 
 	@Override

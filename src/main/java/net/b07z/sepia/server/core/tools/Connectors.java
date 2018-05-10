@@ -191,7 +191,7 @@ public class Connectors {
 	/**
 	 * HTTP GET method for JSON string. Check with {@code httpSuccess(...)} for status.
 	 * @param url - URL address to call including all parameters
-	 * @return JSONObject response of URL call
+	 * @return JSONObject response of URL call - Note: if response is not JSON it will be placed e.g. as "STRING" field in the result. 
 	 */
 	public static JSONObject httpGET(String url) {
 		return httpGET(url, new String[0]);
@@ -200,7 +200,7 @@ public class Connectors {
 	 * HTTP GET method for JSON string. Check with {@code httpSuccess(...)} for status.
 	 * @param url - URL address to call including none or only some parameters
 	 * @param params - additional parameters added to URL (use e.g. "?q=search_term" or "&type=json" etc.)
-	 * @return
+	 * @return JSONObject response of URL call - Note: if response is not JSON it will be placed e.g. as "STRING" field in the result.
 	 */
 	public static JSONObject httpGET(String url, String[] params) {
 		int responseCode = -1;
