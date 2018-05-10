@@ -108,21 +108,27 @@ public class FilesAndStreams {
 	 * @param pathWithName - path to file including file-name
 	 * @param lineMatchRegExp - regular expression to find line
 	 * @param replacement - complete line is replaced by this
-	 * @return true (all good), false (error during read/write)
+	 * @return true (all good), false (error during read/write or line not found)
 	 */
 	public static boolean replaceLineInFile(String pathWithName, String lineMatchRegExp, String replacement){
 		try {
 			Path path = Paths.get(pathWithName);
 			List<String> fileContent = new ArrayList<>(Files.readAllLines(path, StandardCharsets.UTF_8));
+			boolean foundLine = false;
 			for (int i = 0; i < fileContent.size(); i++) {
 				String line = fileContent.get(i);
 			    if (line.matches(lineMatchRegExp)) {
+			    	foundLine = true;
 			        fileContent.set(i, replacement);
 			        break;
 			    }
 			}
-			Files.write(path, fileContent, StandardCharsets.UTF_8);
-			return true;
+			if (foundLine){
+				Files.write(path, fileContent, StandardCharsets.UTF_8);
+				return true;
+			}else{
+				throw new RuntimeException("Line matching regular expression NOT found in: " + pathWithName);
+			}
 		
 		} catch (IOException e) {
 			e.printStackTrace();

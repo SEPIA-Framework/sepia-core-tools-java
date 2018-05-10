@@ -25,7 +25,13 @@ public class ToolsPlayground {
 	public static void main(String[] args) {
 		
 		/* -- Password client hash -- */
-		String hash = hashPassword("12345678");
+		String hash = hashPassword("testpwd12345678!_");
+		System.out.println("password client hash: " + hash);
+		hash = hashPassword("TestPwd12345678!_");
+		System.out.println("password client hash: " + hash);
+		hash = hashPassword("TestPwd12345678!_%");
+		System.out.println("password client hash: " + hash);
+		hash = hashPassword("!§$%&/()=?`");
 		System.out.println("password client hash: " + hash);
 		
 		/* -- Elasticsearch queries -- */
@@ -52,6 +58,7 @@ public class ToolsPlayground {
 		//getAnswersByType query with JsonGenerator
 		query = getAnswersQueryWithBuilder();
 		System.out.println("getAnswersByType query with builder: " + query);
+		
 	}
 	
 	/* -- Password client hash -- */
