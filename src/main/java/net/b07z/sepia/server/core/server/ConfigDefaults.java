@@ -93,6 +93,11 @@ public class ConfigDefaults {
 			Debugger.println("Could not reach AssistAPI at " + defaultAssistAPI, 1);
 			return null;
 		}
+		String resultState = JSON.getString(res, "result");
+		if (resultState == null || !resultState.equals("success")){
+			Debugger.println("AssistAPI answered with error: " + JSON.getString(res, "error"), 1);
+			return null;
+		}
 		return res;
 	}
 }

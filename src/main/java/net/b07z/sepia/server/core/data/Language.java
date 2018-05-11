@@ -30,6 +30,10 @@ public enum Language {
 	TR("Turkish", null, "tur"),
 	ZH("Chinese", null, "cmn");
 	
+	/**
+	 * Get enum value from language code string (or throw error).
+	 * @param languageCode - e.g. "en" or "DE" (case independent)
+	 */
 	public static Language from(String languageCode) {
 		return Language.valueOf(languageCode.toUpperCase());
 	}

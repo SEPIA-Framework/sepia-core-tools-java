@@ -59,7 +59,7 @@ public class SparkJavaFw {
 			JSON.add(result, "result", "fail");
 			JSON.add(result, "error", "500 internal error");
 			JSON.add(result, "info", ex.getMessage());
-			response.body(returnResult(request, response, result.toJSONString(), 200)); 	//code 500 always creates client timeout :/
+			response.body(returnResult(request, response, result.toJSONString(), 200)); 	//code 500 always creates client timeout :/ TODO: check again
 		});
 	}
 
@@ -131,7 +131,7 @@ public class SparkJavaFw {
 		return "401 Unauthorized";
 		*/
 		String msg = "{\"result\":\"fail\",\"error\":\"401 not authorized\"}";
-		return returnResult(request, response, msg, 200);
+		return returnResult(request, response, msg, 200); 		//TODO: we should change this code to 401 as well
 	}
 
 	/**
@@ -142,7 +142,7 @@ public class SparkJavaFw {
 			return returnNoAccess(request, response);
 		}else{
 			String msg = "{\"result\":\"fail\",\"error\":\"400 or 500 bad request or communication error\",\"code\":\"" + errorCode + "\"}";
-			return returnResult(request, response, msg, 200);
+			return returnResult(request, response, msg, 200); 		//TODO: we should change this code to 400/500 as well
 		}
 	}
 

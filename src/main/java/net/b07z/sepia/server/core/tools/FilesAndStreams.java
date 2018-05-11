@@ -44,7 +44,7 @@ public class FilesAndStreams {
 	/**
 	 * Get an ArrayList of "File"s from a directory path.
 	 * @param directoryName - path to directory
-	 * @param files - ArrayList of files to populate
+	 * @param files - ArrayList of files to populate (or null -> creates ArrayList)
 	 * @param doSubfolders - include sub-folders?
 	 * @return list or null
 	 */
