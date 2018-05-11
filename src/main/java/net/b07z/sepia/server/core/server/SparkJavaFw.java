@@ -106,8 +106,15 @@ public class SparkJavaFw {
 				response.type("text/html; charset=utf-8");
 			}
 		}else{
-			response.type("application/javascript");
-			msg = request.queryParams("callback") + "(" + msg + ");";
+			//try jsonp
+			String callback = request.queryParams("callback");
+			if (callback != null && !callback.isEmpty()){
+				response.type("application/javascript");
+				msg = request.queryParams("callback") + "(" + msg + ");";
+			//fallback to plain text
+			}else{
+				response.type("text/plain; charset=utf-8");
+			}
 		}
 		return msg;
 	}
