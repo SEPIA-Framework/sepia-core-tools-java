@@ -21,7 +21,7 @@ public class InputPrompt {
 		System.out.println(comment);
 		String in = reader.next();
 		if(closeAfterwards){
-			reader.close();
+			reader.close(); 	//Closes System.in for rest of session O_O
 		}
 		return in;
 	}

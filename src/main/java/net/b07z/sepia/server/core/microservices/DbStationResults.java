@@ -121,8 +121,8 @@ public class DbStationResults{
 			
 			this.stationName = (String) data.get("name");
 			this.stationId = (String) data.get("id");
-			this.longitude = Converters.obj_2_double(data.get("lon"));
-			this.latitude = Converters.obj_2_double(data.get("lat"));
+			this.longitude = Converters.obj2Double(data.get("lon"));
+			this.latitude = Converters.obj2Double(data.get("lat"));
 		}
 		
 		@Override

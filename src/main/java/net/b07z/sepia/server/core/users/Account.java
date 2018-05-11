@@ -209,7 +209,7 @@ public class Account {
 					
 					//Roles
 					if (info.containsKey("user_roles")){
-						userRoles = Converters.object2ArrayList_S(info.get("user_roles"));
+						userRoles = Converters.object2ArrayListStr(info.get("user_roles"));
 					}else{
 						userRoles = new ArrayList<>();
 					}
@@ -256,7 +256,7 @@ public class Account {
 		userId = (String) account.get("userId");
 		email = (String) account.get("email");
 		phone = (String) account.get("phone");
-		accessLevel = Converters.obj_2_int(account.get("accessLevel"));
+		accessLevel = Converters.obj2Int(account.get("accessLevel"));
 		JSONObject uname = (JSONObject) account.get("userName");
 		if (uname != null){
 			userName = uname;

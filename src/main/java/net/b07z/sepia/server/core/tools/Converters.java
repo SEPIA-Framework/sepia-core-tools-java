@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -97,7 +98,7 @@ public class Converters {
 	 * @return rounded double as string or empty
 	 */
 	public static String smartRound(Object val, boolean round_to_int){
-		double v = obj_2_double(val);
+		double v = obj2Double(val);
 		if (v == Double.NEGATIVE_INFINITY){
 			System.err.println(DateTime.getLogDate() + " ERROR - Converters.java smartRound(..) FAILED! with: " + val.toString());
 			return "";
@@ -127,7 +128,7 @@ public class Converters {
 	 * @param in - string in long-format to convert
 	 * @return long value or -1. If -1 is important to you DON'T use this method
 	 */
-	public static long str_2_long(String in){
+	public static long str2Long(String in){
 		try {
 			return Long.parseLong(in);
 		} catch (Exception e){
@@ -139,7 +140,7 @@ public class Converters {
 	 * @param in - string to convert, must be in double format
 	 * @return double value or NEGATIVE_INFINITY. If NEGATIVE_INFINITY is important to you DON'T use this method
 	 */
-	public static double obj_2_double(Object in){
+	public static double obj2Double(Object in){
 		try {
 			return Double.parseDouble((String.valueOf(in)));
 		} catch (Exception e){
@@ -151,7 +152,7 @@ public class Converters {
 	 * @param in - string to convert, must be in double format
 	 * @return long value or -1. If -1 is important to you DON'T use this method
 	 */
-	public static long obj_2_long(Object in){
+	public static long obj2Long(Object in){
 		try {
 			return (long) Double.parseDouble((String.valueOf(in)));
 		} catch (Exception e){
@@ -164,7 +165,7 @@ public class Converters {
 	 * @param in - string to convert, must be in double format
 	 * @return int value or -1. If -1 is important to you DON'T use this method or check if it was there before
 	 */
-	public static int obj_2_int(Object in){
+	public static int obj2Int(Object in){
 		try {
 			return (int) Double.parseDouble((String.valueOf(in).replaceAll("[^\\d\\.,\\-\\+]", "")));
 		} catch (Exception e){
@@ -177,7 +178,7 @@ public class Converters {
 	 * @param s - String to parse
 	 * @return JSONObject
 	 */
-	public static JSONObject str_2_JSON(String s){
+	public static JSONObject str2Json(String s){
 		JSONParser parser = new JSONParser();
 		JSONObject result;
 		try {
@@ -276,13 +277,13 @@ public class Converters {
 	}
 	
 	/**
-	 * Converts a HashMap&lt;String,String&gt; to a JSONObject
+	 * Converts a Map&lt;String,String&gt; to a JSONObject
 	 * 
-	 * @param m - hashMap&lt;String, String&gt;
+	 * @param m - Map&lt;String, String&gt;
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static JSONObject hashMap_StrStr_2_JSON(HashMap<String, String> m){
+	public static JSONObject mapStrStr2Json(Map<String, String> m){
 		JSONObject params = new JSONObject();
 		for (Map.Entry<String, String> entry : m.entrySet()) {
 			String p = entry.getKey();
@@ -293,13 +294,13 @@ public class Converters {
 		return params;
 	}
 	/**
-	 * Converts a HashMap&lt;String,Long&gt; to a JSONObject
+	 * Converts a Map&lt;String,Long&gt; to a JSONObject
 	 * 
-	 * @param m - hashMap&lt;String, Long&gt;
+	 * @param m - Map&lt;String, Long&gt;
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static JSONObject hashMap_StrLng_2_JSON(HashMap<String, Long> m){
+	public static JSONObject mapStrLng2Json(Map<String, Long> m){
 		JSONObject params = new JSONObject();
 		for (Map.Entry<String, Long> entry : m.entrySet()) {
 			String p = entry.getKey();
@@ -310,13 +311,13 @@ public class Converters {
 		return params;
 	}
 	/**
-	 * Converts a HashMap&lt;String,Object&gt; to a JSONObject
+	 * Converts a Map&lt;String,Object&gt; to a JSONObject
 	 * 
-	 * @param m - hashMap&lt;String, Object&gt;
+	 * @param m - Map&lt;String, Object&gt;
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static JSONObject hashMap_StrObj_2_JSON(HashMap<String, Object> m){
+	public static JSONObject mapStrObj2Json(Map<String, Object> m){
 		JSONObject params = new JSONObject();
 		for (Map.Entry<String, Object> entry : m.entrySet()) {
 			String p = entry.getKey();
@@ -328,12 +329,12 @@ public class Converters {
 	}
 	
 	/**
-	 * Converts a HashMap&lt;String,String&gt; to a single string separated by ";;"
+	 * Converts a Map&lt;String,String&gt; to a single string separated by ";;"
 	 * 
-	 * @param m - hashMap&lt;String, String&gt;
+	 * @param m - Map&lt;String, String&gt;
 	 * @return
 	 */
-	public static String hashMap_StrStr_2_Str(HashMap<String, String> m){
+	public static String mapStrStr2Str(Map<String, String> m){
 		String result="";
 		for (Map.Entry<String, String> entry : m.entrySet()) {
 			String p = entry.getKey();
@@ -350,7 +351,7 @@ public class Converters {
 	 * @return HashMap&lt;String,String&gt; (can be empty)
 	 */
 	@SuppressWarnings("unchecked")
-	public static Map<String, String> Json2HashMap_SS(JSONObject jsonObject) {
+	public static Map<String, String> json2HashMapStrStr(JSONObject jsonObject) {
 		Map<String,String> params = new HashMap<>();
 		if (jsonObject == null) {
 			return params;
@@ -369,7 +370,7 @@ public class Converters {
 	 * @return HashMap&lt;String,String&gt; (can be empty)
 	 */
 	@SuppressWarnings("unchecked")
-	public static Map<String, Object> Json2HashMap(JSONObject jsonObject) {
+	public static Map<String, Object> json2HashMap(JSONObject jsonObject) {
 		Map<String, Object> params = new HashMap<>();
 		if (jsonObject == null) {
 			return params;
@@ -388,9 +389,9 @@ public class Converters {
 	 * @return HashMap or null
 	 */
 	@SuppressWarnings("unchecked")
-	public static HashMap<String, Object> object2HashMap_SO(Object input){
+	public static Map<String, Object> object2HashMapStrObj(Object input){
 		try {
-			HashMap<String, Object> output = (HashMap<String, Object>) input;
+			Map<String, Object> output = (HashMap<String, Object>) input;
 			return output;
 		}catch(Exception e){
 			e.printStackTrace();
@@ -403,9 +404,9 @@ public class Converters {
 	 * @return ArrayList or null
 	 */
 	@SuppressWarnings("unchecked")
-	public static ArrayList<Object> object2ArrayList_O(Object input){
+	public static List<Object> object2ArrayListObj(Object input){
 		try {
-			ArrayList<Object> output = (ArrayList<Object>) input;
+			List<Object> output = (ArrayList<Object>) input;
 			return output;
 		}catch(Exception e){
 			e.printStackTrace();
@@ -418,9 +419,9 @@ public class Converters {
 	 * @return ArrayList or null
 	 */
 	@SuppressWarnings("unchecked")
-	public static ArrayList<String> object2ArrayList_S(Object input){
+	public static List<String> object2ArrayListStr(Object input){
 		try {
-			ArrayList<String> output = (ArrayList<String>) input;
+			List<String> output = (ArrayList<String>) input;
 			return output;
 		}catch(Exception e){
 			e.printStackTrace();
