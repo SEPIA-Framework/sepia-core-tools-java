@@ -4,7 +4,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class loader to be used for plugins to make them run in a sandbox.
@@ -14,7 +14,7 @@ import java.util.ArrayList;
  */
 public class SandboxClassLoader extends URLClassLoader {
     //black-list classes
-	private ArrayList<String> blackList;
+	private List<String> blackList;
 	
 	/*
 	public SandboxClassLoader(URL fileUrl) {
@@ -24,7 +24,7 @@ public class SandboxClassLoader extends URLClassLoader {
         super(new URL[]{fileOrDir.toURI().toURL()});
     }
     */
-    public SandboxClassLoader(File fileOrDir, ArrayList<String> blackList) throws MalformedURLException {
+    public SandboxClassLoader(File fileOrDir, List<String> blackList) throws MalformedURLException {
         super(new URL[]{fileOrDir.toURI().toURL()});
         this.blackList = blackList;
     }

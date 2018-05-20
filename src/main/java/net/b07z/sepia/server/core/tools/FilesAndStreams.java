@@ -24,6 +24,18 @@ import java.util.Properties;
  *
  */
 public class FilesAndStreams {
+	
+	//----helpers:
+	
+	/**
+	 * Generic class to give line operations as lambda expressions.
+	 */
+	public static interface LineOperation {
+		/**
+		 * Take line as input and return modified line.
+		 */
+		public String run(String lineInput);
+	}
 
 	/**
 	 * Collect all data of an InputStream to a string. 
@@ -103,7 +115,7 @@ public class FilesAndStreams {
 	}
 	
 	/**
-	 * Open a file, search first line by regular expression, then replace with new line.
+	 * Open a file, search line by regular expression then replace with new line.
 	 * Stops after first match.
 	 * @param pathWithName - path to file including file-name
 	 * @param lineMatchRegExp - regular expression to find line
@@ -111,6 +123,19 @@ public class FilesAndStreams {
 	 * @return true (all good), false (error during read/write or line not found)
 	 */
 	public static boolean replaceLineInFile(String pathWithName, String lineMatchRegExp, String replacement){
+		return replaceLineInFile(pathWithName, lineMatchRegExp, (oldLine) -> {
+			return replacement;
+		});
+	}
+	/**
+	 * Open a file, search line by regular expression then modify line by custom operation and store modifications.
+	 * Stops after first match.
+	 * @param pathWithName - path to file including file-name
+	 * @param lineMatchRegExp - regular expression to find line
+	 * @param lineOperation - modify line by using this with {@link LineOperation} (use lambda expression)
+	 * @return true (all good), false (error during read/write or line not found)
+	 */
+	public static boolean replaceLineInFile(String pathWithName, String lineMatchRegExp, LineOperation lineOperation){
 		try {
 			Path path = Paths.get(pathWithName);
 			List<String> fileContent = new ArrayList<>(Files.readAllLines(path, StandardCharsets.UTF_8));
@@ -119,7 +144,8 @@ public class FilesAndStreams {
 				String line = fileContent.get(i);
 			    if (line.matches(lineMatchRegExp)) {
 			    	foundLine = true;
-			        fileContent.set(i, replacement);
+			    	String newLine = lineOperation.run(line);
+			        fileContent.set(i, newLine);
 			        break;
 			    }
 			}

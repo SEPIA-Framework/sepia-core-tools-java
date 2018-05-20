@@ -33,9 +33,11 @@ public class ToolsPlayground {
 		System.out.println("password client hash: " + hash);
 		hash = hashPassword("!§$%&/()=?`");
 		System.out.println("password client hash: " + hash);
+		hash = hashPassword("test12345!_");
+		System.out.println("password client hash: " + hash);
 		
 		/* -- Elasticsearch queries -- */
-		
+		/*
 		//double-match for simple field
 		String query = getBoolMustMatch();
 		System.out.println("query must-must: " + query);
@@ -58,7 +60,7 @@ public class ToolsPlayground {
 		//getAnswersByType query with JsonGenerator
 		query = getAnswersQueryWithBuilder();
 		System.out.println("getAnswersByType query with builder: " + query);
-		
+		*/
 	}
 	
 	/* -- Password client hash -- */
