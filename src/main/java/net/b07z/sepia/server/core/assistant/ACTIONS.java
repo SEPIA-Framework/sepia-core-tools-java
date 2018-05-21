@@ -26,7 +26,7 @@ public class ACTIONS {
 	final public static String BUTTON_HELP = "button_help";				//tell client to show a help button
 	final public static String OPEN_DASHBOARD = "open_dashboard";		//tell client to open the user dashboard, parameters: type (common, settings, user_home, user_work, user_name, ...)
 	final public static String OPEN_TEACH_UI = "open_teach_ui";		//tell client to open the teach UI, parameters: type (input, suggestion, ...)
-	final public static String BUTTON_TEACH_UI = "open_teach_ui";	//tell client to show the teach UI button, parameters: type (input, suggestion, ...)
+	final public static String BUTTON_TEACH_UI = "button_teach_ui";	//tell client to show the teach UI button, parameters: type (input, suggestion, ...)
 	final public static String OPEN_LIST = "open_list";				//tell client to open a user specific list, param.: "listInfo" : {"indexType":...}
 	final public static String EXTEND_REQUEST = "extend_request";		//tell client that this request will take longer and he should prepare for that
 	final public static String SHOW_ABORT_OPTION = "show_abort";		//tell client to show an abort option
