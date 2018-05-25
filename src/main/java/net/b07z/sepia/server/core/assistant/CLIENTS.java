@@ -21,6 +21,7 @@ public class CLIENTS {
 	final public static String CHROME_APP = "chrome_app";
 	final public static String SAFARI_BROWSER = "safari_browser";
 	final public static String SAFARI_APP = "safari_app";
+	final public static String WAKEWORD_TOOL = "wakeword_tool";
 	
 	/**
 	 * Check for environment by comparing the input environment (this_env) to an array of
