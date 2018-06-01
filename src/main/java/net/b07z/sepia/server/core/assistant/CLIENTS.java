@@ -24,9 +24,19 @@ public class CLIENTS {
 	final public static String WAKEWORD_TOOL = "wakeword_tool";
 	
 	/**
-	 * Check for environment by comparing the input environment (this_env) to an array of
-	 * test environments (test_envies). E.g. you want to check for a web app running on iOS use:
-	 * compare(this_env, ENVIRONMENTS.WEB_APP, ENVIRONMENTS.iOS).
+	 * Return basic for of the client, e.g. convert "web_app_v1.0.1" to "web_app". 
+	 * @param clientInfo - info given by any client
+	 */
+	public static String getBaseClient(String clientInfo){
+		return clientInfo.replaceFirst("_v\\d.*?(_|$)", "_").trim().replaceFirst("_$", "").replaceAll("[\\W]", "").trim();
+	}
+	
+	//TODO: I think we need to update/simplify this ... and we should write some tests as well! ;-)
+	
+	/**
+	 * Check for client by comparing the input client (this_env) to an array of
+	 * test clients (test_envies). E.g. you want to check for a web app running on iOS use:
+	 * compare(this_env, CLIENTS.IOS_APP, CLIENTS.IOS_BROWSER).
 	 * 
 	 * @param this_env - input environment
 	 * @param test_envies - array of tests
