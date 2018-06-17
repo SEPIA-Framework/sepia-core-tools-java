@@ -18,7 +18,8 @@ public class ACTIONS {
 	final public static String QUEUE_CMD = "queue_cmd";					//tell client to queue a command stored as summary, parameters: cmd
 	final public static String SCHEDULE_CMD = "schedule_cmd";			//tell client to repeat a command stored as summary, parameters: cmd, executeIn, waitForIdle
 	final public static String BUTTON_CMD = "button_cmd";				//tell client to show a button to open a command stored as summary, parameters: cmd, title, type (text, direct_cmd), visibility (all, inputHidden, noConversation),
-	final public static String EVENTS_START = "events_start";			//tell client that the results of the events endpoint start here, parameters: info (text, quietText, divider), text
+	final public static String EVENTS_START = "events_start";						//tell client that the results of the events endpoint start here
+	final public static String FIRST_VISIT_INFO_START = "fist_visit_info_start";	//tell client that the actions of the first-visit-info start here
 	final public static String SCHEDULE_MSG = "schedule_msg";			//tell client to schedule a message (like a push message but locally triggered)
 	final public static String OPEN_INFO = "open_info";				//tell client to open the info window
 	final public static String OPEN_CARDS = "open_cards";				//tell client to open the cards search result view
@@ -27,6 +28,7 @@ public class ACTIONS {
 	final public static String OPEN_DASHBOARD = "open_dashboard";		//tell client to open the user dashboard, parameters: type (common, settings, user_home, user_work, user_name, ...)
 	final public static String OPEN_TEACH_UI = "open_teach_ui";		//tell client to open the teach UI, parameters: type (input, suggestion, ...)
 	final public static String BUTTON_TEACH_UI = "button_teach_ui";	//tell client to show the teach UI button, parameters: type (input, suggestion, ...)
+	final public static String BUTTON_FRAMES_VIEW = "button_frames_view";	//tell client to show a frames view button, parameters: type (input, suggestion, ...)
 	final public static String OPEN_LIST = "open_list";				//tell client to open a user specific list, param.: "listInfo" : {"indexType":...}
 	final public static String EXTEND_REQUEST = "extend_request";		//tell client that this request will take longer and he should prepare for that
 	final public static String SHOW_ABORT_OPTION = "show_abort";		//tell client to show an abort option
