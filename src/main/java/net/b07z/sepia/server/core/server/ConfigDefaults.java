@@ -46,6 +46,9 @@ public class ConfigDefaults {
 	//Users
 	public static String defaultAssistantUserId = ""; 		//this needs to be identical to e.g. Config.assistantId if the server uses it
 	
+	//Privacy policy links
+	public static String privacyPolicyLink = ""; 			//REPLACE THIS in config file for production!
+	
 	/**
 	 * Set some configuration defaults, e.g.:<br>
 	 * "defaultAssistAPI"
@@ -61,6 +64,8 @@ public class ConfigDefaults {
 			clusterKey = JSON.getString(config, "clusterKey");
 		if (config.containsKey("defaultAssistantUserId"))		
 			defaultAssistantUserId = JSON.getString(config, "defaultAssistantUserId");
+		if (config.containsKey("privacyPolicy"))
+			privacyPolicyLink = JSON.getString(config, "privacyPolicy");
 				
 		//Microservices API-Keys
 		if (config.containsKey("DeutscheBahnOpenApiKey"))		
@@ -77,9 +82,10 @@ public class ConfigDefaults {
 		boolean modulesSet = Is.notNullOrEmpty(defaultAuthModule);
 		boolean clientSet = Is.notNullOrEmpty(defaultClientInfo);
 		boolean usersSet = Is.notNullOrEmpty(defaultAssistantUserId);
+		boolean policiesSet = Is.notNullOrEmpty(privacyPolicyLink);
 		//Microservices are optional
 		
-		return (apisSet && clusterSet && modulesSet && clientSet && usersSet);
+		return (apisSet && clusterSet && modulesSet && clientSet && usersSet && policiesSet);
 	}
 	
 	/**

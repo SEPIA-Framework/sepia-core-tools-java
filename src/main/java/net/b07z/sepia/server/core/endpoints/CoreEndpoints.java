@@ -3,6 +3,7 @@ package net.b07z.sepia.server.core.endpoints;
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.core.server.BasicStatistics;
+import net.b07z.sepia.server.core.server.ConfigDefaults;
 import net.b07z.sepia.server.core.server.RequestGetOrFormParameters;
 import net.b07z.sepia.server.core.server.RequestParameters;
 import net.b07z.sepia.server.core.server.SparkJavaFw;
@@ -66,6 +67,7 @@ public class CoreEndpoints {
 		JSON.add(msg, "result", "success");
 		JSON.add(msg, "server", serverName);
 		JSON.add(msg, "version", apiVersion);
+		JSON.add(msg, "privacy_policy", ConfigDefaults.privacyPolicyLink);
 		JSON.add(msg, "host", request.host());
 		JSON.add(msg, "url", request.url());
 		JSON.add(msg, "time", t);
