@@ -104,7 +104,7 @@ public class Connectors {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		HttpGet httpGet = new HttpGet(url);
 		httpGet.setHeader("content-type", "application/json");
-		httpGet.addHeader("User-Agent", "Mozilla/5.0");
+		httpGet.addHeader("User-Agent", USER_AGENT);
 		CloseableHttpResponse response = httpclient.execute(httpGet);
 		try {
 		    //System.out.println(response.getStatusLine());
