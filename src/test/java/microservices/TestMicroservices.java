@@ -28,7 +28,7 @@ public class TestMicroservices {
 			System.out.println("NOTE: JUnit-microservices: skipped dBStationResults testing due to missing test-data!");
 		}
 		
-		if (dbApiKey != null){
+		if (dbApiKey != null && !dbApiKey.isEmpty()){
 			DbStationResults.setApiKey(dbApiKey);
 			
 			String langCode = Language.DE.toValue();
@@ -46,6 +46,9 @@ public class TestMicroservices {
 			assertThat(dbStationFirst.getId(), is("008011160"));
 			assertThat(dbStationClosest.toString(), is("Berlin Ostbahnhof"));
 			assertThat(dbStationClosest.getId(), is("008010255"));
+		
+		}else{
+			System.out.println("NOTE: JUnit-microservices: skipped dBStationResults testing due to missing API-key!");
 		}
 	}
 
