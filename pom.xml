@@ -1,13 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>net.b07z.sepia.server.core</groupId>
     <artifactId>sepia-core-tools</artifactId>
     <version>2.0.1</version>
+    <name>SEPIA Core-Tools</name>
+    <description>The Core-Tools repository contains classes and methods that are shared by all SEPIA servers and other tools like the SDK.</description>
+    <url>https://github.com/SEPIA-Framework/sepia-core-tools-java</url>
     <packaging>jar</packaging>
+    
+    <licenses>
+  		<license>
+    		<name>MIT License</name>
+    		<url>http://www.opensource.org/licenses/mit-license.php</url>
+  		</license>
+	</licenses>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -114,4 +122,19 @@
 		</dependency>
     </dependencies>
 
+	<developers>
+    	<developer>
+      		<name>Florian Quirin</name>
+      		<email>info@bytemind.de</email>
+      		<organization>bytemind.de</organization>
+      		<organizationUrl>http://bytemind.de</organizationUrl>
+    	</developer>
+	</developers>
+	
+	<scm>
+    	<connection>scm:git:git://github.com/SEPIA-Framework/sepia-core-tools-java.git</connection>
+    	<developerConnection>scm:git:ssh://github.com:SEPIA-Framework/sepia-core-tools-java.git</developerConnection>
+    	<url>https://github.com/SEPIA-Framework/sepia-core-tools-java/tree/master</url>
+	</scm>
+	
 </project>

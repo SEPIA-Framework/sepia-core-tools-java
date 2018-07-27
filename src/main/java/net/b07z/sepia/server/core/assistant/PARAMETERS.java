@@ -90,8 +90,9 @@ public class PARAMETERS {
 	final public static String MUSIC_GENRE = "genre";				//music genre (other genres too?)
 	
 	//SMART DEVICES
-	final public static String SMART_DEVICE = "device";			//any smart device
-	final public static String SMART_LOCATION = "smart_place";	//a room or place in the smart environment
+	final public static String SMART_DEVICE = "smart_device";				//any smart device
+	public static final String SMART_DEVICE_VALUE = "smart_device_value";	//a value/number that can be applied to a smart device (e.g. temperature)
+	final public static String ROOM = "room";					//a room in a (smart) home
 	
 	//SEARCH
 	final public static String WEBSEARCH_REQUEST = "websearch_q";			//the term to look for
