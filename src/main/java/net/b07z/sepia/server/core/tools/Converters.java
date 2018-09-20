@@ -364,23 +364,13 @@ public class Converters {
 		return params;
 	}
 	/**
-	 * Convert JSONObject to HashMap&lt;String,Object&gt; by transferring all TOP-LEVEL key-value pairs.
+	 * Convert JSONObject to HashMap&lt;String,Object&gt; by unchecked cast.
 	 * Nested JSONObjects remain what they are.
 	 * @param jsonObject - simple JSON object
 	 * @return HashMap&lt;String,String&gt; (can be empty)
 	 */
-	@SuppressWarnings("unchecked")
 	public static Map<String, Object> json2HashMap(JSONObject jsonObject) {
-		Map<String, Object> params = new HashMap<>();
-		if (jsonObject == null) {
-			return params;
-		}else{
-			for (Object entry : jsonObject.entrySet()) {
-				Map.Entry<String, Object> entryObj = (Map.Entry<String, Object>) entry;
-				params.put(entryObj.getKey(), entryObj.getValue());
-			}
-		}
-		return params;
+		return object2HashMapStrObj(jsonObject);
 	}
 	
 	/**
@@ -391,8 +381,7 @@ public class Converters {
 	@SuppressWarnings("unchecked")
 	public static Map<String, Object> object2HashMapStrObj(Object input){
 		try {
-			Map<String, Object> output = (HashMap<String, Object>) input;
-			return output;
+			return (HashMap<String, Object>) input;
 		}catch(Exception e){
 			e.printStackTrace();
 			return null;
@@ -406,8 +395,7 @@ public class Converters {
 	@SuppressWarnings("unchecked")
 	public static List<Object> object2ArrayListObj(Object input){
 		try {
-			List<Object> output = (ArrayList<Object>) input;
-			return output;
+			return (ArrayList<Object>) input;
 		}catch(Exception e){
 			e.printStackTrace();
 			return null;
@@ -421,8 +409,7 @@ public class Converters {
 	@SuppressWarnings("unchecked")
 	public static List<String> object2ArrayListStr(Object input){
 		try {
-			List<String> output = (ArrayList<String>) input;
-			return output;
+			return (ArrayList<String>) input;
 		}catch(Exception e){
 			e.printStackTrace();
 			return null;

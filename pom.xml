@@ -37,9 +37,8 @@
 							<goal>copy-dependencies</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>
-								${project.build.directory}/libs
-							</outputDirectory>
+							<outputDirectory>${project.build.directory}/release/libs</outputDirectory>
+							<includeScope>runtime</includeScope>
 						</configuration>
 					</execution>
 				</executions>
@@ -58,7 +57,8 @@
 							</mainClass>
 						</manifest>
 					</archive>
-					<finalName>tools-v${project.version}</finalName>
+					<outputDirectory>${project.build.directory}/release</outputDirectory>
+					<finalName>sepia-core-tools-v${project.version}</finalName>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -120,6 +120,13 @@
 		    <artifactId>httpmime</artifactId>
 		    <version>4.5.3</version>
 		</dependency>
+		
+		<dependency>
+      		<groupId>junit</groupId>
+      		<artifactId>junit</artifactId>
+      		<version>4.12</version>
+      		<scope>test</scope>
+    	</dependency>
     </dependencies>
 
 	<developers>
