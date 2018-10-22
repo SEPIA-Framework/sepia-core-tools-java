@@ -189,18 +189,19 @@ public class Connectors {
 	}
 	
 	/**
-	 * HTTP GET method for JSON string. Check with {@code httpSuccess(...)} for status.
+	 * Make HTTP GET request to URL and get JSON response. Check with {@code httpSuccess(...)} for status.
 	 * @param url - URL address to call including all parameters
-	 * @return JSONObject response of URL call - Note: if response is not JSON it will be placed e.g. as "STRING" field in the result. 
+	 * @return JSONObject response of URL call - Note:<br> 
+	 * if response is not JSON it will be placed e.g. as "STRING" field in the result or "JSONARRAY" if it's an array. 
 	 */
 	public static JSONObject httpGET(String url) {
 		return httpGET(url, new String[0]);
 	}
 	/**
-	 * HTTP GET method for JSON string. Check with {@code httpSuccess(...)} for status.
+	 * Make HTTP GET request to URL and get JSON response. Check with {@code httpSuccess(...)} for status.
 	 * @param url - URL address to call including none or only some parameters
 	 * @param params - additional parameters added to URL (use e.g. "?q=search_term" or "&type=json" etc.)
-	 * @return JSONObject response of URL call - Note: if response is not JSON it will be placed e.g. as "STRING" field in the result.
+	 * @return JSONObject response of URL call - Note: if response is not JSON it will be placed e.g. as "STRING" field in the result or "JSONARRAY" if it's an array.
 	 */
 	public static JSONObject httpGET(String url, String[] params) {
 		int responseCode = -1;
@@ -274,7 +275,7 @@ public class Connectors {
 	 */
 	public static JSONObject httpFormPOST(String targetURL, String urlParameters) {
 		
-		HashMap<String, String> headers = new HashMap<>();
+		Map<String, String> headers = new HashMap<>();
 		headers.put("Content-Type", "application/x-www-form-urlencoded");
 		headers.put("Content-Length", Integer.toString(urlParameters.getBytes().length));
 		headers.put("Content-Language", "en-US");
@@ -288,7 +289,7 @@ public class Connectors {
 	 * @param headers - HashMap with request properties (keys) and values. If null uses 'application/json' as default.
 	 * @return JSONObject with response
 	 */
-	public static JSONObject httpPOST(String targetURL, String data, HashMap<String, String> headers) {
+	public static JSONObject httpPOST(String targetURL, String data, Map<String, String> headers) {
 		URL url;
 		HttpURLConnection connection = null;
 		int responseCode = -1;
@@ -384,7 +385,7 @@ public class Connectors {
 	 * @param headers - HashMap with request properties (keys) and values.
 	 * @return JSONObject with response
 	 */
-	public static JSONObject httpPUT(String targetURL, String data, HashMap<String, String> headers) {
+	public static JSONObject httpPUT(String targetURL, String data, Map<String, String> headers) {
 		URL url;
 		HttpURLConnection connection = null;
 		int responseCode = -1;
@@ -469,9 +470,8 @@ public class Connectors {
 	//-------------DELETE--------------
 	
 	/**
-	 * HTTP GET method for JSON string. Use {@code httpSuccess(...)} for status.
-	 * @param url - URL address to call including none or only some parameters
-	 * @param params - additional parameters added to URL (use e.g. "?q=search_term" or "&type=json" etc.)
+	 * Make HTTP DELETE request to URL and get JSON response.. Use {@code httpSuccess(...)} for status.
+	 * @param url - URL address to call including none or only some parameters/paths
 	 * @return
 	 */
 	public static JSONObject httpDELETE(String url) {
@@ -563,7 +563,7 @@ public class Connectors {
 		//System.out.println(res);						//debug
 		if (Is.notNullOrEmpty(res)){
 			res = (res.charAt(0) == '\uFEFF')? res.substring(1) : res;
-			res = res.replaceAll("^(\\r+|\\n+|\\t+)", "").trim();
+			res = res.replaceAll("^(\\r+|\\n+|\\t+)", "").trim(); 		//NOTE: this might have consequences for text formatting
 		}
 		//debug:
 		/*

@@ -3,6 +3,7 @@ package net.b07z.sepia.server.core.tools;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Used to debug code and log info.<br><br>
@@ -75,34 +76,18 @@ public class Debugger {
 	}
 	
 	/**
-	 * Print out a HashMap (String, String).
+	 * Print out a Map (String, any).
 	 */
-	public static void printMap_SS(Map<String, String> hm){
-		for (Map.Entry<String, String> entry : hm.entrySet()) {
-			System.out.println(entry.getKey() + " = " + entry.getValue());
-		}
-	}
-	/**
-	 * Print out a HashMap (String, Long).
-	 */
-	public static void printMap_SL(Map<String, Long> hm){
-		for (Map.Entry<String, Long> entry : hm.entrySet()) {
-			System.out.println(entry.getKey() + " = " + entry.getValue());
-		}
-	}
-	/**
-	 * Print out a HashMap (String, Object).
-	 */
-	public static void printMap_SO(Map<String, Object> hm){
-		for (Map.Entry<String, Object> entry : hm.entrySet()) {
+	public static void printMap(Map<String, ?> hm){
+		for (Entry<String, ?> entry : hm.entrySet()) {
 			System.out.println(entry.getKey() + " = " + entry.getValue());
 		}
 	}
 	/**
 	 * Print out an ArrayList (String).
 	 */
-	public static void printList_S(List<String> list){
-		for (String e : list){
+	public static void printList(List<?> list){
+		for (Object e : list){
 			System.out.println("List element: " + e);
 		}
 	}
