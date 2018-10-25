@@ -256,7 +256,7 @@ public class Account {
 		userId = (String) account.get("userId");
 		email = (String) account.get("email");
 		phone = (String) account.get("phone");
-		accessLevel = Converters.obj2Int(account.get("accessLevel"));
+		accessLevel = Converters.obj2IntOrDefault(account.get("accessLevel"), -1);
 		JSONObject uname = (JSONObject) account.get("userName");
 		if (uname != null){
 			userName = uname;

@@ -80,7 +80,7 @@ public class AuthenticationAssistAPI implements AuthenticationInterface{
 			
 			//ACCESS LEVEL 
 			//TODO: not yet fully implemented, but should be 0 for access via token, 1 for real password and -1 for no access.
-			accessLevel = Converters.obj2Int(response.get("access_level"));
+			accessLevel = Converters.obj2IntOrDefault(response.get("access_level"), -1);
 			
 			//NAME
 			JSONObject user_name = (JSONObject) response.get("user_name");

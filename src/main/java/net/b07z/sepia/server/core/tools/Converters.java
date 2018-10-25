@@ -98,7 +98,7 @@ public class Converters {
 	 * @return rounded double as string or empty
 	 */
 	public static String smartRound(Object val, boolean round_to_int){
-		double v = obj2Double(val);
+		double v = obj2DoubleOrDefault(val, Double.NEGATIVE_INFINITY);
 		if (v == Double.NEGATIVE_INFINITY){
 			System.err.println(DateTime.getLogDate() + " ERROR - Converters.java smartRound(..) FAILED! with: " + val.toString());
 			return "";
@@ -124,52 +124,56 @@ public class Converters {
 	}
 	
 	/**
-	 * Convert a string to a long. If it fails the long will be -1. Best used for System.time checks.
-	 * @param in - string in long-format to convert
-	 * @return long value or -1. If -1 is important to you DON'T use this method
+	 * Convert an unknown object to String or return null.
+	 * @param in - object to convert
+	 * @param def - default
+	 * @return String or default
 	 */
-	public static long str2Long(String in){
+	public static String obj2StringOrDefault(Object in, String def){
 		try {
-			return Long.parseLong(in);
+			return in.toString();
 		} catch (Exception e){
-			return -1;
+			return def;
 		}
 	}
 	/**
 	 * Convert an unknown object that holds a double (real double or string double) to double.
 	 * @param in - string to convert, must be in double format
-	 * @return double value or NEGATIVE_INFINITY. If NEGATIVE_INFINITY is important to you DON'T use this method
+	 * @param def - default
+	 * @return double value or default
 	 */
-	public static double obj2Double(Object in){
+	public static double obj2DoubleOrDefault(Object in, Double def){
 		try {
 			return Double.parseDouble((String.valueOf(in)));
 		} catch (Exception e){
-			return Double.NEGATIVE_INFINITY;
+			return def;
 		}
 	}
 	/**
 	 * Convert an unknown object that holds a double (real double or string double) to long.
 	 * @param in - string to convert, must be in double format
-	 * @return long value or -1. If -1 is important to you DON'T use this method
+	 * @param def - default
+	 * @return long value or default
 	 */
-	public static long obj2Long(Object in){
+	public static long obj2LongOrDefault(Object in, Long def){
 		try {
 			return (long) Double.parseDouble((String.valueOf(in)));
 		} catch (Exception e){
-			return -1;
+			return def;
 		}
 	}
 	/**
 	 * Convert an unknown object that holds an integer/double (real type or as string) to an integer.
 	 * Removes all non-numbers (except .,+-) in the string!
 	 * @param in - string to convert, must be in double format
-	 * @return int value or -1. If -1 is important to you DON'T use this method or check if it was there before
+	 * @param def - default
+	 * @return int value or def
 	 */
-	public static int obj2Int(Object in){
+	public static int obj2IntOrDefault(Object in, Integer def){
 		try {
 			return (int) Double.parseDouble((String.valueOf(in).replaceAll("[^\\d\\.,\\-\\+]", "")));
 		} catch (Exception e){
-			return -1;
+			return def;
 		}
 	}
 	
@@ -371,6 +375,18 @@ public class Converters {
 	 */
 	public static Map<String, Object> json2HashMap(JSONObject jsonObject) {
 		return object2HashMapStrObj(jsonObject);
+	}
+	/**
+	 * Add content of JSONObject to a Map converting all values to String.
+	 * @param jsonSource - source JSONObject
+	 * @param targetMap - target Map (non null!)
+	 */
+	@SuppressWarnings("unchecked")
+	public static void addJsonToMapAsStrings(JSONObject jsonSource, Map<String, String> targetMap){
+		for (Object entry : jsonSource.entrySet()) {
+			Map.Entry<String, Object> entryObj = (Map.Entry<String, Object>) entry;
+			targetMap.put(entryObj.getKey(), entryObj.getValue().toString());
+		}
 	}
 	
 	/**
