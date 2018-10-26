@@ -121,8 +121,8 @@ public class DbStationResults{
 			
 			this.stationName = (String) data.get("name");
 			this.stationId = (String) data.get("id");
-			this.longitude = Converters.obj2Double(data.get("lon"));
-			this.latitude = Converters.obj2Double(data.get("lat"));
+			this.longitude = Converters.obj2DoubleOrDefault(data.get("lon"), Double.NEGATIVE_INFINITY); 		//TODO: is this ok?
+			this.latitude = Converters.obj2DoubleOrDefault(data.get("lat"), Double.NEGATIVE_INFINITY);
 		}
 		
 		@Override
@@ -143,6 +143,9 @@ public class DbStationResults{
 			return longitude;
 		}
 		public double getApproxDistance(double lat, double lng){
+			if (this.latitude == Double.NEGATIVE_INFINITY || this.longitude == Double.NEGATIVE_INFINITY){
+				return Double.MAX_VALUE;		//TODO: is this ok?
+			}
 			try{
 				return Math.sqrt((Math.pow(lat - latitude, 2) + Math.pow(lng - longitude, 2)));
 			
