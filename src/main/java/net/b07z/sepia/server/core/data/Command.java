@@ -127,13 +127,13 @@ public class Command {
 		private boolean isMachineTranslated;
 		private String translatedFrom;
 		private String date;
-		private Map<String, Object> data;		//any additional data we did not think of right now
+		private JSONObject data;		//any additional data we did not think of right now
 
-		public Map<String, Object> getData() {
+		public JSONObject getData() {
 			return data;
 		}
 
-		public void setData(Map<String, Object> data) {
+		public void setData(JSONObject data) {
 			this.data = data;
 		}
 
@@ -271,7 +271,7 @@ public class Command {
 
 		/** Don't call this constructor directly, use SentenceBuilder! */
 		Sentence(Language language, String text, String user, String source, String taggedText, JSONObject params, String cmdSummary,
-						 String userLocation, boolean isMachineTranslated, String translatedFrom, boolean isPublic, boolean isLocal, boolean isExplicit, String environment, List<String> replies, Map<String, Object> data) {
+						 String userLocation, boolean isMachineTranslated, String translatedFrom, boolean isPublic, boolean isLocal, boolean isExplicit, String environment, List<String> replies, JSONObject data) {
 			this.language = Objects.requireNonNull(language);
 			this.text = Objects.requireNonNull(text);
 			this.user = Objects.requireNonNull(user);
