@@ -38,7 +38,8 @@ public class FilesAndStreams {
 	}
 
 	/**
-	 * Collect all data of an InputStream to a string. 
+	 * Collect all data of an InputStream to a string.<br>
+	 * NOTE: Please define encoding of stream!
 	 */
 	public static String getStringFromStream(InputStream stream) {
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(stream))) {

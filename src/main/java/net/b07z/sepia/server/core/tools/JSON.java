@@ -1,7 +1,11 @@
 package net.b07z.sepia.server.core.tools;
 
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
@@ -630,7 +634,7 @@ public final class JSON {
 	}
 	
 	/**
-	 * Write a JSONObject to a file.
+	 * Write a JSONObject to a file (UTF-8 encoding).
 	 * @param filePath - path including file name
 	 * @param obj - JSONObject
 	 * @return true/false
@@ -639,8 +643,10 @@ public final class JSON {
 		if (obj == null){
 			return false;
 		}
-		try (FileWriter file = new FileWriter(filePath)) {
-			file.write(obj.toJSONString());
+		//try (FileWriter file = new FileWriter(filePath)) {
+		try (OutputStreamWriter w = new OutputStreamWriter(new FileOutputStream(filePath), StandardCharsets.UTF_8);){
+			//file.write(obj.toJSONString());
+			w.write(obj.toJSONString());
 			return true;
 		}catch (Exception e){
 			System.err.println(DateTime.getLogDate() + " ERROR - JSON.java / writeJsonToFile() - Failed to write: " + filePath + " - MSG: " + e.getMessage());
@@ -649,14 +655,15 @@ public final class JSON {
 		}
 	}
 	/**
-	 * Read a JSONObject from file.
+	 * Read a JSONObject from file (UTF-8 encoding).
 	 * @param filePath - path including file name
 	 * @return JSONObject or null
 	 */
 	public static JSONObject readJsonFromFile(String filePath){
-		try {
+		try (Reader r = new InputStreamReader(new FileInputStream(filePath), StandardCharsets.UTF_8);) {
 			JSONParser parser = new JSONParser();
-            Object obj = parser.parse(new FileReader(filePath));
+			Object obj = parser.parse(r);
+            //Object obj = parser.parse(new FileReader(filePath));
             JSONObject jsonObject = (JSONObject) obj;
             return jsonObject;
  
