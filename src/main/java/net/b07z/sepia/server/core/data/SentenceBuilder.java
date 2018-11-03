@@ -25,7 +25,7 @@ public class SentenceBuilder {
 	private boolean isExplicit;
 	private String userLocation;
 	private String translatedFrom;
-	private Map<String, Object> data = new HashMap<>();
+	private JSONObject data = new JSONObject();
 
 	public SentenceBuilder(String text, String user, String source) {
 		this.text = Objects.requireNonNull(text);
@@ -58,7 +58,7 @@ public class SentenceBuilder {
 		return this;
 	}
 	
-	public SentenceBuilder setData(Map<String, Object> data) {
+	public SentenceBuilder setData(JSONObject data) {
 		this.data = data;
 		return this;
 	}
