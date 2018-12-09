@@ -38,6 +38,11 @@ public class UserDataList {
 		timer,
 		alarm
 	}
+	public enum EleState{
+		open,
+		inProgress,
+		done
+	}
 	public static boolean indexTypeContains(String test){
 	    for (IndexType c : IndexType.values()) {
 	        if (c.name().equals(test)) {
