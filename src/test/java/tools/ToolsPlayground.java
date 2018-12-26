@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.json.simple.JSONObject;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -12,7 +11,9 @@ import com.fasterxml.jackson.core.JsonGenerator;
 
 import net.b07z.sepia.server.core.tools.EsQueryBuilder;
 import net.b07z.sepia.server.core.tools.JSON;
+import net.b07z.sepia.server.core.tools.RuntimeInterface;
 import net.b07z.sepia.server.core.tools.EsQueryBuilder.QueryElement;
+import net.b07z.sepia.server.core.tools.RuntimeInterface.RuntimeResult;
 import net.b07z.sepia.server.core.tools.Security;
 
 /**
@@ -24,7 +25,43 @@ public class ToolsPlayground {
 
 	public static void main(String[] args) {
 		
+		/* -- Runtime commands -- */
+		System.out.println("Calling runtime: ");
+		RuntimeResult rtr = RuntimeInterface.runCommand(new String[]{"chcp"}, 5000);
+		System.out.println(rtr.toString()); if (rtr.getStatusCode() != 0) System.out.println(rtr.getException());
+		rtr = RuntimeInterface.runCommand(new String[]{"ping", "sepia-framework.github.io"}, 5000);
+		System.out.println(rtr.toString()); if (rtr.getStatusCode() != 0) System.out.println(rtr.getException());
+		rtr = RuntimeInterface.runCommand(new String[]{"ping", "sepia-framework.github.io"}, 500);
+		System.out.println(rtr.toString()); if (rtr.getStatusCode() != 0) System.out.println(rtr.getException());
+		rtr = RuntimeInterface.runCommand(new String[]{"ping", "-c", "3", "sepia-framework.github.io"}, 5000);
+		System.out.println(rtr.toString()); if (rtr.getStatusCode() != 0) System.out.println(rtr.getException());
+		
+		/* -- Write test properties file -- */
+		/*
+		System.out.println("\nTesting properties store and load: ");
+		Properties prop = new Properties();
+		prop.setProperty("test", out);
+		prop.setProperty("umlaute", "äöü");
+		String path = System.getProperty("user.home") + "\\test.properties";
+		try{
+			FilesAndStreams.saveSettings(path, prop);
+			System.out.println("Stored test-file at: " + path);
+		}catch (Exception e){
+			System.out.println("Failed to store test-file at: " + path);
+			e.printStackTrace();
+		}
+		try{
+			Properties prop2 = FilesAndStreams.loadSettings(path);
+			System.out.println("Special Umlaute: " + prop2.getProperty("umlaute"));
+			System.out.println("Test: " + prop2.getProperty("test"));
+		}catch (Exception e){
+			System.out.println("Failed to load test-file at: " + path);
+			e.printStackTrace();
+		}
+		*/
+		
 		/* -- Password client hash -- */
+		/*
 		String hash = hashPassword("testpwd12345678!_");
 		System.out.println("password client hash: " + hash);
 		hash = hashPassword("TestPwd12345678!_");
@@ -35,6 +72,7 @@ public class ToolsPlayground {
 		System.out.println("password client hash: " + hash);
 		hash = hashPassword("test12345!_");
 		System.out.println("password client hash: " + hash);
+		*/
 		
 		/* -- Elasticsearch queries -- */
 		/*
