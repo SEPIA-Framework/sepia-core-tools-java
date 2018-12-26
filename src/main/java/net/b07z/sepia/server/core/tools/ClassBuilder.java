@@ -1,6 +1,13 @@
 package net.b07z.sepia.server.core.tools;
 
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.tools.DiagnosticCollector;
+import javax.tools.JavaCompiler;
+import javax.tools.JavaFileObject;
+import javax.tools.ToolProvider;
 
 /**
  * Build classes from strings. Very handy for configuration files and plug-ins.
@@ -80,6 +87,24 @@ public class ClassBuilder {
 			e.printStackTrace();
 			throw new RuntimeException(DateTime.getLogDate() + " ERROR - Class not found: " + module_name, e);
 		}
+	}
+	
+	/**
+	 * Experimental string source-code compiler.
+	 * @param className
+	 * @param classCode
+	 * @param fileName
+	 */
+	public static void compile(String className, String classCode, String fileName){
+		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+	    DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
+	    
+	    List<JavaFileObject> compilationUnits = new ArrayList<JavaFileObject>();
+        JavaFileObject file = new SourceCodeFromString(className, classCode);
+        compilationUnits.add(file);
+
+	    JavaCompiler.CompilationTask task = compiler.getTask(null, null, diagnostics, null, null, compilationUnits);
+	    System.out.println(task.call() + diagnostics.getDiagnostics().toString()); //passes every time
 	}
 
 }
