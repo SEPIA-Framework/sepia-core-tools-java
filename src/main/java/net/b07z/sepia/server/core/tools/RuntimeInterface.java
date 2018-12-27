@@ -14,7 +14,7 @@ import java.util.stream.Stream;
  */
 public class RuntimeInterface {
 	
-	public static final boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
+	public static Boolean isWindows = null;
 	public static Charset windowsShellCodepage = null; 
 	
 	/**
@@ -72,6 +72,17 @@ public class RuntimeInterface {
 	}
 	
 	/**
+	 * Is the runtime a Windows OS?
+	 * @return
+	 */
+	public static boolean isWindows(){
+		if (isWindows == null){
+			isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
+		}
+		return isWindows;
+	}
+	
+	/**
 	 * We need to run the shell codepage command to get proper windows encoding (is there REALLY no BETTER WAY??).
 	 * @return
 	 */
@@ -104,7 +115,7 @@ public class RuntimeInterface {
 	}
 	public static RuntimeResult runCommand(String[] command, long customTimeout){
 		Charset encoding = StandardCharsets.UTF_8;
-		if (isWindows && windowsShellCodepage == null && !command[0].equals("chcp")){
+		if (isWindows() && windowsShellCodepage == null && !command[0].equals("chcp")){
 			RuntimeResult rtr = getWindowsShellCodepage(); 
 			if (rtr.getStatusCode() != 0){
 				return new RuntimeResult(1, null, rtr.getException());
@@ -122,7 +133,7 @@ public class RuntimeInterface {
 			//process = Runtime.getRuntime().exec(command); 	//old way
 			ProcessBuilder builder = new ProcessBuilder();
 			String[] osPart;
-			if (isWindows){
+			if (isWindows()){
 				osPart = new String[]{"cmd.exe", "/c"};
 			}else{
 				osPart = new String[]{"sh", "-c"};

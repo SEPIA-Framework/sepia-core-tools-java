@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -11,6 +13,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 
 import net.b07z.sepia.server.core.tools.EsQueryBuilder;
 import net.b07z.sepia.server.core.tools.JSON;
+import net.b07z.sepia.server.core.tools.JSONWriter;
 import net.b07z.sepia.server.core.tools.RuntimeInterface;
 import net.b07z.sepia.server.core.tools.EsQueryBuilder.QueryElement;
 import net.b07z.sepia.server.core.tools.RuntimeInterface.RuntimeResult;
@@ -23,18 +26,32 @@ import net.b07z.sepia.server.core.tools.Security;
  */
 public class ToolsPlayground {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		
 		/* -- Runtime commands -- */
 		System.out.println("Calling runtime: ");
 		RuntimeResult rtr = RuntimeInterface.runCommand(new String[]{"chcp"}, 5000);
 		System.out.println(rtr.toString()); if (rtr.getStatusCode() != 0) System.out.println(rtr.getException());
+		rtr = RuntimeInterface.runCommand(new String[]{"echo", "Hello World!"}, 5000);
+		System.out.println(rtr.toString()); if (rtr.getStatusCode() != 0) System.out.println(rtr.getException());
+		/*
 		rtr = RuntimeInterface.runCommand(new String[]{"ping", "sepia-framework.github.io"}, 5000);
 		System.out.println(rtr.toString()); if (rtr.getStatusCode() != 0) System.out.println(rtr.getException());
 		rtr = RuntimeInterface.runCommand(new String[]{"ping", "sepia-framework.github.io"}, 500);
 		System.out.println(rtr.toString()); if (rtr.getStatusCode() != 0) System.out.println(rtr.getException());
 		rtr = RuntimeInterface.runCommand(new String[]{"ping", "-c", "3", "sepia-framework.github.io"}, 5000);
 		System.out.println(rtr.toString()); if (rtr.getStatusCode() != 0) System.out.println(rtr.getException());
+		*/
+		
+		/* -- JSONWriter -- */
+		System.out.println("\nJSONWriter test: ");
+		JSONObject jo = JSON.make(
+				"First", 10, "Second", 20, 
+				"Level2", JSON.make("Third", 300),
+				"EmptyArray", new JSONArray(),
+				"EmptyObject", new JSONObject()
+		);
+		System.out.println(JSONWriter.getPrettyString(jo));
 		
 		/* -- Write test properties file -- */
 		/*

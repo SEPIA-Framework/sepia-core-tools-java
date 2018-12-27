@@ -12,6 +12,11 @@ import javax.tools.SimpleJavaFileObject;
 public class SourceCodeFromString extends SimpleJavaFileObject {
     final String code;
 
+    /**
+     * Construct the new source by giving the (full) class name and code content.
+     * @param name - full class name, e.g. com.example.my_package.MyNewClass
+     * @param code - Java source-code as seen in .java files (including package and import sections)
+     */
     public SourceCodeFromString(String name, String code){
         super(URI.create("string:///" + name.replace('.','/') + Kind.SOURCE.extension), Kind.SOURCE);
         this.code = code;

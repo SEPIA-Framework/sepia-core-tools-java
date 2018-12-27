@@ -46,7 +46,7 @@ public class Debugger {
 	 */
 	public static void printStackTrace(Throwable ex, int numTraces){
 		StackTraceElement[] ste = ex.getStackTrace(); 
-		if (ste != null){
+		if (ste != null && ste.length > 0){
 			for (int i=0; i<Math.min(5, ste.length); i++){
 				Debugger.println("TRACE: " + ex.getStackTrace()[i], 1);
 			}
