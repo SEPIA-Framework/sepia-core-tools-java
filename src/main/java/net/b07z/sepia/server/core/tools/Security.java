@@ -39,7 +39,7 @@ public class Security {
 	 * @return - byte array
 	 */
 	public static byte[] hexToByteArray(String s) {
-	    return DatatypeConverter.parseHexBinary(s);
+	    return DatatypeConverter.parseHexBinary(s); 		//TODO: can we replace this and get rid of 'javax.xml.bind'?
 	}
 	
 	/**

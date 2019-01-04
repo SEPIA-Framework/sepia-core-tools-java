@@ -92,6 +92,8 @@ public class ToolsTest {
 		//isPrivate = Security.isPrivateNetwork("fd9e:21a7:a92c:2323::2"); assertTrue(isPrivate); 	//what are private IPv6 addresses??
 		isPrivate = Security.isPrivateNetwork("http://example.com/index.html");		assertFalse(isPrivate);
 		isPrivate = Security.isPrivateNetwork("example.com");				assertFalse(isPrivate);
+		
+		//TODO: what about things like "raspberrypi.local" or "my-pc.localhost" ?
 	}
 
 }

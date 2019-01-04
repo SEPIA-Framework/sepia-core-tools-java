@@ -29,7 +29,7 @@ public class ClassBuilder {
 	 * @param classLoader - loader that has access to the class. Use null or 'ClassLoader.getSystemClassLoader()' for default.
 	 * @param canonicalClassName - canonical name of the class, e.g.: "java.lang.String"
 	 * @param arguments - arguments usually passed to the constructor (optional).
-	 * @return constructed class
+	 * @return constructed class or throw exception
 	 */
 	public static Object construct(ClassLoader classLoader, String canonicalClassName, Object... arguments){
 		try{
@@ -77,7 +77,7 @@ public class ClassBuilder {
 	 * Constructs a new instance of a class just by using the name of the class.<br>
 	 * 
 	 * @param canonicalClassName - canonical name of the class, e.g.: "java.lang.String"
-	 * @return constructed class
+	 * @return constructed class or throw exception
 	 */
 	public static Object construct(String canonicalClassName){
 		return construct(null, canonicalClassName);

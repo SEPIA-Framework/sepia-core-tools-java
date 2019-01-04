@@ -132,6 +132,14 @@
 		    <version>4.5.3</version>
 		</dependency>
 		
+		<!-- Java 9+ support -->
+		<dependency>
+		    <groupId>javax.xml.bind</groupId>
+		    <artifactId>jaxb-api</artifactId>
+		    <version>2.3.1</version>
+		</dependency>
+		
+		<!-- Testing -->
 		<dependency>
       		<groupId>junit</groupId>
       		<artifactId>junit</artifactId>
