@@ -88,8 +88,9 @@ public class ClassBuilder {
 	 * @param className - full class name including package, e.g. com.example.my_package.MyNewClass
 	 * @param classCode - source-code as seen in Java files
 	 * @param targetFolder - parent directory of compiled class file (without package-path) or null
+	 * @return Compile errors as readable String or empty
 	 */
-	public static void compile(String className, String classCode, File targetFolder){
+	public static String compile(String className, String classCode, File targetFolder){
 		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 		if (compiler == null){
 			String msg = "Cannot find Java compiler! "
@@ -122,12 +123,16 @@ public class ClassBuilder {
 	    if (task.call()){
 	    	//Done
 	    	Debugger.println("ClassBuilder - compiled '" + className + "' to '" + folderOrMemory, 3);
+	    	return "";
 	    }else{
 	    	//Error(s)
+	    	StringBuilder errors = new StringBuilder("Compile errors: \n");
 	    	for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()){
-	    		Debugger.println("ClassBuilder - compiling of '" + diagnostic.getSource().toUri() + "' failed. Error: \n" +
-	    				"Line " + diagnostic.getLineNumber() + ": " + diagnostic.getMessage(Locale.ENGLISH), 1);
+	    		String error = diagnostic.getSource().toUri() + " - " + "Line " + diagnostic.getLineNumber() + ": " + diagnostic.getMessage(Locale.ENGLISH);
+	    		errors.append(error).append(" \n");
+	    		Debugger.println("ClassBuilder - compiling of '" + error, 1);
             }
+	    	return errors.toString();
 	    }
 	}
 
