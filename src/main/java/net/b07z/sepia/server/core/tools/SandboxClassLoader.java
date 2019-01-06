@@ -30,6 +30,9 @@ public class SandboxClassLoader extends URLClassLoader {
     }
     
     @Override
+    /**
+     * Loads class with given binary name if not done before and not on blacklist of the sand-box.
+     */
     public Class<?> loadClass(String name) throws ClassNotFoundException {
     	//TODO: add a white-list/black-list combo here? Maybe check for package on black-list first then white-list
     	if (name.contains(".")){

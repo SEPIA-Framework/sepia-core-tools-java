@@ -1,6 +1,6 @@
 package net.b07z.sepia.server.core.tools;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 
 import org.json.simple.JSONObject;
@@ -53,15 +53,15 @@ public class Is {
 	}
 	
 	/**
-	 * Returns "true" if the list is null or empty.
+	 * Returns "true" if the collection is null or empty.
 	 */
-	public static boolean nullOrEmpty(List<?> l){
+	public static boolean nullOrEmpty(Collection<?> l){
 		return (l == null || l.isEmpty());
 	}
 	/**
-	 * Returns "true" if the list is not null and not empty.
+	 * Returns "true" if the collection is not null and not empty.
 	 */
-	public static boolean notNullOrEmpty(List<?> l){
+	public static boolean notNullOrEmpty(Collection<?> l){
 		return (l != null && !l.isEmpty());
 	}
 }

@@ -121,7 +121,7 @@ public class ClassBuilder {
 	    JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, optionList, null, compilationUnits);
 	    if (task.call()){
 	    	//Done
-	    	Debugger.println("Compiled '" + className + "' to '" + folderOrMemory, 3);
+	    	Debugger.println("ClassBuilder - compiled '" + className + "' to '" + folderOrMemory, 3);
 	    }else{
 	    	//Error(s)
 	    	for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()){

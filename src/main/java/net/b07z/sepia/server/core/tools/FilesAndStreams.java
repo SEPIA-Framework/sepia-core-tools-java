@@ -66,13 +66,18 @@ public class FilesAndStreams {
 	/**
 	 * Collect all data of an InputStream to a string via BufferedReader and InputStreamReader.<br>
 	 * NOTE: Please check correct encoding of stream!
+	 * @param stream - input stream
+	 * @param charset - e.g.: StandardCharsets.UTF_8
+	 * @param lineBreakChar - a character to use for line-breaks, e.g. "\n" or System.lineSeparator()
+	 * @return
+	 * @throws IOException
 	 */
-	public static String getStringFromStream(InputStream stream, Charset charset) throws IOException{
+	public static String getStringFromStream(InputStream stream, Charset charset, String lineBreakChar) throws IOException{
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(stream, charset))) {
 			String inputLine;
 			StringBuilder response = new StringBuilder();
 			while ((inputLine = in.readLine()) != null) {
-				response.append(inputLine + System.lineSeparator());
+				response.append(inputLine + lineBreakChar);
 			}
 			return response.toString();
 		}catch (IOException e){
