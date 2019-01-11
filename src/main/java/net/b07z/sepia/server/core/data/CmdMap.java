@@ -25,11 +25,21 @@ public class CmdMap {
 	private List<String> permissions;
 	
 	@SuppressWarnings("unchecked")
+	/**
+	 * Import command map from JSON.
+	 * @param entry
+	 */
 	public CmdMap(JSONObject entry){
 		this.command = JSON.getString(entry, "command");
 		this.services = new ArrayList<>((JSONArray)entry.get("services"));
 		this.permissions = new ArrayList<>((JSONArray)entry.get("permissions"));
 	}
+	/**
+	 * Create a new command map.
+	 * @param command
+	 * @param services
+	 * @param permissions
+	 */
 	public CmdMap(String command, List<String> services, List<String> permissions){
 		this.command = command;
 		this.services = services;
@@ -51,6 +61,10 @@ public class CmdMap {
 		}else{
 			return false;
 		}
+	}
+	@Override
+	public String toString(){
+		return (this.command + " - services: " + this.services.size());
 	}
 	
 	public String getCommand(){
