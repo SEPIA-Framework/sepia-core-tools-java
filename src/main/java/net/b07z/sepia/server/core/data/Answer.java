@@ -14,6 +14,15 @@ import java.util.stream.Collectors;
 
 import org.json.simple.JSONObject;
 
+/**
+ * This class contains all required info for answers given by the assistant.
+ * Answers can have a number of parameters like character (neutral, cool, ...), when to trigger (first time, first repetition, etc.)
+ * and many more. If you create a custom answer pool (e.g. inside a service) use this constructor to get a good set of parameters:<br>
+ * Answer(Language language, String type, String text, Character character, int repetition, int mood)
+ * 
+ * @author Florian Quirin
+ *
+ */
 public class Answer {
 
 	//database types to organize commands
@@ -42,26 +51,61 @@ public class Answer {
 	private Map<String, Object> data;		//any additional data we did not think of right now
 	private String date;
 
+	/**
+	 * Every answer can be assigned to a certain assistant 'character' like 'cool' or 'rude' (or 'neutral').
+	 */
 	public enum Character {
 		neutral, rude, cool, polite
 	}
 	
+	/**
+	 * Usually you want to use another constructor: {@link Answer}(Language language, String type, String text, Character character, int repetition, int mood)
+	 */
 	public Answer() {
 		// needed for Jackson
 	}
 	
+	/**
+	 * Create an answer with default settings.
+	 * @param language - language code for this answer
+	 * @param type - answer key, basically an ID to find an answer in the pool
+	 * @param text - actual answer (variables like &lt1&gt, &lt2&gt ... are supported)
+	 */
 	public Answer(Language language, String type, String text) {
 		this(language, type, text, Character.neutral);
 	}
-
+	/**
+	 * Create an answer with default settings and custom character.
+	 * @param language - language code for this answer
+	 * @param type - answer key, basically an ID to find an answer in the pool
+	 * @param text - actual answer (variables like &lt1&gt, &lt2&gt ... are supported)
+	 * @param character - answer {@link Character} like "neutral", "rude", "cool"
+	 */
 	public Answer(Language language, String type, String text, Character character) {
 		this(language, type, text, character, 0, 5);
 	}
 	
+	/**
+	 * Build a new answer with all relevant information.
+	 * @param language - language code for this answer
+	 * @param type - answer key, basically an ID to find an answer in the pool
+	 * @param text - actual answer (variables like &lt1&gt, &lt2&gt ... are supported)
+	 * @param character - answer {@link Character} like "neutral", "rude", "cool"
+	 * @param repetition - when will this answer be triggered? First try (0), first repeat (1), following repeats (2)
+	 * @param mood - mood level that this answer will be used from 0-10. Sad (0), neutral (5), happy (10)
+	 */
 	public Answer(Language language, String type, String text, Character character, int repetition, int mood) {
 		this(language, type, text, Collections.singletonList(character), repetition, mood);
 	}
-	
+	/**
+	 * Build a new answer with all relevant information.
+	 * @param language - language code for this answer
+	 * @param type - answer key, basically an ID to find an answer in the pool
+	 * @param text - actual answer (variables like &lt1&gt, &lt2&gt ... are supported)
+	 * @param characters - multiple answer {@link Character} like "neutral", "rude", "cool"
+	 * @param repetition - when will this answer be triggered? First try (0), first repeat (1), following repeats (2)
+	 * @param mood - mood level that this answer will be used from 0-10. Sad (0), neutral (5), happy (10)
+	 */
 	public Answer(Language language, String type, String text, List<Character> characters, int repetition, int mood) {
 		this(language, type, text, characters, repetition, mood,
 				ConfigDefaults.defaultAssistantUserId, Defaults.IMPORT_SOURCE, true, false, false, null,
@@ -70,6 +114,7 @@ public class Answer {
 	}
 
 	/**
+	 * Usually you want to use another constructor: {@link Answer}(Language language, String type, String text, Character character, int repetition, int mood)
 	 * @param isPublic is this visible for everybody, if not, it's a private answer
 	 * @param isLocal is this run on the local home server?
 	 */
@@ -101,14 +146,23 @@ public class Answer {
 		this.date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(new Date());
 	}
 
+	/**
+	 * Language in use for this answer.
+	 */
 	public Language getLanguage() {
 		return language;
 	}
 
+	/**
+	 * This is the answer key, basically an ID to find an answer or list of answers in the pool (DB, file or memory).
+	 */
 	public String getType() {
 		return type;
 	}
 
+	/**
+	 * The actual answer in the given language.
+	 */
 	public String getText() {
 		return text;
 	}
