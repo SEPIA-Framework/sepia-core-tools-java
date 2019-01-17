@@ -63,14 +63,14 @@ public class AuthenticationAssistAPI implements AuthenticationInterface{
 		
 		//Status?
 		if (!Connectors.httpSuccess(response)){
-			log.warn("No success in auth response for user '" + userid + "', returning false: " + response);
+			log.warn("Authentication ERROR for user '" + userid + "' - original msg.: " + response);
 			errorCode = 3; 			//connection error, wrong parameters?
 			return false;
 		}
 		else{
 			String result = (String) response.get("result");
 			if (result.equals("fail")){
-				log.warn("'fail' in auth response for user '" + userid + "', returning false: " + response);
+				log.warn("Authentication failed for user '" + userid + "' - original msg.: " + response);
 				errorCode = 2;		//authentication failed
 				return false;
 			}

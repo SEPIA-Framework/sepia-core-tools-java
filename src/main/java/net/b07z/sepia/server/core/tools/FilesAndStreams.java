@@ -102,9 +102,9 @@ public class FilesAndStreams {
 	}
 	
 	/**
-	 * Get an ArrayList of "File"s from a directory path.
+	 * Get an List of "File"s from a directory path.
 	 * @param directoryName - path to directory
-	 * @param files - ArrayList of files to populate (or null -> creates ArrayList)
+	 * @param files - List of files to populate (or null -> creates ArrayList)
 	 * @param doSubfolders - include sub-folders?
 	 * @return list or null
 	 */
@@ -114,22 +114,67 @@ public class FilesAndStreams {
 			files = new ArrayList<>();
 		}
 	
-	    // get all the files from a directory
+	    //get all the files from a directory
 	    File[] fList = directory.listFiles();
 	    if (fList == null){
 	    	return null;
 	    }
 	    //System.out.println(directory.list().length);		//debug
-	    for (File file : fList) {
-	        if (file.isFile()) {
+	    for (File file : fList){
+	        if (file.isFile()){
 	            files.add(file);
 	            //System.out.println(file.toString());		//debug
-	        } else if (file.isDirectory() & doSubfolders) {
+	        }else if (file.isDirectory() & doSubfolders){
 	        	//listAllFiles(file.getAbsolutePath(), files, doSubfolders);
 	        	directoryToFileList(file.getPath(), files, doSubfolders);
 	        }
 	    }
 		return files;
+	}
+	/**
+	 * Get an List of directories at path. Will skip files.
+	 * @param path - path to search for directories
+	 * @param directories - List of files to populate (or null -> creates ArrayList)
+	 * @return list or null
+	 */
+	public static List<File> getDirectoriesAtPath(String path, List<File> directories) {
+		File directory = new File(path);
+		if (directories == null){
+			directories = new ArrayList<>();
+		}
+	
+	    //get everything at path
+	    File[] fList = directory.listFiles();
+	    if (fList == null){
+	    	return null;
+	    }
+	    //System.out.println(directory.list().length);		//debug
+	    for (File file : fList){
+	        if (!file.isFile()){
+	        	directories.add(file);
+	            //System.out.println(file.toString());		//debug
+	        }
+	    }
+		return directories;
+	}
+	
+	/**
+	 * Delete folder with all of it's content. This is necessary because Java's internal file.delete()
+	 * cannot delete non-empty folders.
+	 * @param folder - folder to delete
+	 */
+	public static void deleteFolder(File folder) {
+	    File[] files = folder.listFiles();
+	    if(files!=null) { //some JVMs return null for empty dirs
+	        for(File f: files) {
+	            if(f.isDirectory()) {
+	                deleteFolder(f);
+	            } else {
+	                f.delete();
+	            }
+	        }
+	    }
+	    folder.delete();
 	}
 	
 	/**
