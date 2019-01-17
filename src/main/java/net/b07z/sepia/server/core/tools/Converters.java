@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -387,6 +388,18 @@ public class Converters {
 			Map.Entry<String, Object> entryObj = (Map.Entry<String, Object>) entry;
 			targetMap.put(entryObj.getKey(), entryObj.getValue().toString());
 		}
+	}
+	
+	/**
+	 * Convert a JSONArray to an ArrayList of strings.
+	 * @param jArray - array to convert, entries are cast to String via '.toString()'
+	 */
+	public static List<String> jsonArrayToStringList(JSONArray jArray){
+		List<String> list = new ArrayList<>();
+		for (Object o : jArray){
+			list.add(o.toString());
+		}
+		return list;
 	}
 	
 	/**

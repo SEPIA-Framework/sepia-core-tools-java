@@ -2,6 +2,7 @@ package net.b07z.sepia.server.core.tools;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
@@ -113,6 +114,21 @@ public class RuntimeInterface {
 	public static RuntimeResult runCommand(String[] command){
 		return runCommand(command, 5000);
 	}
+	/**
+	 * Execute runtime command. Chooses between "cmd.exe" and "sh" shell by OS.
+	 * @param command - e.g.: 'Arrays.asList("ping", "-c", "3", "sepia-framework.github.io")'
+	 * @param customTimeout - custom value between 0 and 15000 ms
+	 * @return
+	 */
+	public static RuntimeResult runCommand(Collection<String> command, long customTimeout){
+		return runCommand(command.toArray(new String[command.size()]), 5000);
+	}
+	/**
+	 * Execute runtime command. Chooses between "cmd.exe" and "sh" shell by OS.
+	 * @param command - e.g.: 'new String[]{"ping", "-c", "3", "sepia-framework.github.io"}'
+	 * @param customTimeout - custom value between 0 and 15000 ms
+	 * @return
+	 */
 	public static RuntimeResult runCommand(String[] command, long customTimeout){
 		Charset encoding = StandardCharsets.UTF_8;
 		if (isWindows() && windowsShellCodepage == null && !command[0].equals("chcp")){
@@ -127,6 +143,8 @@ public class RuntimeInterface {
 		}
 		if (customTimeout > 15000){
 			customTimeout = 15000;
+		}else if (customTimeout <= 0){
+			customTimeout = 5000;
 		}
 		Process process;
 		try{

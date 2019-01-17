@@ -84,10 +84,10 @@ public class ClassBuilder {
 	}
 	
 	/**
-	 * Experimental string source-code compiler.
+	 * Source code string compiler. Compiles code to class and stores result in given folder. 
 	 * @param className - full class name including package, e.g. com.example.my_package.MyNewClass
 	 * @param classCode - source-code as seen in Java files
-	 * @param targetFolder - parent directory of compiled class file (without package-path) or null
+	 * @param targetFolder - parent directory of compiled class file (without package-path)
 	 * @return Compile errors as readable String or empty
 	 */
 	public static String compile(String className, String classCode, File targetFolder){
@@ -123,7 +123,7 @@ public class ClassBuilder {
 	    if (task.call()){
 	    	//Done
 	    	Debugger.println("ClassBuilder - compiled '" + className + "' to '" + folderOrMemory, 3);
-	    	return "";
+	    	return ""; 			//TODO: if this is MEMORY ONLY how do we get the clas later?
 	    }else{
 	    	//Error(s)
 	    	StringBuilder errors = new StringBuilder("Compile errors: \n");
@@ -134,6 +134,13 @@ public class ClassBuilder {
             }
 	    	return errors.toString();
 	    }
+	}
+	
+	/**
+	 * Simply use file name to get simple class name.
+	 */
+	public static String getSimpleClassNameFromFileName(String fileName){
+		return fileName.replaceFirst("\\$.*\\.", ".").replaceFirst("\\.(\\w+)$", "").trim();
 	}
 
 }

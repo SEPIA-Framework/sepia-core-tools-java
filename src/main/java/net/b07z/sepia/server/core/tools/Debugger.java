@@ -17,9 +17,9 @@ import java.util.Map.Entry;
  */
 public class Debugger {
 	
-	static boolean error = true;	//1
-	static boolean info = false;	//2
-	static boolean log = true;		//3
+	public static boolean error = true;		//1
+	public static boolean info = false;		//2
+	public static boolean log = true;		//3
 	
 	/**
 	 * Print a debug message with debug-type.
