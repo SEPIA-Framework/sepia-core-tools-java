@@ -46,12 +46,35 @@ public class ToolsPlayground {
 		/* -- JSONWriter -- */
 		System.out.println("\nJSONWriter test: ");
 		JSONObject jo = JSON.make(
-				"First", 10, "Second", 20, 
+				"First", 10, 
+				"Second", "20", 
 				"Level2", JSON.make("Third", 300),
 				"EmptyArray", new JSONArray(),
 				"EmptyObject", new JSONObject()
 		);
 		System.out.println(JSONWriter.getPrettyString(jo));
+		
+		System.out.println(JSON.getObject(jo, "First".split("\\.")));
+		System.out.println(JSON.getObject(jo, "Second".split("\\.")));
+		System.out.println(JSON.getObject(jo, "EmptyArray".split("\\.")));
+		System.out.println(JSON.getObject(jo, "EmptyObject".split("\\.")));
+		System.out.println(JSON.getObject(jo, "Level2.Third".split("\\.")));
+		
+		JSONObject nodeResponseData = JSON.make(
+				"hello", "Boss",
+				"status", "success"
+		);
+		String answer = "Hello <result_hello> how are you?";
+		String tag = "<result_hello>";
+		String tagClean = tag.replaceFirst("<result_(.*?)>", "$1").trim();
+		System.out.println(nodeResponseData.toJSONString());
+		System.out.println(tagClean);
+		String value = JSON.getObject(nodeResponseData, tagClean.split("\\.")).toString();
+		answer = answer.replaceFirst("(<result_.*?>)", value);
+		System.out.println(answer);
+		
+		String clusterKeyLight = "c";
+		System.out.println((int) clusterKeyLight.charAt(clusterKeyLight.length()-1));
 		
 		/* -- Write test properties file -- */
 		/*

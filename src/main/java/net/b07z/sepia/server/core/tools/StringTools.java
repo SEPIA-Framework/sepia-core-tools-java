@@ -1,5 +1,7 @@
 package net.b07z.sepia.server.core.tools;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,5 +27,20 @@ public class StringTools {
 		}else{
 			return "";
 		}
+	}
+	
+	/**
+	 * Find all groups of matching regular expression or return empty string.
+	 * @param input - input to search in
+	 * @param regEx - regular expression to search for
+	 */
+	public static List<String> findAllRexEx(String input, String regEx){
+		Pattern pattern = Pattern.compile(regEx);
+		Matcher matcher = pattern.matcher(input);
+		List<String> matches = new ArrayList<>();
+		while (matcher.find()){
+			matches.add(matcher.group(0));
+		}
+		return matches;
 	}
 }

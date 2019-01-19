@@ -1,6 +1,7 @@
 package net.b07z.sepia.server.core.server;
 
 import net.b07z.sepia.server.core.tools.Debugger;
+import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.Security;
 import spark.Request;
 
@@ -42,12 +43,13 @@ public class Validate {
 	 */
 	public static boolean validateInternalCall(Request request, String submittedKey, String sharedServerKey) {
 		//TODO: make this more secure by adding a white-list of IPs or something ...
-		if (submittedKey != null && submittedKey.equals(sharedServerKey)){
-			return true;
-		}else if (submittedKey != null){
-			Debugger.println("Invalid internal API call from " + request.ip(), 1);
+		if (Is.nullOrEmpty(submittedKey) || Is.nullOrEmpty(sharedServerKey)){
 			return false;
+		}
+		if (submittedKey.equals(sharedServerKey)){
+			return true;
 		}else{
+			Debugger.println("Invalid internal API call from " + request.ip(), 1);
 			return false;
 		}
 	}

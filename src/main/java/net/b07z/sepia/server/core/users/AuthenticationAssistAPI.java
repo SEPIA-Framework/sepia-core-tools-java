@@ -12,7 +12,7 @@ import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.JSON;
 
 /**
- * Implementation of the Authentication_Interface using the assistant-API.
+ * Implementation of the {@link AuthenticationInterface} using the assistant-API.
  *  
  * @author Florian Quirin
  *
@@ -31,28 +31,52 @@ public class AuthenticationAssistAPI implements AuthenticationInterface{
 	//authenticate user
 	@Override
 	public boolean authenticate(JSONObject info) {
-		String userid = (String) info.get("userId");
-		String password = (String) info.get("pwd");
-		String client = (String) info.get("client");
-		
 		//check client - client has influence on the password token that is used
+		String client = (String) info.get("client");
 		if (client == null || client.isEmpty()){
 			client = ConfigDefaults.defaultClientInfo;
 		}
-		if (password == null || password.trim().isEmpty()) {
-			log.warn("Password null or empty for user '" + userid + "': '" + password + "'");
-		}
-		//make URL
-		this.userid = userid;
+		
+		//Auth. endpoint URL
 		String url = ConfigDefaults.defaultAssistAPI + "authentication";
 		//System.out.println("Auth. call: " + url); 			//debug
-		//data body
-		JSONObject body = JSON.make(
-				"KEY", (userid + ";" + password),
-				"action", "check",
-				"client", client
-		);
-		String dataStr = body.toJSONString();
+		
+		String userid = "anonymous";	//this will stay for tToken because position in tToken object might change
+		String dataStr;
+		//boolean wasAllowAction = false;
+		
+		//--- temp. token auth. ---
+		if (info.containsKey("tToken")){
+			JSONObject tToken = JSON.getJObject(info, "tToken");
+			if (tToken.isEmpty()) {
+				log.warn("Temp. token empty for user '" + userid);
+			}
+			//data body
+			JSONObject body = JSON.make(
+					"tToken", tToken,
+					"action", "allow",
+					"client", client
+			);
+			dataStr = body.toJSONString();
+			//wasAllowAction = true;
+		
+		//--- default userid/password auth. ---
+		}else{
+			userid = (String) info.get("userId");
+			String password = (String) info.get("pwd");
+			if (password == null || password.trim().isEmpty()) {
+				log.warn("Password null or empty for user '" + userid + "': '" + password + "'");
+			}
+			//data body
+			JSONObject body = JSON.make(
+					"KEY", (userid + ";" + password),
+					"action", "check",
+					"client", client
+			);
+			dataStr = body.toJSONString();
+		}
+		//System.out.println(dataStr); 			//debug
+		
 		//headers
 		HashMap<String, String> headers = new HashMap<String, String>();
 		headers.put("Content-Type", "application/json");
@@ -75,30 +99,40 @@ public class AuthenticationAssistAPI implements AuthenticationInterface{
 				return false;
 			}
 			//should be fine now - get basic info about user
-			
-			//TODO: add other IDs? (email, phone)
-			
-			//ACCESS LEVEL 
-			//TODO: not yet fully implemented, but should be 0 for access via token, 1 for real password and -1 for no access.
-			accessLevel = Converters.obj2IntOrDefault(response.get("access_level"), -1);
-			
-			//NAME
-			JSONObject user_name = (JSONObject) response.get("user_name");
-			basicInfo.put("user_name", user_name);
-			
-			//LANGUAGE
-			String language = (String) response.get("user_lang_code");
-			basicInfo.put("user_lang_code", language);
-			
-			//ROLES
-			Object roles_o = response.get("user_roles");
-			if (roles_o != null){
-				basicInfo.put("user_roles", roles_o);
-			}
+			copyBasicInfo(response);
 			
 			//DONE - note: basicInfo CAN be null, so check for it if you use it.
 			errorCode = 0; 			//all fine
 			return true;
+		}
+	}
+	
+	/**
+	 * Fill Account data with data received from successful authentication.
+	 */
+	public void copyBasicInfo(JSONObject response){
+		//TODO: add other IDs? (email, phone)
+		//NOTE: fields names are defined inside assist-server: net.b07z.sepia.server.assist.users.Authenticator
+		
+		//GUUID
+		this.userid = (String) response.get("uid");
+		
+		//ACCESS LEVEL 
+		//TODO: not yet fully implemented, but should be 0 for access via token, 1 for real password and -1 for no access.
+		this.accessLevel = Converters.obj2IntOrDefault(response.get("access_level"), -1);
+
+		//LANGUAGE
+		String language = (String) response.get("user_lang_code");
+		this.basicInfo.put("user_lang_code", language);
+		
+		//NAME
+		JSONObject user_name = (JSONObject) response.get("user_name");
+		this.basicInfo.put("user_name", user_name);
+		
+		//ROLES
+		Object roles_o = response.get("user_roles");
+		if (roles_o != null){
+			this.basicInfo.put("user_roles", roles_o);
 		}
 	}
 	
