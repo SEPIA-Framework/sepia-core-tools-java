@@ -29,7 +29,7 @@ public class FilesAndStreams {
 	//----helpers:
 	
 	/**
-	 * Generic class to give line operations as lambda expressions.
+	 * Generic class to define line operations as lambda expressions.
 	 */
 	public static interface LineOperation {
 		/**
@@ -229,7 +229,7 @@ public class FilesAndStreams {
 	 * @return true (all good), false (error during read/write or line not found)
 	 */
 	public static boolean replaceLineInFile(String pathWithName, String lineMatchRegExp, LineOperation lineOperation){
-		try {
+		try{
 			Path path = Paths.get(pathWithName);
 			List<String> fileContent = new ArrayList<>(Files.readAllLines(path, StandardCharsets.UTF_8));
 			boolean foundLine = false;
@@ -248,8 +248,44 @@ public class FilesAndStreams {
 			}else{
 				throw new RuntimeException("Line matching regular expression NOT found in: " + pathWithName);
 			}
-		
-		} catch (IOException e) {
+		}catch (IOException e){
+			e.printStackTrace();
+			return false;
+		}
+	}
+	/**
+	 * Open a file, search line by regular expression then modify line by custom operation and store modifications.
+	 * Stops after first match. If the line is not found append it ('oldLine' parameter will be empty string in this case).
+	 * @param pathWithName - path to file including file-name
+	 * @param lineMatchRegExp - regular expression to find line
+	 * @param lineOperation - modify or create line with {@link LineOperation} (use lambda expression, e.g.: (oldLine) -> {	return newLine });
+		})
+	 * @return true (all good), false (error during read/write)
+	 */
+	public static boolean replaceLineOrAppend(String pathWithName, String lineMatchRegExp, LineOperation lineOperation){
+		try{
+			Path path = Paths.get(pathWithName);
+			List<String> fileContent = new ArrayList<>(Files.readAllLines(path, StandardCharsets.UTF_8));
+			boolean foundLine = false;
+			for (int i=0; i<fileContent.size(); i++) {
+				String line = fileContent.get(i);
+			    if (line.matches(lineMatchRegExp)) {
+			    	foundLine = true;
+			    	String newLine = lineOperation.run(line);
+			        fileContent.set(i, newLine);
+			        break;
+			    }
+			}
+			if (foundLine){
+				Files.write(path, fileContent, StandardCharsets.UTF_8);
+				return true;
+			}else{
+				String newLine = lineOperation.run("");
+				fileContent.add(newLine);
+				Files.write(path, fileContent, StandardCharsets.UTF_8);
+				return true;
+			}
+		}catch (IOException e){
 			e.printStackTrace();
 			return false;
 		}
