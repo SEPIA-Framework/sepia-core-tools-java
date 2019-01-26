@@ -176,7 +176,7 @@ public class Account {
 	*/
 	/**
 	 * Authenticate the user. Copies basic user info to this class on successful authentication. 
-	 * @param request - the request (aka URL parameters) sent to server.
+	 * @param params - {@RequestParameters}
 	 * @return true or false
 	 */
 	public boolean authenticate(RequestParameters params){

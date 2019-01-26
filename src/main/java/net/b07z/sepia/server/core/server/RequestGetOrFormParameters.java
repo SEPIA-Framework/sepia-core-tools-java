@@ -33,13 +33,21 @@ public class RequestGetOrFormParameters implements RequestParameters {
 	@Override
 	public JSONObject getJson(String key) {
 		String jsonString = request.queryParams(key);
-		return JSON.parseStringOrFail(jsonString);
+		if (jsonString != null){
+			return JSON.parseStringOrFail(jsonString);
+		}else{
+			return null;
+		}
 	}
 	
 	@Override
 	public JSONArray getJsonArray(String key) {
 		String jsonString = request.queryParams(key);
-		return JSON.parseStringToArrayOrFail(jsonString);
+		if (jsonString != null){
+			return JSON.parseStringToArrayOrFail(jsonString);
+		}else{
+			return null;
+		}
 	}
 
 	@Override
