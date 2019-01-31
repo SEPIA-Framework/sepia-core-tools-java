@@ -7,6 +7,12 @@ import java.security.Permissions;
 import java.security.Policy;
 import java.security.ProtectionDomain;
 
+/**
+ * TODO: add more info about the policy.
+ * 
+ * @author Florian Quirin
+ *
+ */
 public class SandboxSecurityPolicy extends Policy{
     
     @Override

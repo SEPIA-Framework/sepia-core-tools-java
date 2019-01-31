@@ -1,6 +1,5 @@
 package net.b07z.sepia.server.core.tools;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,7 +7,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,6 +16,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.function.Consumer;
 
 /**
  * Handles file read/write/edit etc.
@@ -28,7 +29,7 @@ public class FilesAndStreams {
 	//----helpers:
 	
 	/**
-	 * Generic class to give line operations as lambda expressions.
+	 * Generic class to define line operations as lambda expressions.
 	 */
 	public static interface LineOperation {
 		/**
@@ -36,28 +37,74 @@ public class FilesAndStreams {
 		 */
 		public String run(String lineInput);
 	}
+	
+	/**
+	 * Consume streams with custom consumer. Usage example with println:<br>
+	 * <br>
+	 * BufferedInputStreamConsumer streamGobbler = new StreamGobbler(myStream, System.out::println);<br>
+	 * Executors.newSingleThreadExecutor().submit(streamGobbler);<br>
+	 * <br>
+	 * As seen on <a href="https://www.baeldung.com/run-shell-command-in-java">baeldung.com</a>
+	 */
+	public static class BufferedInputStreamConsumer implements Runnable {
+	    private InputStream inputStream;
+	    private Consumer<String> consumer;
+	    private  Charset charset;
+	 
+	    public BufferedInputStreamConsumer(InputStream inputStream, Charset charset, Consumer<String> consumer) {
+	        this.inputStream = inputStream;
+	        this.consumer = consumer;
+	        this.charset = charset;
+	    }
+	    @Override
+	    public void run() {
+	        new BufferedReader(new InputStreamReader(inputStream, charset)).lines()
+	          .forEach(consumer);
+	    }
+	}
 
 	/**
-	 * Collect all data of an InputStream to a string.<br>
-	 * NOTE: Please define encoding of stream!
+	 * Collect all data of an InputStream to a string via BufferedReader and InputStreamReader.<br>
+	 * NOTE: Please check correct encoding of stream!
+	 * @param stream - input stream
+	 * @param charset - e.g.: StandardCharsets.UTF_8
+	 * @param lineBreakChar - a character to use for line-breaks, e.g. "\n" or System.lineSeparator()
+	 * @return
+	 * @throws IOException
 	 */
-	public static String getStringFromStream(InputStream stream) {
-		try (BufferedReader in = new BufferedReader(new InputStreamReader(stream))) {
+	public static String getStringFromStream(InputStream stream, Charset charset, String lineBreakChar) throws IOException{
+		try (BufferedReader in = new BufferedReader(new InputStreamReader(stream, charset))) {
 			String inputLine;
 			StringBuilder response = new StringBuilder();
 			while ((inputLine = in.readLine()) != null) {
-				response.append(inputLine);
+				response.append(inputLine + lineBreakChar);
 			}
 			return response.toString();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
+		}catch (IOException e){
+			throw e;
+		}
+	}
+	/**
+	 * Collect all data of an InputStream to a list, line-by-line via BufferedReader and InputStreamReader.<br>
+	 * NOTE: Please check correct encoding of stream!
+	 */
+	public static List<String> getLinesFromStream(InputStream stream, Charset charset) throws IOException{
+		try (BufferedReader in = new BufferedReader(new InputStreamReader(stream, charset))) {
+			String inputLine;
+			List<String> response = new ArrayList<>();
+			while ((inputLine = in.readLine()) != null) {
+				response.add(inputLine);
+			}
+			return response;
+		}catch (IOException e){
+			throw e;
 		}
 	}
 	
 	/**
-	 * Get an ArrayList of "File"s from a directory path.
+	 * Get an List of "File"s from a directory path.
 	 * @param directoryName - path to directory
-	 * @param files - ArrayList of files to populate (or null -> creates ArrayList)
+	 * @param files - List of files to populate (or null -> creates ArrayList)
 	 * @param doSubfolders - include sub-folders?
 	 * @return list or null
 	 */
@@ -67,22 +114,67 @@ public class FilesAndStreams {
 			files = new ArrayList<>();
 		}
 	
-	    // get all the files from a directory
+	    //get all the files from a directory
 	    File[] fList = directory.listFiles();
 	    if (fList == null){
 	    	return null;
 	    }
 	    //System.out.println(directory.list().length);		//debug
-	    for (File file : fList) {
-	        if (file.isFile()) {
+	    for (File file : fList){
+	        if (file.isFile()){
 	            files.add(file);
 	            //System.out.println(file.toString());		//debug
-	        } else if (file.isDirectory() & doSubfolders) {
+	        }else if (file.isDirectory() & doSubfolders){
 	        	//listAllFiles(file.getAbsolutePath(), files, doSubfolders);
 	        	directoryToFileList(file.getPath(), files, doSubfolders);
 	        }
 	    }
 		return files;
+	}
+	/**
+	 * Get an List of directories at path. Will skip files.
+	 * @param path - path to search for directories
+	 * @param directories - List of files to populate (or null -> creates ArrayList)
+	 * @return list or null
+	 */
+	public static List<File> getDirectoriesAtPath(String path, List<File> directories) {
+		File directory = new File(path);
+		if (directories == null){
+			directories = new ArrayList<>();
+		}
+	
+	    //get everything at path
+	    File[] fList = directory.listFiles();
+	    if (fList == null){
+	    	return null;
+	    }
+	    //System.out.println(directory.list().length);		//debug
+	    for (File file : fList){
+	        if (!file.isFile()){
+	        	directories.add(file);
+	            //System.out.println(file.toString());		//debug
+	        }
+	    }
+		return directories;
+	}
+	
+	/**
+	 * Delete folder with all of it's content. This is necessary because Java's internal file.delete()
+	 * cannot delete non-empty folders.
+	 * @param folder - folder to delete
+	 */
+	public static void deleteFolder(File folder) {
+	    File[] files = folder.listFiles();
+	    if(files!=null) { //some JVMs return null for empty dirs
+	        for(File f: files) {
+	            if(f.isDirectory()) {
+	                deleteFolder(f);
+	            } else {
+	                f.delete();
+	            }
+	        }
+	    }
+	    folder.delete();
 	}
 	
 	/**
@@ -137,11 +229,11 @@ public class FilesAndStreams {
 	 * @return true (all good), false (error during read/write or line not found)
 	 */
 	public static boolean replaceLineInFile(String pathWithName, String lineMatchRegExp, LineOperation lineOperation){
-		try {
+		try{
 			Path path = Paths.get(pathWithName);
 			List<String> fileContent = new ArrayList<>(Files.readAllLines(path, StandardCharsets.UTF_8));
 			boolean foundLine = false;
-			for (int i = 0; i < fileContent.size(); i++) {
+			for (int i=0; i<fileContent.size(); i++) {
 				String line = fileContent.get(i);
 			    if (line.matches(lineMatchRegExp)) {
 			    	foundLine = true;
@@ -156,35 +248,73 @@ public class FilesAndStreams {
 			}else{
 				throw new RuntimeException("Line matching regular expression NOT found in: " + pathWithName);
 			}
-		
-		} catch (IOException e) {
+		}catch (IOException e){
+			e.printStackTrace();
+			return false;
+		}
+	}
+	/**
+	 * Open a file, search line by regular expression then modify line by custom operation and store modifications.
+	 * Stops after first match. If the line is not found append it ('oldLine' parameter will be empty string in this case).
+	 * @param pathWithName - path to file including file-name
+	 * @param lineMatchRegExp - regular expression to find line
+	 * @param lineOperation - modify or create line with {@link LineOperation} (use lambda expression, e.g.: (oldLine) -> {	return newLine });
+		})
+	 * @return true (all good), false (error during read/write)
+	 */
+	public static boolean replaceLineOrAppend(String pathWithName, String lineMatchRegExp, LineOperation lineOperation){
+		try{
+			Path path = Paths.get(pathWithName);
+			List<String> fileContent = new ArrayList<>(Files.readAllLines(path, StandardCharsets.UTF_8));
+			boolean foundLine = false;
+			for (int i=0; i<fileContent.size(); i++) {
+				String line = fileContent.get(i);
+			    if (line.matches(lineMatchRegExp)) {
+			    	foundLine = true;
+			    	String newLine = lineOperation.run(line);
+			        fileContent.set(i, newLine);
+			        break;
+			    }
+			}
+			if (foundLine){
+				Files.write(path, fileContent, StandardCharsets.UTF_8);
+				return true;
+			}else{
+				String newLine = lineOperation.run("");
+				fileContent.add(newLine);
+				Files.write(path, fileContent, StandardCharsets.UTF_8);
+				return true;
+			}
+		}catch (IOException e){
 			e.printStackTrace();
 			return false;
 		}
 	}
 
 	/**
-	 * Save settings to properties file.
-	 * @param config_file - path and file
+	 * Save settings to properties file (UTF-8).
+	 * @param configFile - path and file
 	 * @param config - Properties with settings to store
 	 */
-	public static void saveSettings(String config_file, Properties config) throws Exception{
-		OutputStream out =null;
-		File f = new File(config_file);
-	    out = new FileOutputStream( f );
+	public static void saveSettings(String configFile, Properties config) throws Exception{
+		File f = new File(configFile);
+		OutputStreamWriter out = new OutputStreamWriter(
+				new FileOutputStream(f), StandardCharsets.UTF_8
+		);
 	    config.store(out, null);
 	    out.flush();
 	    out.close();
 	}
 
 	/**
-	 * Load settings from properties file and return Properties.
+	 * Load settings from properties file (UTF-8) and return Properties.
 	 * @param config_file - path and file
 	 */
-	public static Properties loadSettings(String config_file) throws Exception{
-		BufferedInputStream stream=null;
+	public static Properties loadSettings(String configFile) throws Exception{
 		Properties config = new Properties();
-		stream = new BufferedInputStream(new FileInputStream(config_file));
+		InputStreamReader stream = new InputStreamReader(
+				new FileInputStream(configFile), StandardCharsets.UTF_8
+		);
 		config.load(stream);
 		stream.close();
 		return config;

@@ -17,9 +17,9 @@ import java.util.Map.Entry;
  */
 public class Debugger {
 	
-	static boolean error = true;	//1
-	static boolean info = false;	//2
-	static boolean log = true;		//3
+	public static boolean error = true;		//1
+	public static boolean info = false;		//2
+	public static boolean log = true;		//3
 	
 	/**
 	 * Print a debug message with debug-type.
@@ -46,7 +46,7 @@ public class Debugger {
 	 */
 	public static void printStackTrace(Throwable ex, int numTraces){
 		StackTraceElement[] ste = ex.getStackTrace(); 
-		if (ste != null){
+		if (ste != null && ste.length > 0){
 			for (int i=0; i<Math.min(5, ste.length); i++){
 				Debugger.println("TRACE: " + ex.getStackTrace()[i], 1);
 			}

@@ -140,14 +140,15 @@ public final class JSON {
 	}
 	
 	/**
-	 * Print content of JSONObject in a kind of prettier way. Keys and values must be convertible to string!
+	 * Print content of JSONObject in a kind of prettier way to stdOut. Keys and values must be convertible to string!<br>
+	 * Used only for quick debugging, if you need more options us {@link JSONWriter}.
 	 */
 	public static void printJSONpretty(JSONObject input){
 		printJSONpretty(input, "-");
 	}
 	/**
-	 * Print content of JSONObject in a kind of prettier way. Keys and values must be convertible to string!
-	 * The "indentSymbol" is used at the beginning of a line to make the hierarchy clear. 
+	 * Print content of JSONObject in a kind of prettier way. Keys and values must be convertible to string!<br>
+	 * Used only for quick debugging, if you need more options us {@link JSONWriter}.
 	 */
 	@SuppressWarnings("unchecked")
 	public static void printJSONpretty(JSONObject input, String indentSymbol){

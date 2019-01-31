@@ -12,6 +12,7 @@ import net.b07z.sepia.server.core.tools.ContentBuilder;
 import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.JSON;
 import net.b07z.sepia.server.core.tools.Security;
+import net.b07z.sepia.server.core.tools.StringTools;
 
 public class ToolsTest {
 
@@ -78,20 +79,39 @@ public class ToolsTest {
 		boolean isPrivate;
 		try {			isPrivate = Security.isPrivateNetwork(null);	assertTrue(false);
 		}catch (Exception e){}
-		isPrivate = Security.isPrivateNetwork("192.168.0.2");				assertTrue(isPrivate);
-		isPrivate = Security.isPrivateNetwork("https://192.168.0.2");		assertTrue(isPrivate);
-		isPrivate = Security.isPrivateNetwork("http://192.168.0.2:20721");	assertTrue(isPrivate);
-		isPrivate = Security.isPrivateNetwork("193.0.0.2");					assertFalse(isPrivate);
-		isPrivate = Security.isPrivateNetwork("https://193.0.0.2:20721");	assertFalse(isPrivate);
-		isPrivate = Security.isPrivateNetwork("192.168.0.2:20721");			assertTrue(isPrivate);
-		isPrivate = Security.isPrivateNetwork("localhost");					assertTrue(isPrivate);
-		isPrivate = Security.isPrivateNetwork("http://172.31.255.255");		assertTrue(isPrivate);
-		isPrivate = Security.isPrivateNetwork("http://172.32.255.255");		assertFalse(isPrivate);
-		isPrivate = Security.isPrivateNetwork("http://localhost:20721");	assertTrue(isPrivate);
-		isPrivate = Security.isPrivateNetwork("2001:db8:0:8d3:0:8a2e:70:7344");		assertFalse(isPrivate);
-		//isPrivate = Security.isPrivateNetwork("fd9e:21a7:a92c:2323::2"); assertTrue(isPrivate); 	//what are private IPv6 addresses??
-		isPrivate = Security.isPrivateNetwork("http://example.com/index.html");		assertFalse(isPrivate);
-		isPrivate = Security.isPrivateNetwork("example.com");				assertFalse(isPrivate);
+		isPrivate = isPrivateAddress("192.168.0.2");				assertTrue(isPrivate);
+		isPrivate = isPrivateAddress("https://192.168.0.2");		assertTrue(isPrivate);
+		isPrivate = isPrivateAddress("http://192.168.0.2:20721");	assertTrue(isPrivate);
+		isPrivate = isPrivateAddress("193.0.0.2");					assertFalse(isPrivate);
+		isPrivate = isPrivateAddress("https://193.0.0.2:20721");	assertFalse(isPrivate);
+		isPrivate = isPrivateAddress("192.168.0.2:20721");			assertTrue(isPrivate);
+		isPrivate = isPrivateAddress("localhost");					assertTrue(isPrivate);
+		isPrivate = isPrivateAddress("http://172.31.255.255");		assertTrue(isPrivate);
+		isPrivate = isPrivateAddress("http://172.32.255.255");		assertFalse(isPrivate);
+		isPrivate = isPrivateAddress("http://localhost:20721");	assertTrue(isPrivate);
+		isPrivate = isPrivateAddress("2001:db8:0:8d3:0:8a2e:70:7344");		assertFalse(isPrivate);
+		//isPrivate = isPrivateAddress("fd9e:21a7:a92c:2323::2"); assertTrue(isPrivate); 	//what are private IPv6 addresses??
+		isPrivate = isPrivateAddress("http://example.com/index.html");		assertFalse(isPrivate);
+		isPrivate = isPrivateAddress("example.com");				assertFalse(isPrivate);
+		isPrivate = isPrivateAddress("raspberrypi.local");			assertTrue(isPrivate);
+		isPrivate = isPrivateAddress("raspberrypi.local/index.html");	assertTrue(isPrivate);
+		isPrivate = isPrivateAddress("raspberrypi.local.de");			assertFalse(isPrivate);
+		
+		//TODO: what about things like "my-pc.localhost" ?
+	}
+	private boolean isPrivateAddress(String address){
+		try {
+			return Security.isPrivateNetwork(address);
+		}catch (Exception e){
+			return false;
+		}
+	}
+	
+	@Test
+	public void testStringTools(){
+		String text = "This is an answer with result <result_one> and <result_two> ok?";
+		assertTrue(StringTools.findFirstRexEx(text, "<result_.*?>").equals("<result_one>"));
+		assertTrue(StringTools.findAllRexEx(text, "<result_.*?>").toString().equals("[<result_one>, <result_two>]"));
 	}
 
 }

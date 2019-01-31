@@ -34,6 +34,7 @@ public class CMD {
 	final public static String LISTS = "lists";						//parameters:	type, action, info
 	final public static String LOCATION = "location";					//parameters:	search, poi (like italian restaurant, supermarket etc. ...)
 	final public static String MATCH = "match";						//parameters: 	info
+	final public static String MESH_NODE_PLUGIN = "mesh_node_plugin";		//parameters: 	node_url, node_plugin_name, node_plugin_data, reply_success, reply_fail 
 	final public static String MOBILITY = "mobility";					//parameters:	location_start, location_end, type, time
 	final public static String MOVIES = "movies";						//parameters:	search, type (genre), info (actor,director)
 	final public static String MUSIC = "music";						//parameters:	search, type (genre), info (artist?)

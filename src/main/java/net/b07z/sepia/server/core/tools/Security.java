@@ -1,6 +1,7 @@
 package net.b07z.sepia.server.core.tools;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
@@ -39,7 +40,7 @@ public class Security {
 	 * @return - byte array
 	 */
 	public static byte[] hexToByteArray(String s) {
-	    return DatatypeConverter.parseHexBinary(s);
+	    return DatatypeConverter.parseHexBinary(s); 		//TODO: can we replace this and get rid of 'javax.xml.bind'?
 	}
 	
 	/**
@@ -154,15 +155,16 @@ public class Security {
 	/**
 	 * Check if host (e.g. IP address) is from a private network (according to IANA IP range etc.).	
 	 * @param host - host address with or without protocol (http..), port (..:8080) or path (.../index.html) 
+	 * @throws UnknownHostException 
 	 */
-	public static boolean isPrivateNetwork(String host) throws Exception {
+	public static boolean isPrivateNetwork(String host) throws UnknownHostException {
 		if (host == null || host.isEmpty()){
 			new RuntimeException("Invalid host address!");
 		}
 		//clean-up host string
 		host = host.trim().replaceAll("^http(s|)://", "");
 		host = host.trim().replaceAll("/.*", "");
-		if (host.matches("^localhost($|:\\d+$)")){
+		if (host.matches("^localhost($|:\\d+$)|.*\\.local$")){
 			return true;
 		}
 		if (host.contains(".")){

@@ -1,6 +1,17 @@
 package net.b07z.sepia.server.core.tools;
 
+import java.io.File;
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+import javax.tools.Diagnostic;
+import javax.tools.DiagnosticCollector;
+import javax.tools.JavaCompiler;
+import javax.tools.JavaFileObject;
+import javax.tools.StandardJavaFileManager;
+import javax.tools.ToolProvider;
 
 /**
  * Build classes from strings. Very handy for configuration files and plug-ins.
@@ -15,19 +26,18 @@ public class ClassBuilder {
 	 * NOTE! Because getClass always returns non-primitives like "Integer" instead of "int" but they are rarely used, all
 	 * classes are cast to primitives if possible. That means the constructor will not be found if it has "Integer" instead of "int".
 	 * Same is most likely true for the constructors containing the class "Object".
-	 * 
-	 * @param package_name - name of the package, e.g. "java.util". Can be empty.
-	 * @param module_name - name of the class inside the package as string, e.g.: "Date"
-	 * @param arguments - arguments usually passed to the constructor
-	 * @return constructed class
+	 * @param classLoader - loader that has access to the class. Use null or 'ClassLoader.getSystemClassLoader()' for default.
+	 * @param canonicalClassName - canonical name of the class, e.g.: "java.lang.String"
+	 * @param arguments - arguments usually passed to the constructor (optional).
+	 * @return constructed class or throw exception
 	 */
-	public static Object construct(String package_name, String module_name, Object... arguments){
-		if (!package_name.isEmpty()){
-			module_name = package_name + "." + module_name;		//package_name and module_name are separated in case the package_name changes
-		}
+	public static Object construct(ClassLoader classLoader, String canonicalClassName, Object... arguments){
 		try{
+			if (classLoader == null){
+				classLoader = ClassLoader.getSystemClassLoader();
+			}
 			Object clazz;
-			if (arguments.length > 0){
+			if (arguments != null && arguments.length > 0){
 				Class<?>[] arg_clazzes = new Class[arguments.length];
 				for (int i=0; i<arguments.length; i++){
 					arg_clazzes[i] = arguments[i].getClass();
@@ -49,37 +59,88 @@ public class ClassBuilder {
 						arg_clazzes[i] = Short.TYPE;
 					}
 				}
-				Constructor<?> conztructor = Class.forName(module_name).getConstructor(arg_clazzes);
+				Constructor<?> conztructor = Class.forName(canonicalClassName, true, classLoader).getConstructor(arg_clazzes);
 				clazz = conztructor.newInstance(arguments);
 			}else{
-				Constructor<?> conztructor = Class.forName(module_name).getConstructor();
+				Constructor<?> conztructor = Class.forName(canonicalClassName, true, classLoader).getConstructor();
 				clazz = conztructor.newInstance();
 			}
 			return clazz;
 			
 		}catch (Exception e){
 			e.printStackTrace();
-			throw new RuntimeException(DateTime.getLogDate() + " ERROR - Class not found: " + module_name, e);
+			throw new RuntimeException(DateTime.getLogDate() + " ERROR - Class not found: " + canonicalClassName, e);
 		}
 	}
 
 	/**
 	 * Constructs a new instance of a class just by using the name of the class.<br>
 	 * 
-	 * @param module_name - name of the class inside the package as string, e.g.: "Date"
-	 * @return constructed class
+	 * @param canonicalClassName - canonical name of the class, e.g.: "java.lang.String"
+	 * @return constructed class or throw exception
 	 */
-	public static Object construct(String module_name){
-		try{
-			Object clazz;
-			Constructor<?> conztructor = Class.forName(module_name).getConstructor();
-			clazz = conztructor.newInstance();
-			return clazz;
-			
-		}catch (Exception e){
-			e.printStackTrace();
-			throw new RuntimeException(DateTime.getLogDate() + " ERROR - Class not found: " + module_name, e);
+	public static Object construct(String canonicalClassName){
+		return construct(null, canonicalClassName);
+	}
+	
+	/**
+	 * Source code string compiler. Compiles code to class and stores result in given folder. 
+	 * @param className - full class name including package, e.g. com.example.my_package.MyNewClass
+	 * @param classCode - source-code as seen in Java files
+	 * @param targetFolder - parent directory of compiled class file (without package-path)
+	 * @return Compile errors as readable String or empty
+	 */
+	public static String compile(String className, String classCode, File targetFolder){
+		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+		if (compiler == null){
+			String msg = "Cannot find Java compiler! "
+					+ "Please upgrade from JRE to JDK or check JAVA_HOME: " + System.getProperty("java.home");
+			//Debugger.println(msg, 1);
+			throw new RuntimeException(msg);
 		}
+	    DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
+	    
+	    List<JavaFileObject> compilationUnits = new ArrayList<JavaFileObject>();
+        JavaFileObject file = new SourceCodeFromString(className, classCode);
+        compilationUnits.add(file);
+        
+        // This sets up the class path that the compiler will use.
+        // I've added the .jar file that contains the DoStuff interface within in it...
+        List<String> optionList = new ArrayList<>();
+        String folderOrMemory = "MEMORY ONLY";
+        if (targetFolder != null){
+        	folderOrMemory = targetFolder.getAbsolutePath().toString();
+        	optionList.add("-d");
+        	optionList.add(folderOrMemory);
+        }
+        /*
+        optionList.add("-classpath");
+        optionList.add(System.getProperty("java.class.path") + ";dist/InlineCompiler.jar"); 	//example for classpath
+        */
+        StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, null, null);
+
+	    JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, optionList, null, compilationUnits);
+	    if (task.call()){
+	    	//Done
+	    	Debugger.println("ClassBuilder - compiled '" + className + "' to '" + folderOrMemory, 3);
+	    	return ""; 			//TODO: if this is MEMORY ONLY how do we get the clas later?
+	    }else{
+	    	//Error(s)
+	    	StringBuilder errors = new StringBuilder("Compile errors: \n");
+	    	for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()){
+	    		String error = diagnostic.getSource().toUri() + " - " + "Line " + diagnostic.getLineNumber() + ": " + diagnostic.getMessage(Locale.ENGLISH);
+	    		errors.append(error).append(" \n");
+	    		Debugger.println("ClassBuilder - compiling of '" + error, 1);
+            }
+	    	return errors.toString();
+	    }
+	}
+	
+	/**
+	 * Simply use file name to get simple class name.
+	 */
+	public static String getSimpleClassNameFromFileName(String fileName){
+		return fileName.replaceFirst("\\$.*\\.", ".").replaceFirst("\\.(\\w+)$", "").trim();
 	}
 
 }

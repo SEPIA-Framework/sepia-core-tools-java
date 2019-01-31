@@ -14,6 +14,7 @@ import net.b07z.sepia.server.core.server.ConfigDefaults;
 import net.b07z.sepia.server.core.server.RequestParameters;
 import net.b07z.sepia.server.core.tools.ClassBuilder;
 import net.b07z.sepia.server.core.tools.Converters;
+import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 import net.b07z.sepia.server.core.tools.Security;
 
@@ -44,6 +45,29 @@ public class Account {
 	private List<String> userRoles;			//user roles managing certain access rights
 	//more
 	private Map<String, Object> info = new HashMap<>(); 	//info for everything that's not in the basics
+	
+	/**
+	 * Sometimes you need a temporary token that is bound to certain account properties. 
+	 * @param userId
+	 * @param userRoles
+	 * @param secret1
+	 * @param secret2
+	 * @param iterations
+	 * @return
+	 * @throws Exception
+	 */
+	public static String getTemporaryValidationToken(String userId, List<String> userRoles, String secret1, String secret2, int iterations) 
+			throws Exception{
+		if (Is.nullOrEmpty(userId) || userRoles == null || Is.nullOrEmpty(secret1) || Is.nullOrEmpty(secret2) || iterations == 0){
+			throw new RuntimeException("Invalid input for 'getTemporaryValidationToken'");
+		}
+		//build token
+		return Security.bytearrayToHexString(Security.getEncryptedPassword(
+				secret1.replaceAll("\\s", "").trim() + secret2.replaceAll("\\s", "").trim(), 
+				Security.getSha256((userId + userRoles.toString()).replaceAll("\\s", "").trim()), 
+				iterations, 32
+		));
+	}
 	
 	/**
 	 * Return unique user ID.
@@ -152,11 +176,39 @@ public class Account {
 	*/
 	/**
 	 * Authenticate the user. Copies basic user info to this class on successful authentication. 
-	 * @param request - the request (aka URL parameters) sent to server.
+	 * @param params - {@RequestParameters}
 	 * @return true or false
 	 */
 	public boolean authenticate(RequestParameters params){
-		//get parameters
+		//client data?
+		String clientInfo = params.getString("client");
+		if (clientInfo == null || clientInfo.isEmpty()){
+			clientInfo = ConfigDefaults.defaultClientInfo;
+		}
+		
+		//--- Temp. Token ---
+		
+		//check for temporary token first
+		JSONObject tToken = params.getJson("tToken");
+		if (tToken != null){
+			//call
+			JSONObject authInfo = JSON.make(
+					"tToken", tToken,
+					"client", clientInfo
+			);
+			if (authService.authenticate(authInfo)){
+				//get basic info
+				copyBasicInfo();
+				return true;
+			}else{
+				//fail
+				return false;
+			}
+		}
+		
+		//--- Default ---
+		
+		//get username/password parameters
 		String key = params.getString("KEY");
 		if (key == null || key.isEmpty()){
 			String guuid = params.getString("GUUID");
@@ -165,10 +217,6 @@ public class Account {
 				key = guuid + ";" + Security.hashClientPassword(pwd);
 			} 
 		}
-		String client_info = params.getString("client");
-		if (client_info == null || client_info.isEmpty()){
-			client_info = ConfigDefaults.defaultClientInfo;
-		}
 		//check
 		if (key != null && !key.isEmpty()){
 			String[] up = key.split(";",2);
@@ -176,56 +224,64 @@ public class Account {
 				String username = up[0].toLowerCase();
 				String password = up[1];
 				//call
-				JSONObject authInfo = JSON.make("userId", username,
-											"pwd", password,
-											"client", client_info);
-				boolean success = authService.authenticate(authInfo);
-				
-				//get basic info
-				if (success){
-					userId = authService.getUserID();
-					accessLevel = authService.getAccessLevel();
-					
-					info = authService.getBasicInfo();
-					
-					//Language
-					String lang_code = (String) info.get("user_lang_code");
-					if (lang_code != null && !lang_code.isEmpty()){
-						language = lang_code;
-					}
-					
-					//Name
-					JSONObject user_n = (JSONObject) info.get("user_name");
-					if (user_n != null && !user_n.isEmpty()){
-						userName = user_n;
-						userNameShort = getShortUserName();
-					}
-					
-					//Birth
-					String user_birth = (String) info.get("user_birth");
-					if (user_birth != null && !user_birth.isEmpty()){
-						userBirth = user_birth;
-					}
-					
-					//Roles
-					if (info.containsKey("user_roles")){
-						userRoles = Converters.object2ArrayListStr(info.get("user_roles"));
-					}else{
-						userRoles = new ArrayList<>();
-					}
+				JSONObject authInfo = JSON.make(
+						"userId", username,
+						"pwd", password,
+						"client", clientInfo
+				);
+				if (authService.authenticate(authInfo)){
+					//get basic info
+					copyBasicInfo();
+					return true;
+				}else{
+					//fail
+					return false;
 				}
-				return success;
-			
 			//ERROR
 			}else{
 				log.error("AUTHENTICATION FAILED! Due to wrong KEY format: '" + key + "'");
 				return false;
 			}
-		
 		//ERROR
 		}else{
 			log.error("AUTHENTICATION FAILED! Due to missing KEY");
 			return false;
+		}
+	}
+	
+	/**
+	 * Fill Account data with data received from successful authentication.
+	 */
+	public void copyBasicInfo(){
+		userId = authService.getUserID();
+		accessLevel = authService.getAccessLevel();
+		
+		info = authService.getBasicInfo();
+		
+		//Language
+		String lang_code = (String) info.get("user_lang_code");
+		if (lang_code != null && !lang_code.isEmpty()){
+			language = lang_code;
+		}
+		
+		//Name
+		JSONObject user_n = (JSONObject) info.get("user_name");
+		if (user_n != null && !user_n.isEmpty()){
+			userName = user_n;
+			userNameShort = getShortUserName();
+		}
+		
+		//Birth
+		String user_birth = (String) info.get("user_birth");
+		if (user_birth != null && !user_birth.isEmpty()){
+			userBirth = user_birth;
+		}
+		
+		//Roles
+		if (info.containsKey("user_roles")){
+			userRoles = Converters.object2ArrayListStr(info.get("user_roles"));
+		}else{
+			userRoles = new ArrayList<>();
 		}
 	}
 	

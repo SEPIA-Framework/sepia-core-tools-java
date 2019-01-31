@@ -143,6 +143,8 @@ public class SparkJavaFw {
 
 	/**
 	 * Return simple access-restricted message with custom error code.
+	 * @param errorCode - code returned from authenticator - 1: communication error, 2: access denied, ...
+	 * @return
 	 */
 	public static String returnNoAccess(Request request, Response response, int errorCode){
 		if (errorCode == 2){

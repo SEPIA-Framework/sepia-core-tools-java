@@ -104,10 +104,17 @@ public class PARAMETERS {
 	final public static String LIST_TYPE = "list_type";			//type of list (e.g. shopping, todo, ...)
 	final public static String LIST_SUBTYPE = "list_subtype";	//sub-type aka name of list (e.g. my great ..., my macys ...)
 	
+	//MESH NODE PLUGIN
+	final public static String MESH_NODE_URL = "node_url";					//URL to mesh node
+	final public static String MESH_NODE_PLUGIN_NAME = "node_plugin_name";	//name of mesh node plugin
+	final public static String MESH_NODE_PLUGIN_DATA = "node_plugin_data";	//data (e.g. as JSON string) for node plugin
+	
 	//------------ control parameters -------------
 	
 	//CHATS and QUESTIONS
-	final public static String REPLY = "reply";					//a reply the assistant should give submitted as parameter from client
+	final public static String REPLY = "reply";					//a reply the assistant should give submitted as parameter from client (for certain services that use it)
+	final public static String REPLY_SUCCESS = "reply_success";				//a reply used for success (for certain services that use it)
+	final public static String REPLY_FAIL = "reply_fail";					//a reply used for fail (for certain services that use it)
 	final public static String ANY_ANSWER = "any_answer";		//if you don't have a particular parameter that is missing but you ask a previously undefined question you can store the answer here. Maybe add dialog_state to it.
 	
 	//CUSTOM SERVICES (do we still need this?)
