@@ -42,6 +42,8 @@ public class ACTIONS {
 	final public static String REMINDER = "reminder";			//tell client to set an reminder, parameters: tbd
 	final public static String APPOINTMENT = "appointment";		//tell client to set an appointment in the calendar, parameters: tbd
 	final public static String SWITCH_LANGUAGE = "switch_language";		//tell client to switch language, parameters: language_code
+	final public static String BUTTON_CUSTOM_FUN = "button_custom_fun";	//tell client to show a custom button that executes a function, parameters: title, fun
+	final public static String CLIENT_CONTROL_FUN = "client_control_fun";	//tell client to run a control function (pre-defined in client), parameters: fun
 
 	//possible next actions:
 	//public static String STREAMING_REQUEST = "streaming_request";		//tell the client that he has to expect an answer that gets streamed
