@@ -134,5 +134,6 @@ public class PARAMETERS {
 	
 	//Exotic or unique stuff
 	final public static String REPEAT_THIS = "repeat_this";   	//what the assistant shall repeat
+	final public static String DATA = "data"; 					//a multi-purpose, generic parameter for e.g. JSON strings etc. (usually given in direct commands and as optional) 
 
 }
