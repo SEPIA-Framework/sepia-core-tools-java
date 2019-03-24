@@ -109,6 +109,9 @@ public class PARAMETERS {
 	final public static String MESH_NODE_PLUGIN_NAME = "node_plugin_name";	//name of mesh node plugin
 	final public static String MESH_NODE_PLUGIN_DATA = "node_plugin_data";	//data (e.g. as JSON string) for node plugin
 	
+	//CLIENT CONTROLS
+	final public static String CLIENT_FUN = "client_fun";		//a function to be executed in client
+	
 	//------------ control parameters -------------
 	
 	//CHATS and QUESTIONS
@@ -131,5 +134,6 @@ public class PARAMETERS {
 	
 	//Exotic or unique stuff
 	final public static String REPEAT_THIS = "repeat_this";   	//what the assistant shall repeat
+	final public static String DATA = "data"; 					//a multi-purpose, generic parameter for e.g. JSON strings etc. (usually given in direct commands and as optional) 
 
 }

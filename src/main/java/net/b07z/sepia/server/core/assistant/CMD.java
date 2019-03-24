@@ -14,6 +14,7 @@ public class CMD {
 	final public static String BANKING = "banking";					//parameters:	action (<pay>, <show>, <send>), receiver, number, currency
 	final public static String CAR_WELCOME_UPDATE = "car_welcome_up";	//parameters:	-
 	final public static String CHAT = "chat";							//parameters:	apology, complain, compliment, question, ...
+	final public static String CLIENT_CONTROLS = "client_controls";		//parameters:	client_fun
 	final public static String CONTEXT = "context";					//parameters:	- all of the previous command ... -
 	final public static String CONTROL = "control";					//parameters:	type (lights, heater, ...), action (on, off, set, inc. ... complex?), info (room etc.), number (for temp. etc.)
 	final public static String COUNT = "count";						//parameters:	number, memory (saves numbers said)
