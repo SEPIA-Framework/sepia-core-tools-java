@@ -27,6 +27,7 @@ import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.ssl.SSLContexts;
@@ -57,13 +58,19 @@ public class Connectors {
 		delete,
 		head
 	}
-	static class HttpClientResult {
-		int statusCode = 0;
-		String content = "";
+	public static class HttpClientResult {
+		public int statusCode = 0;
+		public String statusLine = "";
+		public String content = "";
 		
 		HttpClientResult(String content, int statusCode){
 			this.content = content;
 			this.statusCode = statusCode;
+		}
+		HttpClientResult(String content, int statusCode, String statusLine){
+			this.content = content;
+			this.statusCode = statusCode;
+			this.statusLine = statusLine;
 		}
 	}
 
@@ -96,7 +103,34 @@ public class Connectors {
 		}
 	}
 	/**
-	 * Simple HTTP GET. Basically the same as "simpleHtmlGet" just realized with Apache HTTP client.
+	 * Sends a GET and returns result as string. NOTE: sets content-type to: 'text/html'.
+	 * Throws a RuntimeException on fail.
+	 */
+	public static String simpleHtmlGet(String url) {
+		try {
+			URL urlObj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) urlObj.openConnection();
+			con.setRequestMethod("GET");
+			con.setRequestProperty("User-Agent", USER_AGENT);
+			con.setRequestProperty("content-type", "text/html");
+			con.setConnectTimeout(CONNECT_TIMEOUT);
+			con.setReadTimeout(READ_TIMEOUT);
+			int responseCode = con.getResponseCode();
+			if (responseCode == HttpURLConnection.HTTP_OK){
+				try (InputStream stream = con.getInputStream();
+						 InputStreamReader isr = new InputStreamReader(stream, Charsets.UTF_8)) {
+					String content = CharStreams.toString(isr);
+					return content;
+				}
+			} else {
+				throw new RuntimeException(DateTime.getLogDate() + " ERROR - Could not get '" + url + "': response code " + responseCode);
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(DateTime.getLogDate() + " ERROR - Could not get '" + url + "', error: " + e.getMessage(), e);
+		}
+	}
+	/**
+	 * Simple HTTP GET. Basically the same as "simpleJsonGet" just realized with Apache HTTP client.
 	 * @param url - URL to call
 	 * @return JSONObject
 	 */
@@ -121,30 +155,47 @@ public class Connectors {
 		}
 	}
 	/**
-	 * Sends a GET and returns result as string. 
-	 * Throws a RuntimeException on fail.
+	 * Simple HTTP GET. Basically the same as "simpleHtmlGet" just realized with Apache HTTP client and allows to set
+	 * or skip custom content-type. Probably the most reliable GET version in this package if you need a string in return.<br>
+	 * NOTE: If the URL was redirected it will produce a ERROR log message and NOT follow the link.<br>
+	 * NOTE2: Cookie management is disabled
+	 * @param url - URL to call
+	 * @param contentType - null for 'auto' or e.g. 'application/json' or 'application/rss+xml' etc.
+	 * @return JSONObject
 	 */
-	public static String simpleHtmlGet(String url) {
-		try {
-			URL urlObj = new URL(url);
-			HttpURLConnection con = (HttpURLConnection) urlObj.openConnection();
-			con.setRequestMethod("GET");
-			con.setRequestProperty("User-Agent", USER_AGENT);
-			con.setRequestProperty("content-type", "text/html");
-			con.setConnectTimeout(CONNECT_TIMEOUT);
-			con.setReadTimeout(READ_TIMEOUT);
-			int responseCode = con.getResponseCode();
-			if (responseCode == HttpURLConnection.HTTP_OK){
-				try (InputStream stream = con.getInputStream();
-						 InputStreamReader isr = new InputStreamReader(stream, Charsets.UTF_8)) {
-					String content = CharStreams.toString(isr);
-					return content;
-				}
-			} else {
-				throw new RuntimeException(DateTime.getLogDate() + " ERROR - Could not get '" + url + "': response code " + responseCode);
-			}
-		} catch (Exception e) {
-			throw new RuntimeException(DateTime.getLogDate() + " ERROR - Could not get '" + url + "', error: " + e.getMessage(), e);
+	public static HttpClientResult apacheHttpGET(String url, String contentType) throws Exception{
+		CloseableHttpClient httpclient = HttpClientBuilder.create()
+				.disableRedirectHandling()
+				.disableCookieManagement()
+				.build();
+		//CloseableHttpClient httpclient = HttpClients.createDefault();
+		HttpGet httpGet = new HttpGet(url);
+		if (contentType != null && !contentType.isEmpty()){
+			httpGet.setHeader("content-type", contentType);
+		}
+		httpGet.addHeader("User-Agent", USER_AGENT);
+		String statusLine = "";
+		int statusCode = 0;
+		String responseData = null;
+		try (CloseableHttpResponse response = httpclient.execute(httpGet);){
+			statusLine = response.getStatusLine().toString();
+			statusCode = response.getStatusLine().getStatusCode();
+			//System.out.println(statusLine);
+			if (statusCode == 301){
+				String errorRedirect = response.getFirstHeader("Location").getValue();
+				statusLine += (", NEW URI: " + errorRedirect);
+    			Debugger.println("HTTP GET: '" + url + "' has REDIRECT to: " + errorRedirect, 1);
+    		}else{
+			    HttpEntity resEntity = response.getEntity();
+			    if (resEntity != null){
+		        	responseData = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
+		        }
+			    EntityUtils.consume(resEntity);
+    		}
+		    return new HttpClientResult(responseData, statusCode, statusLine);
+		    
+		}catch (Exception e){
+			return new HttpClientResult(null, statusCode, statusLine);
 		}
 	}
 	
