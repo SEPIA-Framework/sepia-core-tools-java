@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
+import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
@@ -62,6 +64,7 @@ public class Connectors {
 		public int statusCode = 0;
 		public String statusLine = "";
 		public String content = "";
+		public Charset encoding = null;
 		
 		HttpClientResult(String content, int statusCode){
 			this.content = content;
@@ -71,6 +74,12 @@ public class Connectors {
 			this.content = content;
 			this.statusCode = statusCode;
 			this.statusLine = statusLine;
+		}
+		HttpClientResult(String content, int statusCode, String statusLine, Charset encoding){
+			this.content = content;
+			this.statusCode = statusCode;
+			this.statusLine = statusLine;
+			this.encoding = encoding;
 		}
 	}
 
@@ -131,6 +140,7 @@ public class Connectors {
 	}
 	/**
 	 * Simple HTTP GET. Basically the same as "simpleJsonGet" just realized with Apache HTTP client.
+	 * Uses UTF-8 encoding and 'application/json' content-type.
 	 * @param url - URL to call
 	 * @return JSONObject
 	 */
@@ -158,7 +168,8 @@ public class Connectors {
 	 * Simple HTTP GET. Basically the same as "simpleHtmlGet" just realized with Apache HTTP client and allows to set
 	 * or skip custom content-type. Probably the most reliable GET version in this package if you need a string in return.<br>
 	 * NOTE: If the URL was redirected it will produce a ERROR log message and NOT follow the link.<br>
-	 * NOTE2: Cookie management is disabled
+	 * NOTE2: Cookie management is disabled<br>
+	 * NOTE3: Content encoding is read from HttpEntity and defaults to UTF-8
 	 * @param url - URL to call
 	 * @param contentType - null for 'auto' or e.g. 'application/json' or 'application/rss+xml' etc.
 	 * @return JSONObject
@@ -177,6 +188,7 @@ public class Connectors {
 		String statusLine = "";
 		int statusCode = 0;
 		String responseData = null;
+		Charset charset = null;
 		try (CloseableHttpResponse response = httpclient.execute(httpGet);){
 			statusLine = response.getStatusLine().toString();
 			statusCode = response.getStatusLine().getStatusCode();
@@ -188,14 +200,19 @@ public class Connectors {
     		}else{
 			    HttpEntity resEntity = response.getEntity();
 			    if (resEntity != null){
-		        	responseData = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
+			    	ContentType ct = ContentType.getOrDefault(resEntity);
+			    	charset = ct.getCharset();
+			    	if (charset == null) {
+			            charset = StandardCharsets.UTF_8;
+			        }
+		        	responseData = EntityUtils.toString(resEntity, charset);
 		        }
 			    EntityUtils.consume(resEntity);
     		}
-		    return new HttpClientResult(responseData, statusCode, statusLine);
+		    return new HttpClientResult(responseData, statusCode, statusLine, charset);
 		    
 		}catch (Exception e){
-			return new HttpClientResult(null, statusCode, statusLine);
+			return new HttpClientResult(null, statusCode, statusLine, charset);
 		}
 	}
 	
