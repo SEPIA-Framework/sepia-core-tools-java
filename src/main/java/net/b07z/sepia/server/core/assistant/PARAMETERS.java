@@ -109,8 +109,13 @@ public class PARAMETERS {
 	final public static String MESH_NODE_PLUGIN_NAME = "node_plugin_name";	//name of mesh node plugin
 	final public static String MESH_NODE_PLUGIN_DATA = "node_plugin_data";	//data (e.g. as JSON string) for node plugin
 	
-	//CLIENT CONTROLS
+	//CLIENT and (CLIENT-)PLATFORM CONTROLS
 	final public static String CLIENT_FUN = "client_fun";		//a function to be executed in client
+	final public static String ANDROID_FUN = "android_fun";		//	" 	"
+	final public static String IOS_FUN = "ios_fun";				//	" 	"
+	final public static String BROWSER_FUN = "browser_fun";		//	" 	"
+	final public static String WINDOWS_FUN = "windows_fun";		//	" 	"
+	final public static String DEVICE_FUN = "device_fun";		//	" 	"
 	
 	//------------ control parameters -------------
 	

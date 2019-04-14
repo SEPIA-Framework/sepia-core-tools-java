@@ -8,6 +8,17 @@ package net.b07z.sepia.server.core.assistant;
  */
 public class CLIENTS {
 	
+	public enum Platform {
+		android,
+		ios,
+		browser,
+		windows,
+		java,
+		python,
+		nodejs,
+		unknown
+	}
+	
 	//this is somewhat identical with ENVIRONMENTS but we keep it anyway ^^
 	final public static String WEB_APP = "web_app";				//e.g. HTML Browser
 	final public static String BROWSER = "browser";				//e.g. HTML Browser (alternative to web app)
@@ -17,6 +28,8 @@ public class CLIENTS {
 	final public static String IOS_BROWSER = "ios_browser";		//e.g. iPhone, iPad safari
 	final public static String WIN_APP = "windows_app";			//e.g. windows app store app for mobile or desktop
 	final public static String JAVA_APP = "java_app";			//e.g. VW TTS Client
+	final public static String PYTHON_APP = "python_app";
+	final public static String NODEJS_APP = "nodejs_app";
 	final public static String CHROME_BROWSER = "chrome_browser";
 	final public static String CHROME_APP = "chrome_app";
 	final public static String SAFARI_BROWSER = "safari_browser";
@@ -24,13 +37,41 @@ public class CLIENTS {
 	final public static String WAKEWORD_TOOL = "wakeword_tool";
 	
 	/**
-	 * Return basic for of the client, e.g. convert "web_app_v1.0.1" to "web_app". 
+	 * Try to identify the platform by using the client info. NOTE: since a developer can in theory define any client info
+	 * this might not be 100% reliable.
+	 * @param clientInfo - info given by any client
+	 * @return
+	 */
+	public static Platform getPlatform(String clientInfo){
+		clientInfo = clientInfo.toLowerCase();
+		if (clientInfo.matches(".*(^|_)(browser|web|html|chrome|safari|firefox|edge|ie)($|_).*")){
+			return Platform.browser;
+		}else if (clientInfo.matches(".*(^|_)(android)($|_).*")){
+			return Platform.android;
+		}else if (clientInfo.matches(".*(^|_)(ios)($|_).*")){
+			return Platform.ios;
+		}else if (clientInfo.matches(".*(^|_)(windows|win)($|_).*")){
+			return Platform.windows;
+		}else if (clientInfo.matches(".*(^|_)(java)($|_).*")){
+			return Platform.java;
+		}else if (clientInfo.matches(".*(^|_)(python)($|_).*")){
+			return Platform.python;
+		}else if (clientInfo.matches(".*(^|_)(node|nodejs)($|_).*")){
+			return Platform.nodejs;
+		}else{
+			return Platform.unknown;
+		}
+	}
+	
+	/**
+	 * Return basic for of the client, e.g. convert "web_app_v1.0.1" to "web_app".<br>
+	 * NOTE: This will INCLUDE the device ID given by the user (if any) at the start. If you are using this in a service you can compare it to input.deviceId.
 	 * @param clientInfo - info given by any client
 	 */
 	public static String getBaseClient(String clientInfo){
 		return clientInfo.replaceFirst("_v\\d.*?(_|$)", "_").trim().replaceFirst("_$", "").replaceAll("[\\W]", "").trim();
 	}
-	
+		
 	//TODO: I think we need to update/simplify this ... and we should write some tests as well! ;-)
 	
 	/**
