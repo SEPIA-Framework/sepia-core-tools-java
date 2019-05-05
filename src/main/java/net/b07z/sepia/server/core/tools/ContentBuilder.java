@@ -20,7 +20,7 @@ public class ContentBuilder {
 	 */
 	public static String postForm(Object... keyValues){
 		try {
-			String parameters = keyValues[0] + "=" + keyValues[1];
+			String parameters = keyValues[0] + "=" + URLEncoder.encode(keyValues[1].toString(), "UTF-8");
 			int i = 2;
 			while (i < keyValues.length){
 				parameters += "&" + (keyValues[i] + "=" + URLEncoder.encode(keyValues[i+1].toString(), "UTF-8"));

@@ -211,7 +211,7 @@ public final class JSON {
 	 * 
 	 * @param j_obj - JSONObject input
 	 * @param key - key name of the entry you want, ...get("key")
-	 * @return value as string or empty string (or null of value is actually null)
+	 * @return value as string or empty string (or null if value is actually null)
 	 */
 	public static String getString(JSONObject j_obj, String key){
 		if (j_obj != null && j_obj.containsKey(key)){
