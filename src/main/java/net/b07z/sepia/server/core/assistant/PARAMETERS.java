@@ -91,6 +91,7 @@ public class PARAMETERS {
 	final public static String MUSIC_GENRE = "genre";				//music genre
 	final public static String MUSIC_SERVICE = "music_service";		//service like Spotify or Apple Music
 	final public static String PLAYLIST_NAME = "playlist_name";		//name of a playlist
+	final public static String MEDIA_CONTROLS = "media_controls";	//controls for media players like: next, back, louder, stop, play (might partially overlap with ACTION)
 	
 	//SMART DEVICES
 	final public static String SMART_DEVICE = "smart_device";				//any smart device
