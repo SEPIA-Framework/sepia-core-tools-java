@@ -84,10 +84,14 @@ public class PARAMETERS {
 	final public static String FOOD_CLASS = "food_class";		//italienisch, vegetarisch, vegan
 	
 	//RADIO - MUSIC
-	final public static String RADIO_STATION = "radio_station";	//name of a radio station
+	final public static String RADIO_STATION = "radio_station";		//name of a radio station
 	final public static String SONG = "song";						//a song
-	final public static String MUSIC_ARTIST = "artist";			//an artist (music or something else)
-	final public static String MUSIC_GENRE = "genre";				//music genre (other genres too?)
+	final public static String MUSIC_ARTIST = "artist";				//an music artist			- TODO: Note that ARTIST and GENRE don't use the music_ suffix here!
+	final public static String MUSIC_ALBUM = "music_album";			//an album
+	final public static String MUSIC_GENRE = "genre";				//music genre
+	final public static String MUSIC_SERVICE = "music_service";		//service like Spotify or Apple Music
+	final public static String PLAYLIST_NAME = "playlist_name";		//name of a playlist
+	final public static String MEDIA_CONTROLS = "media_controls";	//controls for media players like: next, back, louder, stop, play (might partially overlap with ACTION)
 	
 	//SMART DEVICES
 	final public static String SMART_DEVICE = "smart_device";				//any smart device
@@ -109,8 +113,13 @@ public class PARAMETERS {
 	final public static String MESH_NODE_PLUGIN_NAME = "node_plugin_name";	//name of mesh node plugin
 	final public static String MESH_NODE_PLUGIN_DATA = "node_plugin_data";	//data (e.g. as JSON string) for node plugin
 	
-	//CLIENT CONTROLS
+	//CLIENT and (CLIENT-)PLATFORM CONTROLS
 	final public static String CLIENT_FUN = "client_fun";		//a function to be executed in client
+	final public static String ANDROID_FUN = "android_fun";		//	" 	"
+	final public static String IOS_FUN = "ios_fun";				//	" 	"
+	final public static String BROWSER_FUN = "browser_fun";		//	" 	"
+	final public static String WINDOWS_FUN = "windows_fun";		//	" 	"
+	final public static String DEVICE_FUN = "device_fun";		//	" 	"
 	
 	//------------ control parameters -------------
 	
@@ -125,11 +134,11 @@ public class PARAMETERS {
 	final public static String CS_COMMAND = "cs_cmd";			//custom service command, so the target server can map it
 	
 	//CONTROL PARAMETERS
-	final public static String SELECTION = "selection";		//control parameter: when a command requires the user to choose one of the results ...(use numbers, maybe names too)
 	final public static String ANSWER_STAGE = "ans_stage";	//control parameter: ...if you want to keep track of dialog_stage in command or want to have the option to skip stages
 	final public static String MEMORY = "memory";				//control parameter: ...if you want to keep track of things that have been said already like a command history
 	final public static String FINAL = "final";					//control parameter: collect parameter names here that are checked, validated and final. Use a list like "[location_start,location_end,time]"
 	final public static String CONFIRMATION = "confirmation";	//control parameter: when a critical command requires a confirmation ...(use: ok, cancel)
+	final public static String SELECTION = "selection";		//control parameter: when a command requires the user to choose one of the results ...(use numbers, maybe names too)
 	final public static String DYNAMIC = "dynamic";				//control parameter: collect parameter names here that are dynamically set during service module to include them in interview build scripts. Use a list like in FINAL
 	
 	//Exotic or unique stuff

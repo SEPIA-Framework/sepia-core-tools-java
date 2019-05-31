@@ -30,7 +30,7 @@ public class StringTools {
 	}
 	
 	/**
-	 * Find all groups of matching regular expression or return empty string.
+	 * Find all groups of matching regular expression or return empty list.
 	 * @param input - input to search in
 	 * @param regEx - regular expression to search for
 	 */
