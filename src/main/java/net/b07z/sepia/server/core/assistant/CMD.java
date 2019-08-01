@@ -33,6 +33,7 @@ public class CMD {
 	final public static String HOTELS = "hotels";						//parameters:	place, time
 	final public static String INSURANCE = "insurance";				//parameters:	action (<get_offer>, <get_help>), info (insurance object), type (any type like vollkasko)
 	final public static String KNOWLEDGEBASE = "knowledgebase";		//parameters:	search, type
+	final public static String LANGUAGE_SWITCH = "language_switch";	//parameters:	language
 	final public static String LISTS = "lists";						//parameters:	type, action, info
 	final public static String LOCATION = "location";					//parameters:	search, poi (like italian restaurant, supermarket etc. ...)
 	final public static String MATCH = "match";						//parameters: 	info
