@@ -56,7 +56,7 @@ public class CMD {
 	final public static String REPEAT = "repeat";						//parameters:	-
 	final public static String REPEAT_ME = "repeat_me";					//parameters:	-
 	final public static String RESULT_REDIRECT = "result_redirect";		//parameters:	-
-	final public static String SENTENCE_CONNECT = "sentence_connect";	//parameters:	-
+	final public static String SENTENCE_CONNECT = "sentence_connect";	//parameters:	sentences
 	final public static String WEATHER = "weather";					//parameters:	place, time
 	final public static String WEB_SEARCH = "websearch";				//parameters:	websearch_q
 
