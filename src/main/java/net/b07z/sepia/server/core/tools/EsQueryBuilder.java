@@ -18,6 +18,11 @@ public class EsQueryBuilder {
 		Object value;
 		String analyzer;
 		
+		/**
+		 * Examples:<br>
+		 * new QueryElement("channelId", channelId, "keylower")<br>
+		 * NOTE: keylower is a custom analyzer
+		 */
 		public QueryElement(String field, Object value, String analyzer){
 			this.field = field;
 			this.value = value;
@@ -25,6 +30,11 @@ public class EsQueryBuilder {
 				this.analyzer = analyzer;
 			}
 		}
+		/**
+		 * Examples:<br>
+		 * new QueryElement("channelId", channelId)<br>
+		 * new QueryElement("timeUNIX", JSON.make("lt", olderThanUnix))<br>
+		 */
 		public QueryElement(String field, Object value){
 			this.field = field;
 			this.value = value;
@@ -36,6 +46,9 @@ public class EsQueryBuilder {
 		}
 		public JSONObject getAsMatch(){
 			return JSON.make("match", getJSON());
+		}
+		public JSONObject getAsRange(){
+			return JSON.make("range", getJSON());
 		}
 	}
 	
@@ -95,6 +108,21 @@ public class EsQueryBuilder {
 		}
 		return JSON.make("query", JSON.make("bool", JSON.make("must", must, "must_not", mustNot)));
 	}
+	
+	/**
+	 * Build a query that must match certain elements and value ranges, e.g. must match a certain message-ID with timestamp older than xyz.    
+	 */
+	public static JSONObject getBoolMustAndRangeMatch(List<QueryElement> mustMatches, List<QueryElement> rangeMatches){
+		JSONArray must = new JSONArray();
+		JSONArray filter = new JSONArray();
+		for (QueryElement qe : mustMatches){
+			JSON.add(must, qe.getAsMatch());
+		}
+		for (QueryElement qe : rangeMatches){
+			JSON.add(filter, qe.getAsRange());
+		}
+		return JSON.make("query", JSON.make("bool", JSON.make("must", must, "filter", filter)));
+	}
 
 	/**
 	 * Build a query for a nested entry that must match a set of query elements. Note: each query field has to include the path as well like this:
@@ -125,5 +153,27 @@ public class EsQueryBuilder {
 		JSON.add(mustArray, JSON.make("nested", JSON.make("path", nestPath, "query", nestedMustMatches.get("query"))));
 		//merge
 		return JSON.make("query", JSON.make("bool", JSON.make("must", mustArray)));
+	}
+	
+	/**
+	 * Build a range query with a custom combination of greater-than (gt), greater-or-equal (gte),
+	 * less-than (lt) and less-or-equal (lte). Conditions that are not needed should be set null.<br>
+	 * 
+	 * For details see: https://www.elastic.co/guide/en/elasticsearch/reference/5.3/query-dsl-range-query.html
+	 * 
+	 * @param matchField - field to apply range query to
+	 * @param gt - greater-than, number or string (or null)
+	 * @param gte - greater-or-equal, number or string (or null)
+	 * @param lt - less-than, number or string (or null)
+	 * @param lte - less-or-equal, number or string (or null)
+	 * @return
+	 */
+	public static JSONObject buildRangeQuery(String matchField, Object gt, Object gte, Object lt, Object lte){
+		JSONObject conditions = new JSONObject();
+		if (gt != null) JSON.put(conditions, "gt", gt);
+		if (gte != null) JSON.put(conditions, "gte", gte);
+		if (lt != null) JSON.put(conditions, "lt", lt);
+		if (lte != null) JSON.put(conditions, "lte", lte);
+		return JSON.make("query", JSON.make("range", JSON.make(matchField, conditions)));
 	}
 }

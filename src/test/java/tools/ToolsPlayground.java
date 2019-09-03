@@ -5,7 +5,6 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -13,10 +12,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 
 import net.b07z.sepia.server.core.tools.EsQueryBuilder;
 import net.b07z.sepia.server.core.tools.JSON;
-import net.b07z.sepia.server.core.tools.JSONWriter;
-import net.b07z.sepia.server.core.tools.RuntimeInterface;
 import net.b07z.sepia.server.core.tools.EsQueryBuilder.QueryElement;
-import net.b07z.sepia.server.core.tools.RuntimeInterface.RuntimeResult;
 import net.b07z.sepia.server.core.tools.Security;
 
 /**
@@ -29,11 +25,13 @@ public class ToolsPlayground {
 	public static void main(String[] args) throws Exception {
 		
 		/* -- Runtime commands -- */
+		/*
 		System.out.println("Calling runtime: ");
 		RuntimeResult rtr = RuntimeInterface.runCommand(new String[]{"chcp"}, 5000);
 		System.out.println(rtr.toString()); if (rtr.getStatusCode() != 0) System.out.println(rtr.getException());
 		rtr = RuntimeInterface.runCommand(new String[]{"echo", "Hello World!"}, 5000);
 		System.out.println(rtr.toString()); if (rtr.getStatusCode() != 0) System.out.println(rtr.getException());
+		*/
 		/*
 		rtr = RuntimeInterface.runCommand(new String[]{"ping", "sepia-framework.github.io"}, 5000);
 		System.out.println(rtr.toString()); if (rtr.getStatusCode() != 0) System.out.println(rtr.getException());
@@ -44,6 +42,7 @@ public class ToolsPlayground {
 		*/
 		
 		/* -- JSONWriter -- */
+		/*
 		System.out.println("\nJSONWriter test: ");
 		JSONObject jo = JSON.make(
 				"First", 10, 
@@ -75,6 +74,7 @@ public class ToolsPlayground {
 		
 		String clusterKeyLight = "c";
 		System.out.println((int) clusterKeyLight.charAt(clusterKeyLight.length()-1));
+		*/
 		
 		/* -- Write test properties file -- */
 		/*
@@ -115,7 +115,7 @@ public class ToolsPlayground {
 		*/
 		
 		/* -- Elasticsearch queries -- */
-		/*
+		
 		//double-match for simple field
 		String query = getBoolMustMatch();
 		System.out.println("query must-must: " + query);
@@ -138,7 +138,11 @@ public class ToolsPlayground {
 		//getAnswersByType query with JsonGenerator
 		query = getAnswersQueryWithBuilder();
 		System.out.println("getAnswersByType query with builder: " + query);
-		*/
+		
+		//match and range
+		query = getBoolMustAndRangeMatch();
+		System.out.println("getBoolMustAndRangeMatch query with builder: " + query);
+		System.out.println("getBoolMustAndRangeMatch query with direct build: " + EsQueryBuilder.buildRangeQuery("timeUNIX", "30", null, "100", null));
 	}
 	
 	/* -- Password client hash -- */
@@ -168,6 +172,20 @@ public class ToolsPlayground {
 		shouldMatches.add(new QueryElement("name", "bName"));
 		
 		String query = EsQueryBuilder.getBoolMustAndShoudMatch(mustMatches, shouldMatches).toJSONString();
+		return query;
+	}
+	
+	public static String getBoolMustAndRangeMatch(){
+		//must
+		List<QueryElement> mustMatches = new ArrayList<>(); 
+		mustMatches.add(new QueryElement("user", "theUserId01"));
+		mustMatches.add(new QueryElement("title", "myTitleToMatch"));
+		//should
+		List<QueryElement> rangeMatches = new ArrayList<>(); 
+		rangeMatches.add(new QueryElement("timeUNIX", JSON.make("lt", 60000l, "gt", 30000l)));
+		rangeMatches.add(new QueryElement("entries", JSON.make("gte", 25)));
+		
+		String query = EsQueryBuilder.getBoolMustAndRangeMatch(mustMatches, rangeMatches).toJSONString();
 		return query;
 	}
 	
