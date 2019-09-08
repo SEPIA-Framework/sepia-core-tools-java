@@ -79,8 +79,9 @@ public interface AuthenticationInterface {
 	 * "userid" (typically email address, same as in registration request),<br>
 	 * "time" (time stamp of the registration request),<br>
 	 * "token" (token received from registration request),<br>
+	 * "ticketid" (ticket id pointing to temporary token),<br>
 	 * "type" (type of registration, e.g. via email),<br>
-	 * "basic_info" (any info the user could additionally submit like name ...).<br>
+	 * "new_pwd" (new user password, hashed in client?).<br>
 	 * @return true/false
 	 */
 	public boolean changePassword(JSONObject info);

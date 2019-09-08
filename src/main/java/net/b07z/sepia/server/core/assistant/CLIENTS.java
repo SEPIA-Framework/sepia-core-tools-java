@@ -27,7 +27,7 @@ public class CLIENTS {
 	final public static String IOS_APP = "ios_app";				//e.g. iPhone, iPad
 	final public static String IOS_BROWSER = "ios_browser";		//e.g. iPhone, iPad safari
 	final public static String WIN_APP = "windows_app";			//e.g. windows app store app for mobile or desktop
-	final public static String JAVA_APP = "java_app";			//e.g. VW TTS Client
+	final public static String JAVA_APP = "java_app";			//e.g. VW TTS Client, server client
 	final public static String PYTHON_APP = "python_app";
 	final public static String NODEJS_APP = "nodejs_app";
 	final public static String CHROME_BROWSER = "chrome_browser";

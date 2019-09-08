@@ -372,7 +372,7 @@ public class Converters {
 	 * Convert JSONObject to HashMap&lt;String,Object&gt; by unchecked cast.
 	 * Nested JSONObjects remain what they are.
 	 * @param jsonObject - simple JSON object
-	 * @return HashMap&lt;String,String&gt; (can be empty)
+	 * @return HashMap&lt;String,Object&gt; (can be empty)
 	 */
 	public static Map<String, Object> json2HashMap(JSONObject jsonObject) {
 		return object2HashMapStrObj(jsonObject);

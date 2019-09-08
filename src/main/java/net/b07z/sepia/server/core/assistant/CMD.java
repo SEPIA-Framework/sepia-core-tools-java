@@ -33,6 +33,7 @@ public class CMD {
 	final public static String HOTELS = "hotels";						//parameters:	place, time
 	final public static String INSURANCE = "insurance";				//parameters:	action (<get_offer>, <get_help>), info (insurance object), type (any type like vollkasko)
 	final public static String KNOWLEDGEBASE = "knowledgebase";		//parameters:	search, type
+	final public static String LANGUAGE_SWITCH = "language_switch";	//parameters:	language
 	final public static String LISTS = "lists";						//parameters:	type, action, info
 	final public static String LOCATION = "location";					//parameters:	search, poi (like italian restaurant, supermarket etc. ...)
 	final public static String MATCH = "match";						//parameters: 	info
@@ -55,7 +56,7 @@ public class CMD {
 	final public static String REPEAT = "repeat";						//parameters:	-
 	final public static String REPEAT_ME = "repeat_me";					//parameters:	-
 	final public static String RESULT_REDIRECT = "result_redirect";		//parameters:	-
-	final public static String SENTENCE_CONNECT = "sentence_connect";	//parameters:	-
+	final public static String SENTENCE_CONNECT = "sentence_connect";	//parameters:	sentences
 	final public static String WEATHER = "weather";					//parameters:	place, time
 	final public static String WEB_SEARCH = "websearch";				//parameters:	websearch_q
 
