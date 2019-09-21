@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -76,6 +77,27 @@ public class Converters {
 		}
 		cmd_summary += add.trim();
 		return cmd_summary;
+	}
+	/**
+	 * Get parameters from "cmd_summary" string.
+	 * @param cmd - command (must be known)
+	 * @param cmdSummary - whole string of cmd_summary
+	 * @return JSONObject with parameters or null (if none are found)
+	 */
+	public static JSONObject getParametersFromCommandSummary(String cmd, String cmdSummary){
+		cmdSummary = cmdSummary.replaceFirst(";;$", "").trim();
+		if (cmdSummary.matches("^" + Pattern.quote(cmd + ";;") + ".+")){
+			String paramString = cmdSummary.split(Pattern.quote(cmd + ";;"), 2)[1];
+			String[] paramsPV = paramString.trim().split(";;(?=[\\w.-]+=)");
+			JSONObject params = new JSONObject();
+			for (int i=0; i<paramsPV.length; i++){
+				String[] pv = paramsPV[i].split("=", 2);
+				JSON.put(params, pv[0], pv[1]);
+			}
+			return params;
+		}else{
+			return null;
+		}
 	}
 	
 	/**
