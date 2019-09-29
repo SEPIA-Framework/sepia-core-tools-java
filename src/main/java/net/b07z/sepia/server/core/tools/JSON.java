@@ -261,7 +261,7 @@ public final class JSON {
 		String res = defaultString;
 		if (jo != null && jo.containsKey(key)){
 			res = (String) jo.get(key);
-			if (res.isEmpty()){
+			if (Is.nullOrEmpty(res)){
 				res = defaultString;
 			}
 		}
