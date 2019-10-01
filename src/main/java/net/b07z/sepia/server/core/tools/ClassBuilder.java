@@ -27,11 +27,11 @@ public class ClassBuilder {
 	 * classes are cast to primitives if possible. That means the constructor will not be found if it has "Integer" instead of "int".
 	 * Same is most likely true for the constructors containing the class "Object".
 	 * @param classLoader - loader that has access to the class. Use null or 'ClassLoader.getSystemClassLoader()' for default.
-	 * @param canonicalClassName - canonical name of the class, e.g.: "java.lang.String"
+	 * @param fullClassName - fully qualified name for a class or interface (in the same format returned by getName), e.g.: "java.lang.String"
 	 * @param arguments - arguments usually passed to the constructor (optional).
 	 * @return constructed class or throw exception
 	 */
-	public static Object construct(ClassLoader classLoader, String canonicalClassName, Object... arguments){
+	public static Object construct(ClassLoader classLoader, String fullClassName, Object... arguments){
 		try{
 			if (classLoader == null){
 				classLoader = ClassLoader.getSystemClassLoader();
@@ -59,28 +59,28 @@ public class ClassBuilder {
 						arg_clazzes[i] = Short.TYPE;
 					}
 				}
-				Constructor<?> conztructor = Class.forName(canonicalClassName, true, classLoader).getConstructor(arg_clazzes);
+				Constructor<?> conztructor = Class.forName(fullClassName, true, classLoader).getConstructor(arg_clazzes);
 				clazz = conztructor.newInstance(arguments);
 			}else{
-				Constructor<?> conztructor = Class.forName(canonicalClassName, true, classLoader).getConstructor();
+				Constructor<?> conztructor = Class.forName(fullClassName, true, classLoader).getConstructor();
 				clazz = conztructor.newInstance();
 			}
 			return clazz;
 			
 		}catch (Exception e){
 			e.printStackTrace();
-			throw new RuntimeException(DateTime.getLogDate() + " ERROR - Class not found: " + canonicalClassName, e);
+			throw new RuntimeException(DateTime.getLogDate() + " ERROR - Class not found: " + fullClassName, e);
 		}
 	}
 
 	/**
 	 * Constructs a new instance of a class just by using the name of the class.<br>
 	 * 
-	 * @param canonicalClassName - canonical name of the class, e.g.: "java.lang.String"
+	 * @param fullClassName - full name of the class (getName()), e.g.: "java.lang.String"
 	 * @return constructed class or throw exception
 	 */
-	public static Object construct(String canonicalClassName){
-		return construct(null, canonicalClassName);
+	public static Object construct(String fullClassName){
+		return construct(null, fullClassName);
 	}
 	
 	/**
