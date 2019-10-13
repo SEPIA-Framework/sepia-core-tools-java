@@ -8,9 +8,12 @@ package net.b07z.sepia.server.core.assistant;
  */
 public class ENVIRONMENTS {
 	
-	final public static String ALL = "all"; 		//default environment with all options to display results
-	final public static String NO_SCREEN = "noScreen";
-	final public static String NO_AUDIO = "noAudio";
+	final public static String DEFAULT = "default"; 				//default environment with all options to display results, e.g. smartphone
+	final public static String AVATAR_DISPLAY = "avatar_display";	//avatar display with limited space to display results, sound available
+	final public static String SPEAKER = "speaker";					//smart speaker with audio only
+	final public static String SILENT_DISPLAY = "silent_display";	//display without audio
+	final public static String CAR_DISPLAY = "car_display";			//display with audio. Might have modified behavior to for events, follow-ups, etc. TBD
+	//watch ?
 	//...
 
 }
