@@ -153,7 +153,8 @@ public class Security {
 	}
 
 	/**
-	 * Check if host (e.g. IP address) is from a private network (according to IANA IP range etc.).	
+	 * Check if host (e.g. IP address) is from a private network (according to IANA IP range etc.).<br>
+	 * NOTE: This might fail if server is behind proxy!
 	 * @param host - host address with or without protocol (http..), port (..:8080) or path (.../index.html) 
 	 * @throws UnknownHostException 
 	 */

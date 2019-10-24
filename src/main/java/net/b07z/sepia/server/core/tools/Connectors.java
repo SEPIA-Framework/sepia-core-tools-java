@@ -17,6 +17,7 @@ import javax.net.ssl.SSLContext;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -60,11 +61,15 @@ public class Connectors {
 		delete,
 		head
 	}
+	/**
+	 * Holds the result of an HTTP call (usually but not exclusively done with Apache {@link CloseableHttpClient}).
+	 */
 	public static class HttpClientResult {
 		public int statusCode = 0;
 		public String statusLine = "";
 		public String content = "";
 		public Charset encoding = null;
+		public  Map<String, String> headers;
 		
 		HttpClientResult(String content, int statusCode){
 			this.content = content;
@@ -79,6 +84,13 @@ public class Connectors {
 			this.content = content;
 			this.statusCode = statusCode;
 			this.statusLine = statusLine;
+			this.encoding = encoding;
+		}
+		HttpClientResult(String content, int statusCode, String statusLine, Map<String, String> headers, Charset encoding){
+			this.content = content;
+			this.statusCode = statusCode;
+			this.statusLine = statusLine;
+			this.headers = headers;
 			this.encoding = encoding;
 		}
 	}
@@ -172,7 +184,7 @@ public class Connectors {
 	 * NOTE3: Content encoding is read from HttpEntity and defaults to UTF-8
 	 * @param url - URL to call
 	 * @param contentType - null for 'auto' or e.g. 'application/json' or 'application/rss+xml' etc.
-	 * @return JSONObject
+	 * @return {@link HttpClientResult}
 	 */
 	public static HttpClientResult apacheHttpGET(String url, String contentType) throws Exception{
 		CloseableHttpClient httpclient = HttpClientBuilder.create()
@@ -209,7 +221,11 @@ public class Connectors {
 		        }
 			    EntityUtils.consume(resEntity);
     		}
-		    return new HttpClientResult(responseData, statusCode, statusLine, charset);
+			Map<String, String> headers = new HashMap<>();
+			for (Header header : response.getAllHeaders()){
+				headers.put(header.getName(), header.getValue());
+			}
+		    return new HttpClientResult(responseData, statusCode, statusLine, headers, charset);
 		    
 		}catch (Exception e){
 			return new HttpClientResult(null, statusCode, statusLine, charset);
@@ -219,6 +235,7 @@ public class Connectors {
 	/**
 	 * Apache HttpClient GET with no restrictions on the SSL certificate validity.
 	 * @param url - call this URL
+	 * @return {@link HttpClientResult}
 	 */
 	public static HttpClientResult httpGetSelfSignedSSL(String url) throws IOException, GeneralSecurityException {
 		//Apache docs:
