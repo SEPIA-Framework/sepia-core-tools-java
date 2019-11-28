@@ -189,7 +189,7 @@ public class Elasticsearch implements DatabaseInterface {
 		//System.out.println(result.toJSONString()); 		//debug
 		
 		//success?
-		if (Connectors.httpSuccess(result)){
+		if (Connectors.httpSuccess(result, true)){
 			return result;
 		}
 		//error

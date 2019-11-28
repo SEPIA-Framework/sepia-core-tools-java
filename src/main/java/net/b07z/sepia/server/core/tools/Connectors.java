@@ -636,15 +636,28 @@ public class Connectors {
 	
 	/**
 	 * Convenience method to check if the HTTP REST call was successful.<br>
-	 * The HTTP REST methods used here add a helper field to the result to track the state of the call.
+	 * The HTTP REST methods used here add a helper field (HTTP_REST_SUCCESS) to the result to track the state of the call.
 	 * With this method you can check if this field exists and says "true".
 	 */
 	public static boolean httpSuccess(JSONObject response){
+		return httpSuccess(response, false);
+	}
+	/**
+	 * Convenience method to check if the HTTP REST call was successful.<br>
+	 * The HTTP REST methods used here add a helper field (HTTP_REST_SUCCESS) to the result to track the state of the call.
+	 * With this method you can check if this field exists and says "true".
+	 * @param response - HTTP response
+	 * @param removeTag - if response contains HTTP_REST_SUCCESS field remove it after test  
+	 */
+	public static boolean httpSuccess(JSONObject response, boolean removeTag){
 		if (response == null){
 			return false;
 		}
 		Object restO = response.get(HTTP_REST_SUCCESS);
-		boolean rest = (restO == null)? false : (boolean)response.get("HTTP_REST_SUCCESS");
+		boolean rest = (restO == null)? false : (boolean) restO;
+		if (removeTag){
+			response.remove(HTTP_REST_SUCCESS);
+		}
 		return rest;
 	}
 	
