@@ -54,6 +54,9 @@ public class Connectors {
 	public static final int CONNECT_TIMEOUT = 15000;
 	public static final int READ_TIMEOUT = 60000;
 	
+	public static final String HEADER_AUTHORIZATION = "Authorization";	//Authorization: <type> <credentials>, with type e.g.: Basic (base64(uname:pwd)), Bearer
+	public static final String HEADER_CONTENT_TYPE = "Content-Type";
+	
 	public enum Method {
 		get,
 		post,
@@ -101,6 +104,14 @@ public class Connectors {
 	 * Throws a RuntimeException on fail.
 	 */
 	public static JSONObject simpleJsonGet(String url) {
+		return simpleJsonGet(url, null);
+	}
+	/**
+	 * Sends a GET and parses the reply as JSON. Other than {@code httpGET_JSON},
+	 * this leaves the reply unmodified, i.e. it won't add {@code HTTP_REST_SUCCESS}.
+	 * Throws a RuntimeException on fail.
+	 */
+	public static JSONObject simpleJsonGet(String url, Map<String, String> headers) {
 		try {
 			URL urlObj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) urlObj.openConnection();
@@ -109,6 +120,12 @@ public class Connectors {
 			con.setConnectTimeout(CONNECT_TIMEOUT);
 			con.setReadTimeout(READ_TIMEOUT);
 			//con.setRequestProperty("content-type", "text/html");
+			if (headers != null){
+				for (Map.Entry<String, String> entry : headers.entrySet()){
+					con.setRequestProperty(entry.getKey(), entry.getValue());
+					//System.out.println(entry.getKey() +": "+ entry.getValue());
+				}
+			}
 			int responseCode = con.getResponseCode();
 			if (responseCode == HttpURLConnection.HTTP_OK){
 				try (InputStream stream = con.getInputStream();
@@ -280,7 +297,7 @@ public class Connectors {
 	 * if response is not JSON it will be placed e.g. as "STRING" field in the result or "JSONARRAY" if it's an array. 
 	 */
 	public static JSONObject httpGET(String url) {
-		return httpGET(url, new String[0]);
+		return httpGET(url, null);
 	}
 	/**
 	 * Make HTTP GET request to URL and get JSON response. Check with {@code httpSuccess(...)} for status.
@@ -295,7 +312,7 @@ public class Connectors {
 	 * Make HTTP GET request to URL and get JSON response. Check with {@code httpSuccess(...)} for status.
 	 * @param url - URL address to call including none or only some parameters
 	 * @param params - additional parameters added to URL (use e.g. "?q=search_term" or "&type=json" etc.) or null
-	 * @param headers - Map with request properties (keys) and values.
+	 * @param headers - Map with request properties (keys) and values. Sets only 'User-Agent' header by default.
 	 * @return JSONObject response of URL call - Note: if response is not JSON it will be placed e.g. as "STRING" field in the result or "JSONARRAY" if it's an array.
 	 */
 	public static JSONObject httpGET(String url, String[] params, Map<String, String> headers) {
@@ -390,7 +407,7 @@ public class Connectors {
 	 * Make a HTTP POST request to targetUrl with custom headers. Check {@code httpSuccess(...)} for status.
 	 * @param targetURL - URL of service
 	 * @param data - data in chosen content-type, e.g. url parameter style or JSON string
-	 * @param headers - HashMap with request properties (keys) and values. If null uses 'application/json' as default.
+	 * @param headers - HashMap with request properties (keys) and values. Set by default if null: 'Content-Type' = 'application/json'.
 	 * @return JSONObject with response
 	 */
 	public static JSONObject httpPOST(String targetURL, String data, Map<String, String> headers) {
@@ -485,7 +502,7 @@ public class Connectors {
 	 * Make a HTTP PUT request to targetUrl with custom headers. Check {@code httpSuccess(...)} for status.
 	 * @param targetURL - URL of service
 	 * @param data - data in chosen content-type, e.g. url parameter style or JSON string
-	 * @param headers - HashMap with request properties (keys) and values.
+	 * @param headers - HashMap with request properties (keys) and values. NO headers set by default if null.
 	 * @return JSONObject with response
 	 */
 	public static JSONObject httpPUT(String targetURL, String data, Map<String, String> headers) {
@@ -577,6 +594,15 @@ public class Connectors {
 	 * @return
 	 */
 	public static JSONObject httpDELETE(String url) {
+		return httpDELETE(url, null);
+	}
+	/**
+	 * Make HTTP DELETE request to URL and get JSON response.. Use {@code httpSuccess(...)} for status.
+	 * @param url - URL address to call including none or only some parameters/paths
+	 * @param headers - Map with request properties (keys) and values. Sets only 'User-Agent' header by default.
+	 * @return
+	 */
+	public static JSONObject httpDELETE(String url, Map<String, String> headers) {
 		int responseCode = -1;
 		String success_str = HTTP_REST_SUCCESS;
 		try{
@@ -587,6 +613,13 @@ public class Connectors {
 			con.setRequestProperty("User-Agent", USER_AGENT);
 			con.setConnectTimeout(CONNECT_TIMEOUT);
 			con.setReadTimeout(READ_TIMEOUT);
+			
+			if (headers != null){
+				for (Map.Entry<String, String> entry : headers.entrySet()){
+					con.setRequestProperty(entry.getKey(), entry.getValue());
+					//System.out.println(entry.getKey() +": "+ entry.getValue());
+				}
+			}
 	
 			responseCode = con.getResponseCode();
 			//System.out.println("GET Response Code : " + responseCode);		//debug
@@ -633,6 +666,21 @@ public class Connectors {
 	}
 	
 	//-------------- COMMON ------------------
+	
+	/**
+	 * Add 'Authorization' header to given headers. (NOTE: this will modify the given object!)
+	 * @param headers - given headers map or null (will create one)
+	 * @param authType - types like 'Basic' or 'Bearer'
+	 * @param authData - data as string, e.g. for type 'Basic' this should be a base64 coded string of "username:password"
+	 * @return modified header map
+	 */
+	public static Map<String, String> addAuthHeader(Map<String, String> headers, String authType, String authData){
+		if (headers == null){
+			headers = new HashMap<>();
+		}
+		headers.put(Connectors.HEADER_AUTHORIZATION, authType.trim() + " " + authData);
+		return headers;
+	}
 	
 	/**
 	 * Convenience method to check if the HTTP REST call was successful.<br>
