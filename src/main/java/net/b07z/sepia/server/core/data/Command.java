@@ -118,6 +118,7 @@ public class Command {
 		private String user;
 		private String source;
 		private String environment;
+		private String deviceId;
 		private String taggedText;
 		private boolean isPublic;
 		private boolean isLocal;
@@ -208,6 +209,14 @@ public class Command {
 		public void setEnvironment(String environment) {
 			this.environment = environment;
 		}
+		
+		public String getDeviceId() {
+			return deviceId;
+		}
+
+		public void setDeviceId(String deviceId) {
+			this.deviceId = deviceId;
+		}
 
 		public String getSource() {
 			return source;
@@ -271,7 +280,8 @@ public class Command {
 
 		/** Don't call this constructor directly, use SentenceBuilder! */
 		Sentence(Language language, String text, String user, String source, String taggedText, JSONObject params, String cmdSummary,
-						 String userLocation, boolean isMachineTranslated, String translatedFrom, boolean isPublic, boolean isLocal, boolean isExplicit, String environment, List<String> replies, JSONObject data) {
+						 String userLocation, boolean isMachineTranslated, String translatedFrom, boolean isPublic, boolean isLocal, boolean isExplicit, 
+						 String environment, String deviceId, List<String> replies, JSONObject data) {
 			this.language = Objects.requireNonNull(language);
 			this.text = Objects.requireNonNull(text);
 			this.user = Objects.requireNonNull(user);
@@ -286,6 +296,7 @@ public class Command {
 			this.isLocal = isLocal;
 			this.isExplicit = isExplicit;
 			this.environment = environment;
+			this.deviceId = deviceId;
 			this.replies = replies;
 			this.data = data;
 			this.date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(new Date());
