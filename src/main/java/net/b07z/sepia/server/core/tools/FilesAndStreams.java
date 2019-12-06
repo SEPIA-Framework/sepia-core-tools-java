@@ -15,7 +15,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 /**
@@ -26,10 +28,12 @@ import java.util.function.Consumer;
  */
 public class FilesAndStreams {
 	
+	private static Map<String, String> fileContentCache = new ConcurrentHashMap<>();
+	
 	//----helpers:
 	
 	/**
-	 * Generic class to define line operations as lambda expressions.
+	 * Generic class to define line operations as lambda expressions. (Basically identical with Function<String, String>).
 	 */
 	public static interface LineOperation {
 		/**
@@ -178,7 +182,7 @@ public class FilesAndStreams {
 	}
 	
 	/**
-	 * Read file and return as list.
+	 * Read UTF-8 encoded file and return as list.
 	 * @param pathWithName - path to file including file-name
 	 * @return list with file content line-by-line
 	 * @throws IOException
@@ -190,7 +194,7 @@ public class FilesAndStreams {
 	}
 	
 	/**
-	 * Write list to file.
+	 * Write list to UTF-8 encoded file.
 	 * @param pathWithName - path to file including file-name
 	 * @param fileContent - list of strings to be stored line-by-line
 	 * @return true (all good), false (error during write)
@@ -204,6 +208,40 @@ public class FilesAndStreams {
 		} catch (IOException e) {
 			e.printStackTrace();
 			return false;
+		}
+	}
+	
+	/**
+	 * Read UTF-8 encoded file line-by-line, do optional operation on each line and merge everything to one string.
+	 * The result will be cached in a concurrent Map (optional) using the path as key and will be loaded from there on next call.<br>
+	 * NOTE 1: If no lineOperation is given the lines will be merged via default UNIX end-of-line ('\n').<br>
+	 * NOTE 2: Files can be large so think about your cache size when using this.<br>
+	 * NOTE 3: The file will be loaded entirely and then iterated line-by-line ... not the best method for large files ...
+	 * @param pathToFile - path to file, e.g. "Xtensions/myFolder/my.file"
+	 * @param useCache - cache result and load from cache or don't 
+	 * @param lineOperation - optional operation used to modify each line of the file (or null). NOTE: If you need an end-of-line character you need to add it in your operator.
+	 * @return String representing the file after line-operations are applied and lines are merged
+	 * @throws IOException
+	 */
+	public static String readFileModifyAndCache(String pathToFile, boolean useCache, LineOperation lineOperation) throws IOException {
+		if (useCache && fileContentCache.containsKey(pathToFile)){
+			return fileContentCache.get(pathToFile);
+		}else{
+			List<String> lines = readFileAsList(pathToFile);
+			String mergedList;
+			if (lineOperation != null){
+				mergedList = "";
+				for (String l : lines){
+					l = lineOperation.run(l);
+					mergedList += l;
+				};
+			}else{
+				mergedList = String.join("\n", lines);
+			}
+			if (useCache){
+				fileContentCache.put(pathToFile, mergedList);
+			}
+			return mergedList;
 		}
 	}
 	
