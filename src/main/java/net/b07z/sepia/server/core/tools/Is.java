@@ -71,4 +71,10 @@ public class Is {
 	public static boolean typeEqual(String value, Enum<?> type){
 		return value.equals(type.name());
 	}
+	/**
+	 * Returns "true" if the string is equal to enum.name() ignoring case.
+	 */
+	public static boolean typeEqualIgnoreCase(String value, Enum<?> type){
+		return value.equalsIgnoreCase(type.name());
+	}
 }
