@@ -1,8 +1,11 @@
 package net.b07z.sepia.server.core.tools;
 
 import java.io.UnsupportedEncodingException;
+import java.math.RoundingMode;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -144,6 +147,46 @@ public class Converters {
 				return "";
 			}
 		}
+	}
+	
+	/**
+	 * Return the default expected format for decimal numbers:
+	 * <li>Round half-up (1.5 rounds to 2)</li>
+	 * <li>Decimal separator is dot "."</li>
+	 * <li>Grouping separator is empty</li>
+	 */
+	public static DecimalFormat getDefaultDecimalFormat(){
+		DecimalFormat df = new DecimalFormat();
+		df.setRoundingMode(RoundingMode.HALF_UP);
+		DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+		symbols.setDecimalSeparator('.');
+		symbols.setGroupingSeparator(Character.MIN_VALUE);
+		df.setDecimalFormatSymbols(symbols);
+		return df;
+	}
+	/**
+	 * Convert a string to {@link Number} using the default decimal format {@link #getDefaultDecimalFormat()}.<br>
+	 * NOTE:
+	 * <li>String MUST NOT have a grouping separator (2,000.0 has to be 2000.0)</li>
+	 * <li>Decimal separator MUST BE dot "."</li>
+	 * @param num - String in format described above
+	 * @return Number or Exception
+	 * @throws java.text.ParseException
+	 */
+	public static Number stringToNumber(String num) throws java.text.ParseException{
+		return getDefaultDecimalFormat().parse(num);
+	}
+	/**
+	 * Convert {@link Number} using the default decimal format {@link #getDefaultDecimalFormat()} to a string with custom pattern.
+	 * You can use {@link #stringToNumber(String)} if you have a String instead of a Number as input. 
+	 * @param num - Number
+	 * @param pattern - e.g. "#.##" or "00.00". NOTE: use dot "." as separator!
+	 * @return
+	 */
+	public static String numberToString(Number num, String pattern) throws IllegalArgumentException{
+		DecimalFormat df = getDefaultDecimalFormat();
+		df.applyPattern(pattern);
+		return df.format(num);
 	}
 	
 	/**
