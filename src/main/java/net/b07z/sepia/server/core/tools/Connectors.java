@@ -257,11 +257,12 @@ public class Connectors {
 	public static HttpClientResult httpGetSelfSignedSSL(String url) throws IOException, GeneralSecurityException {
 		//Apache docs:
 		//https://hc.apache.org/httpcomponents-client-ga/tutorial/html/fundamentals.html
+		//https://hc.apache.org/httpcomponents-client-ga/tutorial/html/connmgmt.html - 2.7.3 ...
 		
 		SSLContext sslContext = SSLContexts.custom()
 			    .loadTrustMaterial(new TrustSelfSignedStrategy())
 			    .build();
-		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(sslContext);
+		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(sslContext);		//optionally add: NoopHostnameVerifier.INSTANCE
 		Registry<ConnectionSocketFactory> reg = RegistryBuilder.<ConnectionSocketFactory>create()
 			    .register("https", socketFactory)
 			    .build();
