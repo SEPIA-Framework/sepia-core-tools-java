@@ -154,6 +154,16 @@ public class SparkJavaFw {
 			return returnResult(request, response, msg, 200); 		//TODO: we should change this code to 400/500 as well
 		}
 	}
+	
+	/**
+	 * Return simple "path invalid" message.
+	 */
+	public static String returnPathNotFound(Request request, Response response){
+		return returnResult(request, response, JSON.make(
+				"result", "fail",
+				"error", "404 path invalid"
+		).toJSONString(), 404);
+	}
 
 	/**
 	 * Get request body or throw error.

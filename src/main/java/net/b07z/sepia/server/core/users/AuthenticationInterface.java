@@ -126,7 +126,6 @@ public interface AuthenticationInterface {
 	 * Typically a website or app will use a token issued during the last log-in procedure to authenticate the user. logoutAllClients() should 
 	 * make all tokens invalid thus making further use of the token impossible on any machine.  
 	 * @param userid - id to log out
-	 * @param client - depending on the client different tokens can be used  
 	 * @return
 	 */
 	public boolean logoutAllClients(String userid);

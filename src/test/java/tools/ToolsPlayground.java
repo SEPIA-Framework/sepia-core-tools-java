@@ -10,6 +10,7 @@ import org.json.simple.JSONObject;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 
+import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.EsQueryBuilder;
 import net.b07z.sepia.server.core.tools.JSON;
 import net.b07z.sepia.server.core.tools.EsQueryBuilder.QueryElement;
@@ -116,6 +117,7 @@ public class ToolsPlayground {
 		
 		/* -- Elasticsearch queries -- */
 		
+		/*
 		//double-match for simple field
 		String query = getBoolMustMatch();
 		System.out.println("query must-must: " + query);
@@ -143,6 +145,23 @@ public class ToolsPlayground {
 		query = getBoolMustAndRangeMatch();
 		System.out.println("getBoolMustAndRangeMatch query with builder: " + query);
 		System.out.println("getBoolMustAndRangeMatch query with direct build: " + EsQueryBuilder.buildRangeQuery("timeUNIX", "30", null, "100", null));
+		*/
+		
+		/* -- Converting numbers -- */
+		
+		System.out.println("Converting numbers:\n");
+		System.out.println("2,000,000.5 --> " + Converters.stringToNumber("2,000,000.5").doubleValue());
+		System.out.println("2000000.5 --> " + Converters.stringToNumber("2000000.5").doubleValue());
+		System.out.println("2,5 --> " + Converters.stringToNumber("2,5").doubleValue());
+		System.out.println("2.5 --> " + Converters.stringToNumber("2.5").doubleValue());
+		
+		System.out.println("21.57689 (#.##) --> " + Converters.numberToString(Converters.stringToNumber("21.57689"), "#.##"));
+		System.out.println("21.57689 (#) --> " + Converters.numberToString(Converters.stringToNumber("21.57689"), "#"));
+		System.out.println("1.57689 (##) --> " + Converters.numberToString(Converters.stringToNumber("1.57689"), "##"));
+		System.out.println("300 (##.#) --> " + Converters.numberToString(Converters.stringToNumber("300"), "##.#"));
+		System.out.println("30 (000.0#) --> " + Converters.numberToString(Converters.stringToNumber("30"), "000.0#"));
+		System.out.println("30 (0.0) --> " + Converters.numberToString(Converters.stringToNumber("30"), "0.0"));
+		System.out.println("1.57689 (0.0) --> " + Converters.numberToString(Converters.stringToNumber("1.57689"), "00.0"));
 	}
 	
 	/* -- Password client hash -- */

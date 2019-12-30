@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -129,7 +130,8 @@ public final class JSON {
 	}
 	
 	/**
-	 * Print content of JSONObject to system.out. Keys and values must be convertible to string!
+	 * Print content of JSONObject to system.out. Keys and values must be convertible to string!<br>
+	 * For a more elegant way consider: {@link #prettyPrint(JSONObject)}.
 	 * @param input - JSONObject to print
 	 */
 	@SuppressWarnings("unchecked")
@@ -141,14 +143,14 @@ public final class JSON {
 	
 	/**
 	 * Print content of JSONObject in a kind of prettier way to stdOut. Keys and values must be convertible to string!<br>
-	 * Used only for quick debugging, if you need more options us {@link JSONWriter}.
+	 * Used only for quick debugging, if you need more options use {@link JSONWriter} or simply {@link #prettyPrint(JSONObject)}.
 	 */
 	public static void printJSONpretty(JSONObject input){
 		printJSONpretty(input, "-");
 	}
 	/**
 	 * Print content of JSONObject in a kind of prettier way. Keys and values must be convertible to string!<br>
-	 * Used only for quick debugging, if you need more options us {@link JSONWriter}.
+	 * Used only for quick debugging, if you need more options use {@link JSONWriter} or simply {@link #prettyPrint(JSONObject)}.
 	 */
 	@SuppressWarnings("unchecked")
 	public static void printJSONpretty(JSONObject input, String indentSymbol){
@@ -161,6 +163,23 @@ public final class JSON {
 				System.out.println(indentSymbol + key + ": " + value );
 			}
 		});
+	}
+	/**
+	 * Properly print JSONObject in a pretty form.
+	 * @param json - JSON object
+	 */
+	public static void prettyPrint(JSONObject json){
+		System.out.println(JSONWriter.getPrettyString(json));
+	}
+	
+	/**
+	 * Get keys of JSON object as set of strings.
+	 * @param json - JSONObject
+	 */
+	@SuppressWarnings("unchecked")
+	public static Set<String> getKeys(JSONObject json){
+		Set<String> keys = json.keySet();
+		return keys;
 	}
 	
 	/**

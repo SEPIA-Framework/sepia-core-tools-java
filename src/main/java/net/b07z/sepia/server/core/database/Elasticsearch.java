@@ -2,12 +2,14 @@ package net.b07z.sepia.server.core.database;
 
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.core.database.DatabaseInterface;
 import net.b07z.sepia.server.core.tools.Connectors;
 import net.b07z.sepia.server.core.tools.Debugger;
+import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 
 /**
@@ -21,6 +23,9 @@ public class Elasticsearch implements DatabaseInterface {
 	//ElasticSearch address
 	protected String server;
 	
+	private String esAuthType;
+	private String esAuthData;
+	
 	/**
 	 * Create Elasticsearch class with default server. 
 	 */
@@ -32,6 +37,49 @@ public class Elasticsearch implements DatabaseInterface {
 	 */
 	public Elasticsearch(String server){
 		this.server = server;
+	}
+	/**
+	 * Create Elasticsearch class with custom server and authentication data.
+	 * @param server - endpoint URL of Elasticsearch server
+	 * @param authType - authentication type (or null), e.g. 'Basic' or 'Bearer'
+	 * @param authData - authentication data (or null), e.g. base64 encoded 'username:password' string
+	 */
+	public Elasticsearch(String server, String authType, String authData) {
+		this.server = server;
+		this.esAuthType = authType;
+		this.esAuthData = authData;
+	}
+	
+	private Map<String, String> addAuthHeader(Map<String, String> headers){
+		return Connectors.addAuthHeader(headers, esAuthType, esAuthData);
+	}
+	
+	//HTTP call methods for ES
+	private JSONObject esHttpGET(String url){
+		if (Is.notNullOrEmpty(this.esAuthData)){
+			return Connectors.httpGET(url, null, addAuthHeader(null));
+		}else{
+			return Connectors.httpGET(url);
+		}
+	}
+	private JSONObject esHttpPOST(String url, String queryJson, Map<String, String> headers){
+		if (Is.notNullOrEmpty(this.esAuthData)){
+			headers = addAuthHeader(headers);
+		}
+		return Connectors.httpPOST(url, queryJson, headers);
+	}
+	private JSONObject esHttpPUT(String url, String queryJson, Map<String, String> headers){
+		if (Is.notNullOrEmpty(this.esAuthData)){
+			headers = addAuthHeader(headers);
+		}
+		return Connectors.httpPUT(url, queryJson, headers);
+	}
+	private JSONObject esHttpDELETE(String url){
+		if (Is.notNullOrEmpty(this.esAuthData)){
+			return Connectors.httpDELETE(url, addAuthHeader(null));
+		}else{
+			return Connectors.httpDELETE(url);
+		}
 	}
 	
 	//-------INTERFACE IMPLEMENTATIONS---------
@@ -67,17 +115,15 @@ public class Elasticsearch implements DatabaseInterface {
 		try{
 			String url = server + "/" + path + "_search?q=" + URLEncoder.encode(search_term, "UTF-8");
 		
-			JSONObject result = Connectors.httpGET(url);
+			JSONObject result = esHttpGET(url);
 			//System.out.println(result.toJSONString()); 		//debug
 			
 			//success?
-			if (Connectors.httpSuccess(result)){
-				return result;
-			}
-			//error
-			else{
-				return result;
-			}
+			//if (Connectors.httpSuccess(result)){
+			//	return result;
+			//}
+			return result;
+
 		//error
 		}catch (Exception e){
 			JSONObject res = new JSONObject();
@@ -93,17 +139,15 @@ public class Elasticsearch implements DatabaseInterface {
 			String url = server + "/" + path + "_search";
 			//System.out.println("url: " + url); 		//debug
 			//System.out.println("query: " + jsonQuery); 		//debug
-			JSONObject result = Connectors.httpPOST(url, jsonQuery, null);
+			JSONObject result = esHttpPOST(url, jsonQuery, null);
 			//System.out.println(result.toJSONString()); 		//debug
 			
 			//success?
-			if (Connectors.httpSuccess(result)){
-				return result;
-			}
-			//error
-			else{
-				return result;
-			}
+			//if (Connectors.httpSuccess(result)){
+			//	return result;
+			//}
+			return result;
+			
 		//error
 		}catch (Exception e){
 			JSONObject res = new JSONObject();
@@ -126,17 +170,15 @@ public class Elasticsearch implements DatabaseInterface {
 			String url = server + "/" + path + "_delete_by_query";
 			//System.out.println("url: " + url); 		//debug
 			//System.out.println("query: " + jsonQuery); 		//debug
-			JSONObject result = Connectors.httpPOST(url, jsonQuery, null);
+			JSONObject result = esHttpPOST(url, jsonQuery, null);
 			//System.out.println(result.toJSONString()); 		//debug
 			
 			//success?
-			if (Connectors.httpSuccess(result)){
-				return result;
-			}
-			//error
-			else{
-				return result;
-			}
+			//if (Connectors.httpSuccess(result)){
+			//	return result;
+			//}
+			return result;
+			
 		//error
 		}catch (Exception e){
 			JSONObject res = new JSONObject();
@@ -163,7 +205,7 @@ public class Elasticsearch implements DatabaseInterface {
 		headers.put("Content-Type", "application/json");
 		headers.put("Content-Length", Integer.toString(dataStr.getBytes().length));
 
-		JSONObject result = Connectors.httpPUT(url, dataStr, headers);
+		JSONObject result = esHttpPUT(url, dataStr, headers);
 		//System.out.println(result.toJSONString()); 		//debug
 		
 		//success?
@@ -185,15 +227,15 @@ public class Elasticsearch implements DatabaseInterface {
 		//Build URL
 		String url = server + "/" + "_mappings";
 		
-		JSONObject result = Connectors.httpGET(url);
+		JSONObject result = esHttpGET(url);
 		//System.out.println(result.toJSONString()); 		//debug
 		
 		//success?
-		if (Connectors.httpSuccess(result)){
+		if (Connectors.httpSuccess(result, true)){
 			return result;
-		}
+		
 		//error
-		else{
+		}else{
 			Debugger.println("getMappings - ElasticSearch - found no DB or no mappings", 1);
 			return null;
 		}
@@ -218,15 +260,15 @@ public class Elasticsearch implements DatabaseInterface {
 		headers.put("Content-Type", "application/json");
 		headers.put("Content-Length", Integer.toString(dataStr.getBytes().length));
 		
-		JSONObject result = Connectors.httpPUT(url, dataStr, headers);
+		JSONObject result = esHttpPUT(url, dataStr, headers);
 		//System.out.println(result.toJSONString()); 		//debug
 		
 		//success?
 		if (Connectors.httpSuccess(result)){
 			return 0;
-		}
+		
 		//error
-		else{
+		}else{
 			Debugger.println("writeDocument - ElasticSearch - error in '" + index + "/" + type + "': " + result.toJSONString(), 1);
 			return 1;
 		}
@@ -250,15 +292,15 @@ public class Elasticsearch implements DatabaseInterface {
 		headers.put("Content-Type", "application/json");
 		headers.put("Content-Length", Integer.toString(dataStr.getBytes().length));
 		
-		JSONObject result = Connectors.httpPOST(url, dataStr, headers);
+		JSONObject result = esHttpPOST(url, dataStr, headers);
 		//System.out.println("writeDocument Result: " + result.toJSONString()); 				//debug
 		
 		//success?
 		if (Connectors.httpSuccess(result)){
 			return JSON.make("code", 0, "_id", result.get("_id"));
-		}
+		
 		//error
-		else{
+		}else{
 			Debugger.println("writeDocument - ElasticSearch - error in '" + index + "/" + type + "': " + result.toJSONString(), 1);
 			return JSON.make("code", 1);
 		}
@@ -305,15 +347,15 @@ public class Elasticsearch implements DatabaseInterface {
 		headers.put("Content-Type", "application/json");
 		headers.put("Content-Length", Integer.toString(dataStr.getBytes().length));
 		
-		JSONObject result = Connectors.httpPOST(url, dataStr, headers);
+		JSONObject result = esHttpPOST(url, dataStr, headers);
 		//System.out.println(result.toJSONString()); 		//debug
 		
 		//success?
 		if (Connectors.httpSuccess(result)){
 			return 0;
-		}
+		
 		//error
-		else{
+		}else{
 			Debugger.println("updateDocument - ElasticSearch - error in '" + index + "/" + type + "': " + result.toJSONString(), 1);
 			return 1;
 		}
@@ -367,15 +409,15 @@ public class Elasticsearch implements DatabaseInterface {
 		headers.put("Content-Type", "application/json");
 		headers.put("Content-Length", Integer.toString(dataStr.getBytes().length));
 		
-		JSONObject result = Connectors.httpPOST(url, dataStr, headers);
+		JSONObject result = esHttpPOST(url, dataStr, headers);
 		//System.out.println(result.toJSONString()); 		//debug
 		
 		//success?
 		if (Connectors.httpSuccess(result)){
 			return 0;
-		}
+		
 		//error
-		else{
+		}else{
 			Debugger.println("deleteFromDocument - ElasticSearch - error in '" + index + "/" + type + "': " + result.toJSONString(), 1);
 			return 1;
 		}
@@ -392,15 +434,15 @@ public class Elasticsearch implements DatabaseInterface {
 		//Build URL
 		String url = server + "/" + index + "/" + type + "/" + id;
 		
-		JSONObject result = Connectors.httpGET(url);
+		JSONObject result = esHttpGET(url);
 		//System.out.println(result.toJSONString()); 		//debug
 		
 		//success?
 		if (Connectors.httpSuccess(result)){
 			return result;
-		}
+		
 		//error
-		else{
+		}else{
 			Debugger.println("getDocument - ElasticSearch - error in '" + index + "/" + type + "': " + result.toJSONString(), 1);
 			return result;
 		}
@@ -428,15 +470,15 @@ public class Elasticsearch implements DatabaseInterface {
 		//Build URL
 		String url = server + "/" + index + "/" + type + "/" + id;
 		
-		JSONObject result = Connectors.httpDELETE(url);
+		JSONObject result = esHttpDELETE(url);
 		//System.out.println(result.toJSONString()); 		//debug
 		
 		//success?
 		if (Connectors.httpSuccess(result)){
 			return 0;
-		}
+		
 		//error
-		else{
+		}else{
 			Debugger.println("deleteDocument - ElasticSearch - error in '" + index + "/" + type + "': " + result.toJSONString(), 1);
 			return 1;
 		}
@@ -450,15 +492,15 @@ public class Elasticsearch implements DatabaseInterface {
 		//Build URL
 		String url = server + "/" + path;
 		
-		JSONObject result = Connectors.httpDELETE(url);
+		JSONObject result = esHttpDELETE(url);
 		//System.out.println(result.toJSONString()); 		//debug
 		
 		//success?
 		if (Connectors.httpSuccess(result)){
 			return 0;
-		}
+		
 		//error
-		else{
+		}else{
 			Debugger.println("deleteAny - ElasticSearch - error in '" + path + "': " + result.toJSONString(), 1);
 			return 1;
 		}

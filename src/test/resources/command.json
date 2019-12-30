@@ -19,6 +19,7 @@
         "environment" : null,
         "date": "2016-05-31T11:10:43",
         "user": "myuser",
+		"device_id" : null,
         "user_location": "5,8.2"
       },
       {
@@ -38,6 +39,7 @@
         "environment" : null,
         "date": "2016-05-31T11:10:43",
         "user" : null,
+		"device_id" : null,
         "user_location" : null
       }
     ]

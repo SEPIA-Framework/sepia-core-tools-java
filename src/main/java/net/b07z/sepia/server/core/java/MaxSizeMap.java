@@ -5,7 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * A Map implementation that uses {@LinkedHashMap} to features to keep the size limited to a maximum and drop the oldest entry on overflow.<br>
+ * A Map implementation that uses {@link LinkedHashMap} to features to keep the size limited to a maximum and drop the oldest entry on overflow.<br>
  * NOTE: Check the constructor on notes about concurrency.  
  * 
  * @author Florian Quirin
@@ -20,7 +20,7 @@ public class MaxSizeMap<K, V> extends LinkedHashMap<K, V> {
 	private int maxKeysSize;
 	
 	/**
-	 * Create a {@LinkedHashMap} that automatically removes the oldest entry when size is exceeded.<br>
+	 * Create a {@link LinkedHashMap} that automatically removes the oldest entry when size is exceeded.<br>
 	 * <br>
 	 * IMPORTANT: This map (as is it basically a linked hash map) can run into concurrency problems, use {@link #getSynchronizedMap(int)}
 	 * or build your own Collections.synchronizedMap(...) if you access the list from multiple threads.

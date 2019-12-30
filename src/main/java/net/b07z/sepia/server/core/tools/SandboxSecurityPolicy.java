@@ -41,6 +41,7 @@ public class SandboxSecurityPolicy extends Policy{
         Permissions permissions = new Permissions(); 
         //TODO: add more permissions?
         permissions.add(new SocketPermission("*", "connect"));
+        permissions.add(new RuntimePermission("modifyThread"));
         return permissions;
     }
  

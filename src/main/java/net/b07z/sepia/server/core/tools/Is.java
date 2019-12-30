@@ -64,4 +64,17 @@ public class Is {
 	public static boolean notNullOrEmpty(Collection<?> l){
 		return (l != null && !l.isEmpty());
 	}
+	
+	/**
+	 * Returns "true" if the string is equal to enum.name().
+	 */
+	public static boolean typeEqual(String value, Enum<?> type){
+		return value.equals(type.name());
+	}
+	/**
+	 * Returns "true" if the string is equal to enum.name() ignoring case.
+	 */
+	public static boolean typeEqualIgnoreCase(String value, Enum<?> type){
+		return value.equalsIgnoreCase(type.name());
+	}
 }

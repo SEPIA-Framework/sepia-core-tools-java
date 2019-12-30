@@ -15,6 +15,7 @@ public class SentenceBuilder {
 
 	private Language language;
 	private String environment;
+	private String deviceId;
 	private String taggedText;
 	private String cmdSummary;
 	private JSONObject params = new JSONObject();
@@ -35,6 +36,11 @@ public class SentenceBuilder {
 
 	public SentenceBuilder setEnvironment(String env) {
 		this.environment = env;
+		return this;
+	}
+	
+	public SentenceBuilder setDeviceId(String devId) {
+		this.deviceId = devId;
 		return this;
 	}
 	
@@ -100,6 +106,6 @@ public class SentenceBuilder {
 
 	public Command.Sentence build() {
 		return new Command.Sentence(language, text, user, source, taggedText, params, cmdSummary,
-				userLocation, isMachineTranslated, translatedFrom, isPublic, isLocal, isExplicit, environment, replies, data);
+				userLocation, isMachineTranslated, translatedFrom, isPublic, isLocal, isExplicit, environment, deviceId, replies, data);
 	}
 }
