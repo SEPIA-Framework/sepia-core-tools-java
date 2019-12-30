@@ -346,7 +346,7 @@ public class FilesAndStreams {
 
 	/**
 	 * Load settings from properties file (UTF-8) and return Properties.
-	 * @param config_file - path and file
+	 * @param configFile - path and file
 	 */
 	public static Properties loadSettings(String configFile) throws Exception{
 		Properties config = new Properties();
