@@ -154,10 +154,15 @@ public class RuntimeInterface {
 			if (isWindows()){
 				osPart = new String[]{"cmd.exe", "/c"};
 			}else{
-				osPart = new String[]{"sh", "-c"};
+				if (command.length == 1){
+					osPart = new String[]{"sh", "-c"};
+				}else{
+					osPart = new String[]{};
+				}
 			}
 			builder.command(Stream.of(osPart, command).flatMap(Stream::of).toArray(String[]::new)); 	//tricky way to concatenate arrays
 			//builder.directory(new File(System.getProperty("user.home"))); 	//set process directory or other options ...
+			//builder.inheritIO();
 			process = builder.start();
 			
 			//wait for finish or timeout
