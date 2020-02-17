@@ -12,6 +12,13 @@ import org.json.simple.JSONObject;
  *
  */
 public class Is {
+	
+	/**
+	 * Is Java running in Windows?
+	 */
+	public static boolean systemWindows(){
+		return RuntimeInterface.isWindows();
+	}
 
 	/**
 	 * Returns "true" if the string is null or empty.

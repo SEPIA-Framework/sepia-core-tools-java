@@ -126,7 +126,7 @@ public class RuntimeInterface {
 	/**
 	 * Execute runtime command. Chooses between "cmd.exe" and "sh" shell by OS.
 	 * @param command - e.g.: 'new String[]{"ping", "-c", "3", "sepia-framework.github.io"}'
-	 * @param customTimeout - custom value between 0 and 15000 ms
+	 * @param customTimeout - custom value between 1 and 15000 ms (0 = 5000 ms)
 	 * @return
 	 */
 	public static RuntimeResult runCommand(String[] command, long customTimeout){
@@ -154,10 +154,15 @@ public class RuntimeInterface {
 			if (isWindows()){
 				osPart = new String[]{"cmd.exe", "/c"};
 			}else{
-				osPart = new String[]{"sh", "-c"};
+				if (command.length == 1){
+					osPart = new String[]{"sh", "-c"};
+				}else{
+					osPart = new String[]{};
+				}
 			}
 			builder.command(Stream.of(osPart, command).flatMap(Stream::of).toArray(String[]::new)); 	//tricky way to concatenate arrays
 			//builder.directory(new File(System.getProperty("user.home"))); 	//set process directory or other options ...
+			//builder.inheritIO();
 			process = builder.start();
 			
 			//wait for finish or timeout
@@ -172,7 +177,12 @@ public class RuntimeInterface {
 		List<String> output = null;
 		try{
 			output = FilesAndStreams.getLinesFromStream(process.getInputStream(), encoding);
-			return new RuntimeResult(process.exitValue(), output, null);
+			int code = process.exitValue();
+			if (code != 0){
+				return new RuntimeResult(1, output, new Exception("Process finished with code: " + code));
+			}else{
+				return new RuntimeResult(code, output, null);
+			}
 		}catch(Exception e){
 			return new RuntimeResult(1, output, e);
 		}

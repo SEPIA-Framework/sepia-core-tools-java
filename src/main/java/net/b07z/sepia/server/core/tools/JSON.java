@@ -7,6 +7,7 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -426,7 +427,7 @@ public final class JSON {
 	}
 	
 	/**
-	 * Take an ArrayList with strings and make a JSONArray out of it.
+	 * Take a  List of strings and make a JSONArray out of it.
 	 * @return JSONArray
 	 */
 	@SuppressWarnings("unchecked")
@@ -437,15 +438,39 @@ public final class JSON {
 		}
 		return array;
 	}
-	
 	/**
-	 * Take an ArrayList with objects and make a JSONArray out of it.
+	 * Take a List of objects and make a JSONArray out of it.
 	 * @return JSONArray
 	 */
 	@SuppressWarnings("unchecked")
 	public static JSONArray objectListToJSONArray(List<Object> list){
 		JSONArray array = new JSONArray();
 		for (Object o : list){
+			array.add(o);
+		}
+		return array;
+	}
+	
+	/**
+	 * Take a Collection of strings and make a JSONArray out of it.
+	 * @return JSONArray
+	 */
+	@SuppressWarnings("unchecked")
+	public static JSONArray stringCollectionToJSONArray(Collection<String> collection){
+		JSONArray array = new JSONArray();
+		for (String s : collection){
+			array.add(s);
+		}
+		return array;
+	}
+	/**
+	 * Take a Collection of objects and make a JSONArray out of it.
+	 * @return JSONArray
+	 */
+	@SuppressWarnings("unchecked")
+	public static JSONArray objectCollectionToJSONArray(Collection<Object> collection){
+		JSONArray array = new JSONArray();
+		for (Object o : collection){
 			array.add(o);
 		}
 		return array;

@@ -245,6 +245,9 @@ public class Connectors {
 		    return new HttpClientResult(responseData, statusCode, statusLine, headers, charset);
 		    
 		}catch (Exception e){
+			if (Is.nullOrEmpty(statusLine)){
+				statusLine = e.getMessage();
+			}
 			return new HttpClientResult(null, statusCode, statusLine, charset);
 		}
 	}
@@ -371,8 +374,8 @@ public class Connectors {
 				//result
 				//System.out.println("GET request did not work");				//debug
 				JSONObject json = new JSONObject();
-				JSON.add(json, success_str, new Boolean(false));
-				JSON.add(json, "code", new Integer(responseCode));
+				JSON.add(json, success_str, false);
+				JSON.add(json, "code", responseCode);
 				return json;
 			}
 			
@@ -380,9 +383,9 @@ public class Connectors {
 			//result
 			//System.out.println("GET request did not work");					//debug
 			JSONObject json = new JSONObject();
-			JSON.add(json, success_str, new Boolean(false));
+			JSON.add(json, success_str, false);
 			JSON.add(json, "error", e.toString());
-			JSON.add(json, "code", new Integer(responseCode));
+			JSON.add(json, "code", responseCode);
 			return json;
 		}
 	}
@@ -477,16 +480,16 @@ public class Connectors {
 				return result;
 			}else{
 				JSONObject json = new JSONObject();
-				JSON.add(json, success_str, new Boolean(false));
-				JSON.add(json, "code", new Integer(responseCode));
+				JSON.add(json, success_str, false);
+				JSON.add(json, "code", responseCode);
 				JSON.add(json, "error", res);
 				return json;
 			}
 
 	    }catch (Exception e) {
 	    	JSONObject json = new JSONObject();
-			JSON.add(json, success_str, new Boolean(false));
-			JSON.add(json, "code", new Integer(responseCode));
+			JSON.add(json, success_str, false);
+			JSON.add(json, "code", responseCode);
 			JSON.add(json, "error", e.toString());
 			return json;
 
@@ -567,16 +570,16 @@ public class Connectors {
 				
 			}else{
 				JSONObject json = new JSONObject();
-				JSON.add(json, success_str, new Boolean(false));
-				JSON.add(json, "code", new Integer(responseCode));
+				JSON.add(json, success_str, false);
+				JSON.add(json, "code", responseCode);
 				JSON.add(json, "error", res);
 				return json;
 			}
 
 	    }catch (Exception e) {
 	    	JSONObject json = new JSONObject();
-			JSON.add(json, success_str, new Boolean(false));
-			JSON.add(json, "code", new Integer(responseCode));
+			JSON.add(json, success_str, false);
+			JSON.add(json, "code", responseCode);
 			JSON.add(json, "error", e.toString());
 			return json;
 
@@ -650,8 +653,8 @@ public class Connectors {
 				//result
 				//System.out.println("GET request did not work");				//debug
 				JSONObject json = new JSONObject();
-				JSON.add(json, success_str, new Boolean(false));
-				JSON.add(json, "code", new Integer(responseCode));
+				JSON.add(json, success_str, false);
+				JSON.add(json, "code", responseCode);
 				return json;
 			}
 			
@@ -659,9 +662,9 @@ public class Connectors {
 			//result
 			//System.out.println("GET request did not work");					//debug
 			JSONObject json = new JSONObject();
-			JSON.add(json, success_str, new Boolean(false));
+			JSON.add(json, success_str, false);
 			JSON.add(json, "error", e.toString());
-			JSON.add(json, "code", new Integer(responseCode));
+			JSON.add(json, "code", responseCode);
 			return json;
 		}
 	}
@@ -743,26 +746,26 @@ public class Connectors {
 				//parse JSONObject
 				JSONParser parser = new JSONParser();
 				result = (JSONObject) parser.parse(res);
-				JSON.add(result, successTag, new Boolean(true));
+				JSON.add(result, successTag, true);
 			}else if (res.startsWith("[{")){
 				//parse JSONArray
 				JSONParser parser = new JSONParser();
 				JSONArray arr = (JSONArray) parser.parse(res);
 				result = new JSONObject();
 				JSON.add(result, "JSONARRAY", arr);
-				JSON.add(result, successTag, new Boolean(true));
+				JSON.add(result, successTag, true);
 			}else{
 				//save String only
 				result = new JSONObject();
 				JSON.add(result, "STRING", res);
-				JSON.add(result, successTag, new Boolean(true));
+				JSON.add(result, successTag, true);
 			}
 			//System.out.println(result.toString());						//debug
 			return result;
 		}catch (ParseException e){
 			System.err.println(DateTime.getLogDate() + " ERROR - Connectors.java / build() - Failed to parse JSON string: " + res);
 			result = new JSONObject();
-			JSON.add(result, successTag, new Boolean(false));
+			JSON.add(result, successTag, false);
 			JSON.add(result, "error", "result could not be parsed");
 			JSON.add(result, "code", "500");
 			return result;
