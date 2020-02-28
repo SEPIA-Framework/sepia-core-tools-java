@@ -337,7 +337,7 @@ public class Elasticsearch implements DatabaseInterface {
 		if (!data.containsKey("script") && !data.containsKey("doc_as_upsert")){
 			JSONObject dataUpdate = new JSONObject();
 			JSON.put(dataUpdate, "doc", data);
-			JSON.put(dataUpdate, "doc_as_upsert", new Boolean(true));
+			JSON.put(dataUpdate, "doc_as_upsert", Boolean.TRUE);
 			data = dataUpdate;
 		}
 		String dataStr = data.toJSONString();
