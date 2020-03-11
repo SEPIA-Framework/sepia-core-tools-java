@@ -1,7 +1,9 @@
 package net.b07z.sepia.server.core.users;
 
+import java.util.Collection;
 import java.util.HashMap;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 /**
@@ -62,6 +64,15 @@ public interface AuthenticationInterface {
 	 * @return user GUID or empty. Throws exception on DB connection error.
 	 */
 	public String userExists(String identifier, String type) throws RuntimeException;
+	
+	/**
+	 * Get JSONArray of users.
+	 * @param keys - define collection of keys to be extracted from user object (NOTE: not everything might be allowed).
+	 * @param from - start from result page X (e.g.: 0)
+	 * @param size - return this many results (e.g.: 50)
+	 * @return
+	 */
+	public JSONArray listUsers(Collection<String> keys, int from, int size);
 	
 	/**
 	 * Create the info that needs to be send back to the user containing a URL for the endpoint, a time stamp
