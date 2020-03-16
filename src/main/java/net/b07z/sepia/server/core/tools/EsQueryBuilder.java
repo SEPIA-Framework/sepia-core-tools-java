@@ -13,6 +13,11 @@ import org.json.simple.JSONObject;
  */
 public class EsQueryBuilder {
 	
+	//the "match all" query
+	public static final JSONObject matchAll = JSON.make(
+			"query", JSON.make("match_all", new JSONObject())
+	);
+	
 	public static class QueryElement{
 		String field;
 		Object value;
