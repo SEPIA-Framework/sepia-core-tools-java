@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.SSLContext;
 
@@ -55,7 +56,10 @@ public class Connectors {
 	public static final int READ_TIMEOUT = 60000;
 	
 	public static final String HEADER_AUTHORIZATION = "Authorization";	//Authorization: <type> <credentials>, with type e.g.: Basic (base64(uname:pwd)), Bearer
+	public static final String HEADER_ACCEPT_CONTENT = "Accept";
 	public static final String HEADER_CONTENT_TYPE = "Content-Type";
+	public static final String HEADER_ACCEPT_ENCODING = "Accept-Encoding";
+	public static final String HEADER_CONTENT_ENCODING = "Content-Encoding";
 	
 	public enum Method {
 		get,
@@ -333,6 +337,7 @@ public class Connectors {
 	
 			con.setRequestMethod("GET");
 			con.setRequestProperty("User-Agent", USER_AGENT);
+			//con.setRequestProperty(HEADER_ACCEPT_ENCODING, "gzip");		//TODO: make this common?
 			con.setConnectTimeout(CONNECT_TIMEOUT);
 			con.setReadTimeout(READ_TIMEOUT);
 			
@@ -364,9 +369,7 @@ public class Connectors {
 				JSONObject result = build(res, success_str);
 				return result;
 				*/
-				InputStream stream = con.getInputStream();
-				InputStreamReader isr = new InputStreamReader(stream, Charsets.UTF_8);
-				String content = CharStreams.toString(isr);
+				String content = getStreamContentAsString(con, con.getInputStream());
 				JSONObject result = build(content, success_str);
 				return result;
 		
@@ -472,8 +475,7 @@ public class Connectors {
 			rd.close();
 			String res = response.toString();
 			*/
-			InputStreamReader isr = new InputStreamReader(is, Charsets.UTF_8);
-			String res = CharStreams.toString(isr);
+			String res = getStreamContentAsString(connection, is);
 			
 			if (success){
 				JSONObject result = build(res, success_str);
@@ -550,19 +552,7 @@ public class Connectors {
 			}else{
 				is = connection.getErrorStream();
 			}
-			/*
-			BufferedReader rd = new BufferedReader(new InputStreamReader(is));
-			String line;
-			StringBuffer response = new StringBuffer(); 
-			while((line = rd.readLine()) != null) {
-				response.append(line);
-				//response.append('\r');	//line break messes it all up
-			}
-			rd.close();
-			//String res = response.toString();
-			*/
-			InputStreamReader isr = new InputStreamReader(is, Charsets.UTF_8);
-			String res = CharStreams.toString(isr);
+			String res = getStreamContentAsString(connection, is);
 			
 			if (success){
 				JSONObject result = build(res, success_str);
@@ -630,22 +620,7 @@ public class Connectors {
 	
 			//success?
 			if (responseCode >= 200 && responseCode < 300){		//(responseCode == HttpURLConnection.HTTP_OK){
-				/*
-				BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-				String inputLine;
-				StringBuffer response = new StringBuffer();
-	 
-				while ((inputLine = in.readLine()) != null) {
-					response.append(inputLine);
-				}
-				in.close();
-	
-				//result
-				//System.out.println(response.toString());						//debug
-				String res = response.toString();
-				*/
-				InputStreamReader isr = new InputStreamReader(con.getInputStream(), Charsets.UTF_8);
-				String res = CharStreams.toString(isr);
+				String res = getStreamContentAsString(con, con.getInputStream());
 				JSONObject result = build(res, success_str);
 				return result;
 		
@@ -718,6 +693,27 @@ public class Connectors {
 	 */
 	public static String httpError(JSONObject response){
 		return ("code: " + response.get("code") + ", error: " + response.get("error"));
+	}
+	
+	/**
+	 * Is response GZIP compressed?
+	 */
+	private static boolean isGzipResponse(HttpURLConnection con){
+	    String encodingHeader = con.getHeaderField("Content-Encoding");
+	    return (encodingHeader != null && encodingHeader.toLowerCase().contains("gzip"));
+	}
+	
+	/**
+	 * Get content of stream as string.
+	 */
+	private static String getStreamContentAsString(HttpURLConnection con, InputStream is) throws IOException{
+		if (isGzipResponse(con)){
+			InputStreamReader isr = new InputStreamReader(new GZIPInputStream(is), Charsets.UTF_8);
+			return CharStreams.toString(isr);
+		}else{
+			InputStreamReader isr = new InputStreamReader(is, Charsets.UTF_8);
+			return CharStreams.toString(isr);
+		}
 	}
 	
 	/**
