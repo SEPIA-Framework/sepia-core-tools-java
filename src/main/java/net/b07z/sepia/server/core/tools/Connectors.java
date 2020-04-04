@@ -49,7 +49,7 @@ import org.json.simple.parser.ParseException;
  */
 public class Connectors {
 	
-	private static final String USER_AGENT = "Mozilla/5.0";
+	public static final String USER_AGENT = "Mozilla/5.0";
 	public static final String HTTP_REST_SUCCESS = "HTTP_REST_SUCCESS";
 	
 	public static final int CONNECT_TIMEOUT = 15000;
@@ -60,6 +60,7 @@ public class Connectors {
 	public static final String HEADER_CONTENT_TYPE = "Content-Type";
 	public static final String HEADER_ACCEPT_ENCODING = "Accept-Encoding";
 	public static final String HEADER_CONTENT_ENCODING = "Content-Encoding";
+	public static final String HEADER_USER_AGENT = "User-Agent";
 	
 	public enum Method {
 		get,
@@ -154,7 +155,7 @@ public class Connectors {
 			HttpURLConnection con = (HttpURLConnection) urlObj.openConnection();
 			con.setRequestMethod("GET");
 			con.setRequestProperty("User-Agent", USER_AGENT);
-			con.setRequestProperty("content-type", "text/html");
+			con.setRequestProperty("Accept", "text/html");
 			con.setConnectTimeout(CONNECT_TIMEOUT);
 			con.setReadTimeout(READ_TIMEOUT);
 			int responseCode = con.getResponseCode();
@@ -180,7 +181,7 @@ public class Connectors {
 	public static JSONObject apacheHttpGETjson(String url) throws Exception{
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		HttpGet httpGet = new HttpGet(url);
-		httpGet.setHeader("content-type", "application/json");
+		httpGet.setHeader("Accept", "application/json");
 		httpGet.addHeader("User-Agent", USER_AGENT);
 		CloseableHttpResponse response = httpclient.execute(httpGet);
 		try {
@@ -204,20 +205,41 @@ public class Connectors {
 	 * NOTE2: Cookie management is disabled<br>
 	 * NOTE3: Content encoding is read from HttpEntity and defaults to UTF-8
 	 * @param url - URL to call
-	 * @param contentType - null for 'auto' or e.g. 'application/json' or 'application/rss+xml' etc.
+	 * @param contentType - (Accept header) null for 'auto' or e.g. 'application/json', 'application/xml' or 'application/rss+xml' etc.
 	 * @return {@link HttpClientResult}
 	 */
-	public static HttpClientResult apacheHttpGET(String url, String contentType) throws Exception{
+	public static HttpClientResult apacheHttpGET(String url, String contentType) throws Exception {
+		Map<String, String> headers = new HashMap<>();
+		if (Is.notNullOrEmpty(contentType)){
+			headers.put("Accept", contentType);	
+		}
+		return apacheHttpGET(url, headers);
+	}
+	/**
+	 * Simple HTTP GET. Basically the same as "simpleHtmlGet" just realized with Apache HTTP client and allows to set
+	 * or skip custom content-type. Probably the most reliable GET version in this package if you need a string in return.<br>
+	 * NOTE: If the URL was redirected it will produce a ERROR log message and NOT follow the link.<br>
+	 * NOTE2: Cookie management is disabled<br>
+	 * NOTE3: Content encoding is read from HttpEntity and defaults to UTF-8
+	 * @param url - URL to call
+	 * @param headers - request headers (or null), e.g. "Accept", "User-Agent", etc.
+	 * @return {@link HttpClientResult}
+	 */
+	public static HttpClientResult apacheHttpGET(String url, Map<String, String> headers) throws Exception {
 		CloseableHttpClient httpclient = HttpClientBuilder.create()
 				.disableRedirectHandling()
 				.disableCookieManagement()
 				.build();
 		//CloseableHttpClient httpclient = HttpClients.createDefault();
 		HttpGet httpGet = new HttpGet(url);
-		if (contentType != null && !contentType.isEmpty()){
-			httpGet.setHeader("content-type", contentType);
+		if (headers != null){
+			for (Map.Entry<String, String> entry : headers.entrySet()){
+				httpGet.setHeader(entry.getKey(), entry.getValue());
+			}
 		}
-		httpGet.addHeader("User-Agent", USER_AGENT);
+		if (headers == null || !headers.containsKey("User-Agent")){
+			httpGet.addHeader("User-Agent", USER_AGENT);
+		}
 		String statusLine = "";
 		int statusCode = 0;
 		String responseData = null;
@@ -242,11 +264,11 @@ public class Connectors {
 		        }
 			    EntityUtils.consume(resEntity);
     		}
-			Map<String, String> headers = new HashMap<>();
+			Map<String, String> responseHeaders = new HashMap<>();
 			for (Header header : response.getAllHeaders()){
-				headers.put(header.getName(), header.getValue());
+				responseHeaders.put(header.getName(), header.getValue());
 			}
-		    return new HttpClientResult(responseData, statusCode, statusLine, headers, charset);
+		    return new HttpClientResult(responseData, statusCode, statusLine, responseHeaders, charset);
 		    
 		}catch (Exception e){
 			if (Is.nullOrEmpty(statusLine)){
