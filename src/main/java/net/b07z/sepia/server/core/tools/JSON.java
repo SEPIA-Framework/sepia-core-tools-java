@@ -51,7 +51,8 @@ public final class JSON {
 	 * Make a JSONObject by simply giving 3 keys and values.
 	 */
 	@SuppressWarnings("unchecked")
-	public static JSONObject make(String key, Object value, String key2, Object value2, String key3, Object value3){
+	public static JSONObject make(String key, Object value, String key2, Object value2, 
+			String key3, Object value3){
 		JSONObject jo = make(key, value, key2, value2);
 		jo.put(key3, value3);
 		return jo;
@@ -60,7 +61,8 @@ public final class JSON {
 	 * Make a JSONObject by simply giving 4 keys and values.
 	 */
 	@SuppressWarnings("unchecked")
-	public static JSONObject make(String key, Object value, String key2, Object value2, String key3, Object value3, String key4, Object value4){
+	public static JSONObject make(String key, Object value, String key2, Object value2, 
+			String key3, Object value3, String key4, Object value4){
 		JSONObject jo = make(key, value, key2, value2, key3, value3);
 		jo.put(key4, value4);
 		return jo;
@@ -69,9 +71,21 @@ public final class JSON {
 	 * Make a JSONObject by simply giving 5 keys and values.
 	 */
 	@SuppressWarnings("unchecked")
-	public static JSONObject make(String key, Object value, String key2, Object value2, String key3, Object value3, String key4, Object value4, String key5, Object value5){
+	public static JSONObject make(String key, Object value, String key2, Object value2, 
+			String key3, Object value3, String key4, Object value4, String key5, Object value5){
 		JSONObject jo = make(key, value, key2, value2, key3, value3, key4, value4);
 		jo.put(key5, value5);
+		return jo;
+	}
+	/**
+	 * Make a JSONObject by simply giving 6 keys and values.
+	 */
+	@SuppressWarnings("unchecked")
+	public static JSONObject make(String key, Object value, String key2, Object value2, 
+			String key3, Object value3, String key4, Object value4, String key5, Object value5, 
+			String key6, Object value6){
+		JSONObject jo = make(key, value, key2, value2, key3, value3, key4, value4, key5, value5);
+		jo.put(key6, value6);
 		return jo;
 	}
 	
