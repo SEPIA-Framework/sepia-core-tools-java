@@ -239,6 +239,18 @@ public final class JSON {
 	}
 	
 	/**
+	 * Get double value of key-field or default value.
+	 */
+	public static double getDoubleOrDefault(JSONObject jObj, String key, double defaultValue){
+		try{
+			if (jObj != null && jObj.containsKey(key)){
+				return Double.valueOf(jObj.get(key).toString());
+			}
+		}catch(Exception e){}
+		return defaultValue;
+	}
+	
+	/**
 	 * Get a string "value" of a JSONObject named "key".
 	 * Long: If you have an JSONObject and you want the value of a key name as a String
 	 * than you can get it with this method ;-)
