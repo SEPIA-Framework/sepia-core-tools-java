@@ -35,5 +35,14 @@ public class URLBuilder {
 			throw new RuntimeException(DateTime.getLogDate() + " WARNING - URLBuilder.java / getString() - Failed to build URL: " + keyValues, e);
 		}
 	}
+	/**
+	 * Same as {@link #getString(String, String...)} but including '.replace("+", "%20")'.
+	 * @param baseURL - URL to start with, e.g. http://www.google.com
+	 * @param keyValues - tuples of parameter-value, e.g. "?q=" and "shoes"
+	 * @return
+	 */
+	public static String getStringP20(String baseURL, String... keyValues){
+		return getString(baseURL, keyValues).replace("+", "%20");
+	}
 
 }
