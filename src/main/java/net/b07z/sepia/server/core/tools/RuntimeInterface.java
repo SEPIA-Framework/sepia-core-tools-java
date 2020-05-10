@@ -182,7 +182,7 @@ public class RuntimeInterface {
 				if (command.length == 1){
 					osPart = new String[]{"sh", "-c"};
 				}else{
-					osPart = new String[]{};
+					osPart = new String[]{}; 	//TODO: this does not always work as expected it seems :-/
 				}
 			}
 			builder.command(Stream.of(osPart, command).flatMap(Stream::of).toArray(String[]::new)); 	//tricky way to concatenate arrays
