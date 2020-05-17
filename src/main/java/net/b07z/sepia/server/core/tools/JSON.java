@@ -12,6 +12,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -638,6 +640,35 @@ public final class JSON {
 			obj.put(key, value);
 		}
 		return obj;
+	}
+	
+	/**
+	 * Iterate over the key-value pairs of this JSONObject and apply a function.
+	 * Does nothing if JSONObject is null.
+	 * @param jo - JSONObject to iterate over
+	 * @param fun - function to apply
+	 */
+	@SuppressWarnings("unchecked")
+	public static void forEach(JSONObject jo, BiConsumer<String, Object> fun){
+		if (jo != null){
+			jo.forEach((k, v) -> {
+				fun.accept((String) k, v);
+			});
+		}
+	}
+	/**
+	 * Iterate over the values of this JSONArray and apply a function.
+	 * Does nothing if JSONArray is null.
+	 * @param ja - JSONArray to iterate over
+	 * @param fun - function to apply
+	 */
+	@SuppressWarnings("unchecked")
+	public static void forEach(JSONArray ja, Consumer<Object> fun){
+		if (ja != null){
+			ja.forEach( v -> {
+				fun.accept(v);
+			});
+		}
 	}
 	
 	/**
