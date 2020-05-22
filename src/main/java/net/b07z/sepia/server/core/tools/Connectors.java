@@ -346,6 +346,17 @@ public class Connectors {
 	 * @return JSONObject response of URL call - Note: if response is not JSON it will be placed e.g. as "STRING" field in the result or "JSONARRAY" if it's an array.
 	 */
 	public static JSONObject httpGET(String url, String[] params, Map<String, String> headers) {
+		return httpGET(url, params, headers, CONNECT_TIMEOUT);
+	}
+	/**
+	 * Make HTTP GET request to URL and get JSON response. Check with {@code httpSuccess(...)} for status.
+	 * @param url - URL address to call including none or only some parameters
+	 * @param params - additional parameters added to URL (use e.g. "?q=search_term" or "&type=json" etc.) or null
+	 * @param headers - Map with request properties (keys) and values. Sets only 'User-Agent' header by default.
+	 * @param connectTimeout - max. time to wait for connection (ms)
+	 * @return JSONObject response of URL call - Note: if response is not JSON it will be placed e.g. as "STRING" field in the result or "JSONARRAY" if it's an array.
+	 */
+	public static JSONObject httpGET(String url, String[] params, Map<String, String> headers, int connectTimeout) {
 		int responseCode = -1;
 		String success_str = HTTP_REST_SUCCESS;
 		try{
@@ -360,7 +371,7 @@ public class Connectors {
 			con.setRequestMethod("GET");
 			con.setRequestProperty("User-Agent", USER_AGENT);
 			//con.setRequestProperty(HEADER_ACCEPT_ENCODING, "gzip");		//TODO: make this common?
-			con.setConnectTimeout(CONNECT_TIMEOUT);
+			con.setConnectTimeout(connectTimeout);
 			con.setReadTimeout(READ_TIMEOUT);
 			
 			if (headers != null){
@@ -423,7 +434,7 @@ public class Connectors {
 	 * @param urlParameters - parameters for x-www-form-urlencoded content-type, e.g. "a=1&b=2&c=3..." 
 	 * @return server answer as JSONObject
 	 */
-	public static JSONObject httpFormPOST(String targetURL, String urlParameters) {
+	public static JSONObject httpFormPOST(String targetURL, String urlParameters){
 		
 		Map<String, String> headers = new HashMap<>();
 		headers.put("Content-Type", "application/x-www-form-urlencoded");
@@ -439,7 +450,18 @@ public class Connectors {
 	 * @param headers - HashMap with request properties (keys) and values. Set by default if null: 'Content-Type' = 'application/json'.
 	 * @return JSONObject with response
 	 */
-	public static JSONObject httpPOST(String targetURL, String data, Map<String, String> headers) {
+	public static JSONObject httpPOST(String targetURL, String data, Map<String, String> headers){
+		return httpPOST(targetURL, data, headers, CONNECT_TIMEOUT);
+	}
+	/**
+	 * Make a HTTP POST request to targetUrl with custom headers. Check {@code httpSuccess(...)} for status.
+	 * @param targetURL - URL of service
+	 * @param data - data in chosen content-type, e.g. url parameter style or JSON string
+	 * @param headers - HashMap with request properties (keys) and values. Set by default if null: 'Content-Type' = 'application/json'.
+	 * @param connectTimeout - max. time to wait for connection (ms)
+	 * @return JSONObject with response
+	 */
+	public static JSONObject httpPOST(String targetURL, String data, Map<String, String> headers, int connectTimeout){
 		URL url;
 		HttpURLConnection connection = null;
 		int responseCode = -1;
@@ -450,7 +472,7 @@ public class Connectors {
 			url = new URL(targetURL);
 			connection = (HttpURLConnection)url.openConnection();
 			connection.setRequestMethod("POST");
-			connection.setConnectTimeout(CONNECT_TIMEOUT);
+			connection.setConnectTimeout(connectTimeout);
 			connection.setReadTimeout(READ_TIMEOUT);
 			//System.out.println("---headers---");
 			if (headers == null){
