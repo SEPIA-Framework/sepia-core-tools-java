@@ -190,7 +190,7 @@ public class Converters {
 	}
 	
 	/**
-	 * Convert an unknown object to String or return null.
+	 * Convert an unknown object to String or return default value.
 	 * @param in - object to convert
 	 * @param def - default
 	 * @return String or default
