@@ -1,7 +1,9 @@
 package net.b07z.sepia.server.core.users;
 
+import java.util.Collection;
 import java.util.HashMap;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -196,6 +198,12 @@ public class AuthenticationAssistAPI implements AuthenticationInterface{
 	public boolean logoutAllClients(String userid) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+	
+	@Override
+	public JSONArray listUsers(Collection<String> keys, int from, int size){
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override

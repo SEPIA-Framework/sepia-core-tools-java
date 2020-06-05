@@ -4,7 +4,7 @@
 
     <groupId>net.b07z.sepia.server.core</groupId>
     <artifactId>sepia-core-tools</artifactId>
-    <version>2.2.5</version>
+    <version>2.2.6</version>
     <name>SEPIA Core-Tools</name>
     <description>The Core-Tools repository contains classes and methods that are shared by all SEPIA servers and other tools like the SDK.</description>
     <url>https://github.com/SEPIA-Framework/sepia-core-tools-java</url>
@@ -105,13 +105,18 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.9.10.3</version>
+            <version>2.10.4</version>
         </dependency>
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
             <version>2.6</version>
         </dependency>
+        <dependency>
+		    <groupId>commons-io</groupId>
+		    <artifactId>commons-io</artifactId>
+		    <version>2.6</version>
+		</dependency>
         <dependency>
   			<groupId>commons-codec</groupId>
   			<artifactId>commons-codec</artifactId>
@@ -136,6 +141,11 @@
 		    <groupId>org.apache.httpcomponents</groupId>
 		    <artifactId>httpmime</artifactId>
 		    <version>4.5.3</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.owasp.encoder</groupId>
+		    <artifactId>encoder</artifactId>
+		    <version>1.2.2</version>
 		</dependency>
 		
 		<!-- Java 9+ support -->

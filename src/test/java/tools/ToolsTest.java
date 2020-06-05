@@ -113,5 +113,21 @@ public class ToolsTest {
 		assertTrue(StringTools.findFirstRexEx(text, "<result_.*?>").equals("<result_one>"));
 		assertTrue(StringTools.findAllRexEx(text, "<result_.*?>").toString().equals("[<result_one>, <result_two>]"));
 	}
-
+	
+	@Test
+	public void testHtmlEscapeAndRemoveTools(){
+		//escape
+		String text = "This is a \"text\" with a 'HTML' <script> && /special/ characters";
+		String escaped = "This is a &quot;text&quot; with a &#x27;HTML&#x27; &lt;script&gt; &amp;&amp; &#x2F;special&#x2F; characters";
+		assertTrue(Converters.escapeHTML(text).equals(escaped));
+		assertTrue(Converters.unescapeHTML(escaped).equals(text));
+		
+		//remove
+		text = "<a href='harmful.html'>Harmless</a>remain<SCRIPT >alert('fail');</script>img<IMG src='test' onload='stuff'>";
+		String removed = "Harmless remain alert('fail'); img";
+		assertTrue(Converters.removeHTML(text).equals(removed));
+		text = "<span style='color:#f00;'>Text</span>";
+		removed = "Text";
+		assertTrue(Converters.removeHTML(text).equals(removed));
+	}
 }

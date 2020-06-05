@@ -12,6 +12,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -51,7 +53,8 @@ public final class JSON {
 	 * Make a JSONObject by simply giving 3 keys and values.
 	 */
 	@SuppressWarnings("unchecked")
-	public static JSONObject make(String key, Object value, String key2, Object value2, String key3, Object value3){
+	public static JSONObject make(String key, Object value, String key2, Object value2, 
+			String key3, Object value3){
 		JSONObject jo = make(key, value, key2, value2);
 		jo.put(key3, value3);
 		return jo;
@@ -60,7 +63,8 @@ public final class JSON {
 	 * Make a JSONObject by simply giving 4 keys and values.
 	 */
 	@SuppressWarnings("unchecked")
-	public static JSONObject make(String key, Object value, String key2, Object value2, String key3, Object value3, String key4, Object value4){
+	public static JSONObject make(String key, Object value, String key2, Object value2, 
+			String key3, Object value3, String key4, Object value4){
 		JSONObject jo = make(key, value, key2, value2, key3, value3);
 		jo.put(key4, value4);
 		return jo;
@@ -69,9 +73,21 @@ public final class JSON {
 	 * Make a JSONObject by simply giving 5 keys and values.
 	 */
 	@SuppressWarnings("unchecked")
-	public static JSONObject make(String key, Object value, String key2, Object value2, String key3, Object value3, String key4, Object value4, String key5, Object value5){
+	public static JSONObject make(String key, Object value, String key2, Object value2, 
+			String key3, Object value3, String key4, Object value4, String key5, Object value5){
 		JSONObject jo = make(key, value, key2, value2, key3, value3, key4, value4);
 		jo.put(key5, value5);
+		return jo;
+	}
+	/**
+	 * Make a JSONObject by simply giving 6 keys and values.
+	 */
+	@SuppressWarnings("unchecked")
+	public static JSONObject make(String key, Object value, String key2, Object value2, 
+			String key3, Object value3, String key4, Object value4, String key5, Object value5, 
+			String key6, Object value6){
+		JSONObject jo = make(key, value, key2, value2, key3, value3, key4, value4, key5, value5);
+		jo.put(key6, value6);
 		return jo;
 	}
 	
@@ -219,6 +235,18 @@ public final class JSON {
 		try{
 			if (jObj != null && jObj.containsKey(key)){
 				return Long.valueOf(jObj.get(key).toString());
+			}
+		}catch(Exception e){}
+		return defaultValue;
+	}
+	
+	/**
+	 * Get double value of key-field or default value.
+	 */
+	public static double getDoubleOrDefault(JSONObject jObj, String key, double defaultValue){
+		try{
+			if (jObj != null && jObj.containsKey(key)){
+				return Double.valueOf(jObj.get(key).toString());
 			}
 		}catch(Exception e){}
 		return defaultValue;
@@ -612,6 +640,35 @@ public final class JSON {
 			obj.put(key, value);
 		}
 		return obj;
+	}
+	
+	/**
+	 * Iterate over the key-value pairs of this JSONObject and apply a function.
+	 * Does nothing if JSONObject is null.
+	 * @param jo - JSONObject to iterate over
+	 * @param fun - function to apply
+	 */
+	@SuppressWarnings("unchecked")
+	public static void forEach(JSONObject jo, BiConsumer<String, Object> fun){
+		if (jo != null){
+			jo.forEach((k, v) -> {
+				fun.accept((String) k, v);
+			});
+		}
+	}
+	/**
+	 * Iterate over the values of this JSONArray and apply a function.
+	 * Does nothing if JSONArray is null.
+	 * @param ja - JSONArray to iterate over
+	 * @param fun - function to apply
+	 */
+	@SuppressWarnings("unchecked")
+	public static void forEach(JSONArray ja, Consumer<Object> fun){
+		if (ja != null){
+			ja.forEach( v -> {
+				fun.accept(v);
+			});
+		}
 	}
 	
 	/**

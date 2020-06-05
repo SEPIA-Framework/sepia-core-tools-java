@@ -42,11 +42,14 @@ public class CoreEndpoints {
 	 * Note: this is a GET endpoint
 	 */
 	public static String ping(Request request, Response response, String serverName){
-		//stats
-		BasicStatistics.addOtherApiHit("Ping endpoint");
-		BasicStatistics.addOtherApiTime("Ping endpoint", 1);
+		long tic = System.currentTimeMillis();
 		
 		JSONObject msgJSON = JSON.make("result", "success", "server", serverName);
+		
+		//stats
+		BasicStatistics.addOtherApiHit("Server 'ping' endpoint");
+		BasicStatistics.addOtherApiTime("Server 'ping' endpoint", tic);
+		
 		return SparkJavaFw.returnResult(request, response, msgJSON.toJSONString(), 200);
 	}
 
@@ -58,11 +61,8 @@ public class CoreEndpoints {
 	 */
 	public static String validateServer(Request request, Response response, 
 			String serverName, String apiVersion, String localName, String localSecret){
-		//stats
-		BasicStatistics.addOtherApiHit("Validation endpoint");
-		BasicStatistics.addOtherApiTime("Validation endpoint", 1);
-		
 		//prepare parameters
+		long tic = System.currentTimeMillis();
 		RequestParameters params = new RequestGetOrFormParameters(request);
 					
 		long t = System.currentTimeMillis();
@@ -75,6 +75,10 @@ public class CoreEndpoints {
 		JSON.add(msg, "url", request.url());
 		JSON.add(msg, "time", t);
 		JSON.add(msg, "signature", Validate.getLocalSignature(request, params.getString("challenge"), t, localName, localSecret));
+		
+		//stats
+		BasicStatistics.addOtherApiHit("Server 'validation' endpoint");
+		BasicStatistics.addOtherApiTime("Server 'validation' endpoint", tic);
 	
 		return SparkJavaFw.returnResult(request, response, msg.toJSONString(), 200);
 	}

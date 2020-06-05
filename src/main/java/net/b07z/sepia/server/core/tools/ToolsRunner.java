@@ -16,7 +16,7 @@ public class ToolsRunner {
 	 */
 	public static void main(String[] args) {
 		//Help
-		if (args[0].equals("-h") || args[0].equals("-help") || args[0].equals("help")){
+		if (args == null || args.length == 0 || args[0].equals("-h") || args[0].equals("-help") || args[0].equals("help")){
 			help();
 			return;
 		
@@ -24,6 +24,12 @@ public class ToolsRunner {
 		}else if (args[0].equals("connection-check")){
 			String[] toolArgs = Arrays.copyOfRange(args, 1, args.length);
 			ConnectionCheck.main(toolArgs);
+			return;
+		
+		//Unknown
+		}else{
+			System.out.println("Unknown tool: " + args[0]);
+			help();
 			return;
 		}
 	}

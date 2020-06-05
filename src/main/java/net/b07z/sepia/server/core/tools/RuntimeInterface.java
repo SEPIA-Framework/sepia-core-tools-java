@@ -88,7 +88,7 @@ public class RuntimeInterface {
 	 * @return
 	 */
 	public static RuntimeResult getWindowsShellCodepage(){
-		RuntimeResult rtr = runCommand(new String[]{"chcp"}, 3000);
+		RuntimeResult rtr = runCommand(new String[]{"chcp"}, 3000, false);
 		List<String> out = rtr.getOutput();
 		if (rtr.getStatusCode() == 0 && Is.notNullOrEmpty(out)){
 			Debugger.println("RuntimeInterface - Trying to get Windows shell encoding...", 3);
@@ -107,29 +107,46 @@ public class RuntimeInterface {
 	}
 	
 	/**
-	 * Execute runtime command. Chooses between "cmd.exe" and "sh" shell by OS.
-	 * @param command - e.g.: 'new String[]{"ping", "-c", "3", "sepia-framework.github.io"}'
+	 * Escape string to make environmental variables useless.<br>
+	 * This only replaces "%" with " % " (Win) and "$" with " $ " (Unix). Is this enough?
+	 * @param in - input string to escape
 	 * @return
 	 */
-	public static RuntimeResult runCommand(String[] command){
-		return runCommand(command, 5000);
+	public static String escapeVar(String in){
+		if (isWindows()){
+			return in.replaceAll("%", " % ");
+		}else{
+			return in.replaceAll("\\$", "\"$\"");
+		}
+	}
+	
+	/**
+	 * Execute runtime command. Chooses between "cmd.exe" and "sh" shell by OS.
+	 * @param command - e.g.: 'new String[]{"ping", "-c", "3", "sepia-framework.github.io"}'
+	 * @param restrictCode - add some restrictions regarding code execution in cmd arguments etc.
+	 * @return
+	 */
+	public static RuntimeResult runCommand(String[] command, boolean restrictCode){
+		return runCommand(command, 5000, restrictCode);
 	}
 	/**
 	 * Execute runtime command. Chooses between "cmd.exe" and "sh" shell by OS.
 	 * @param command - e.g.: 'Arrays.asList("ping", "-c", "3", "sepia-framework.github.io")'
 	 * @param customTimeout - custom value between 0 and 15000 ms
+	 * @param restrictCode - add some restrictions regarding code execution in cmd arguments etc.
 	 * @return
 	 */
-	public static RuntimeResult runCommand(Collection<String> command, long customTimeout){
-		return runCommand(command.toArray(new String[command.size()]), 5000);
+	public static RuntimeResult runCommand(Collection<String> command, long customTimeout, boolean restrictCode){
+		return runCommand(command.toArray(new String[command.size()]), 5000, restrictCode);
 	}
 	/**
 	 * Execute runtime command. Chooses between "cmd.exe" and "sh" shell by OS.
 	 * @param command - e.g.: 'new String[]{"ping", "-c", "3", "sepia-framework.github.io"}'
 	 * @param customTimeout - custom value between 1 and 15000 ms (0 = 5000 ms)
+	 * @param restrictCode - add some restrictions regarding code execution in cmd arguments etc.
 	 * @return
 	 */
-	public static RuntimeResult runCommand(String[] command, long customTimeout){
+	public static RuntimeResult runCommand(String[] command, long customTimeout, boolean restrictCode){
 		Charset encoding = StandardCharsets.UTF_8;
 		if (isWindows() && windowsShellCodepage == null && !command[0].equals("chcp")){
 			RuntimeResult rtr = getWindowsShellCodepage(); 
@@ -151,13 +168,21 @@ public class RuntimeInterface {
 			//process = Runtime.getRuntime().exec(command); 	//old way
 			ProcessBuilder builder = new ProcessBuilder();
 			String[] osPart;
+			if (restrictCode){
+				/* TODO: 	I HAVEN'T FOUND A GOOD SOLUTION YET TO MAKE THIS SAFE :-(
+				for (int i=0; i<command.length; i++){
+					command[i] = escapeVar(command[i]);
+				}
+				*/
+				throw new RuntimeException("RuntimeInterface with 'restricted' mode is NOT WORKING yet! Please handle security check in calling method!");
+			}
 			if (isWindows()){
-				osPart = new String[]{"cmd.exe", "/c"};
+				osPart = new String[]{"cmd.exe", "/C"};
 			}else{
 				if (command.length == 1){
 					osPart = new String[]{"sh", "-c"};
 				}else{
-					osPart = new String[]{};
+					osPart = new String[]{}; 	//TODO: this does not always work as expected it seems :-/
 				}
 			}
 			builder.command(Stream.of(osPart, command).flatMap(Stream::of).toArray(String[]::new)); 	//tricky way to concatenate arrays

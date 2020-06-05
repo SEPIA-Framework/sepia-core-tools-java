@@ -13,6 +13,11 @@ import org.json.simple.JSONObject;
  */
 public class EsQueryBuilder {
 	
+	//the "match all" query
+	public static final JSONObject matchAll = JSON.make(
+			"query", JSON.make("match_all", new JSONObject())
+	);
+	
 	public static class QueryElement{
 		String field;
 		Object value;
@@ -77,6 +82,17 @@ public class EsQueryBuilder {
 				"}}";
 		return query;	
 	} */
+	
+	/**
+	 * Build a query that should match at least one of the query elements 
+	 */
+	public static JSONObject getBoolShouldMatch(List<QueryElement> shouldMatches){
+		JSONArray should = new JSONArray();
+		for (QueryElement qe : shouldMatches){
+			JSON.add(should, qe.getAsMatch());
+		}
+		return JSON.make("query", JSON.make("bool", JSON.make("should", should, "minimum_should_match", 1)));
+	}
 	
 	/**
 	 * Build a query that must match some elements and should (AT LEAST ONE) match another set of query elements  

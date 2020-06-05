@@ -1,6 +1,7 @@
 package net.b07z.sepia.server.core.database;
 
 import java.net.URLEncoder;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -337,7 +338,7 @@ public class Elasticsearch implements DatabaseInterface {
 		if (!data.containsKey("script") && !data.containsKey("doc_as_upsert")){
 			JSONObject dataUpdate = new JSONObject();
 			JSON.put(dataUpdate, "doc", data);
-			JSON.put(dataUpdate, "doc_as_upsert", new Boolean(true));
+			JSON.put(dataUpdate, "doc_as_upsert", Boolean.TRUE);
 			data = dataUpdate;
 		}
 		String dataStr = data.toJSONString();
@@ -457,6 +458,36 @@ public class Elasticsearch implements DatabaseInterface {
 	 */
 	public JSONObject getDocument(String index, String type, String id, String sources){
 		return getDocument(index, type, id + "?_source=" + sources.replaceAll("\\s+", "").trim());
+	}
+	
+	/**
+	 * Get multiple documents of path "index/type" and filter by sources list.
+	 * @param index - index name, e.g. "users"
+	 * @param type - type name, e.g. "all"
+	 * @param from - start from result page X (e.g.: 0)
+	 * @param size - return this many results (e.g.: 50)
+	 * @param sources - fields to extract, e.g. ["key1", "key2"]
+	 * @return
+	 */
+	public JSONObject getDocuments(String index, String type, int from, int size, Collection<String> sources){
+		//Build URL
+		String url = server + "/" + index + "/" + type + "/_search" + "?from=" + from + "&size=" + size;
+		if (Is.notNullOrEmpty(sources)){
+			url += "&_source=" + String.join(",", sources);
+		}
+		
+		JSONObject result = esHttpGET(url);
+		//System.out.println(result.toJSONString()); 		//debug
+		
+		//success?
+		if (Connectors.httpSuccess(result)){
+			return result;
+
+		//error
+		}else{
+			Debugger.println("getDocuments - ElasticSearch - error in '" + index + "/" + type + "' with requested sources '" + sources + "': " + result.toJSONString(), 1);
+			return null;
+		}
 	}
 	
 	/**

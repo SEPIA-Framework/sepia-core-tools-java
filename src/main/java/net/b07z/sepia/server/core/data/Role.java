@@ -16,5 +16,6 @@ public enum Role {
 	thing, 				//e.g. for IoT devices
 	tinkerer,
 	smarthomeguest,		//for smart home skills that run on-device
-	smarthomeadmin
+	smarthomeadmin,
+	infant, kid, teen, elderly
 }

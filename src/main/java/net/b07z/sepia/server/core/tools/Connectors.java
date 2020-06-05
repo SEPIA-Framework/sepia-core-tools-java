@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.SSLContext;
 
@@ -48,14 +49,18 @@ import org.json.simple.parser.ParseException;
  */
 public class Connectors {
 	
-	private static final String USER_AGENT = "Mozilla/5.0";
+	public static final String USER_AGENT = "Mozilla/5.0";
 	public static final String HTTP_REST_SUCCESS = "HTTP_REST_SUCCESS";
 	
 	public static final int CONNECT_TIMEOUT = 15000;
 	public static final int READ_TIMEOUT = 60000;
 	
 	public static final String HEADER_AUTHORIZATION = "Authorization";	//Authorization: <type> <credentials>, with type e.g.: Basic (base64(uname:pwd)), Bearer
+	public static final String HEADER_ACCEPT_CONTENT = "Accept";
 	public static final String HEADER_CONTENT_TYPE = "Content-Type";
+	public static final String HEADER_ACCEPT_ENCODING = "Accept-Encoding";
+	public static final String HEADER_CONTENT_ENCODING = "Content-Encoding";
+	public static final String HEADER_USER_AGENT = "User-Agent";
 	
 	public enum Method {
 		get,
@@ -150,7 +155,7 @@ public class Connectors {
 			HttpURLConnection con = (HttpURLConnection) urlObj.openConnection();
 			con.setRequestMethod("GET");
 			con.setRequestProperty("User-Agent", USER_AGENT);
-			con.setRequestProperty("content-type", "text/html");
+			con.setRequestProperty("Accept", "text/html");
 			con.setConnectTimeout(CONNECT_TIMEOUT);
 			con.setReadTimeout(READ_TIMEOUT);
 			int responseCode = con.getResponseCode();
@@ -176,7 +181,7 @@ public class Connectors {
 	public static JSONObject apacheHttpGETjson(String url) throws Exception{
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		HttpGet httpGet = new HttpGet(url);
-		httpGet.setHeader("content-type", "application/json");
+		httpGet.setHeader("Accept", "application/json");
 		httpGet.addHeader("User-Agent", USER_AGENT);
 		CloseableHttpResponse response = httpclient.execute(httpGet);
 		try {
@@ -200,20 +205,41 @@ public class Connectors {
 	 * NOTE2: Cookie management is disabled<br>
 	 * NOTE3: Content encoding is read from HttpEntity and defaults to UTF-8
 	 * @param url - URL to call
-	 * @param contentType - null for 'auto' or e.g. 'application/json' or 'application/rss+xml' etc.
+	 * @param contentType - (Accept header) null for 'auto' or e.g. 'application/json', 'application/xml' or 'application/rss+xml' etc.
 	 * @return {@link HttpClientResult}
 	 */
-	public static HttpClientResult apacheHttpGET(String url, String contentType) throws Exception{
+	public static HttpClientResult apacheHttpGET(String url, String contentType) throws Exception {
+		Map<String, String> headers = new HashMap<>();
+		if (Is.notNullOrEmpty(contentType)){
+			headers.put("Accept", contentType);	
+		}
+		return apacheHttpGET(url, headers);
+	}
+	/**
+	 * Simple HTTP GET. Basically the same as "simpleHtmlGet" just realized with Apache HTTP client and allows to set
+	 * or skip custom content-type. Probably the most reliable GET version in this package if you need a string in return.<br>
+	 * NOTE: If the URL was redirected it will produce a ERROR log message and NOT follow the link.<br>
+	 * NOTE2: Cookie management is disabled<br>
+	 * NOTE3: Content encoding is read from HttpEntity and defaults to UTF-8
+	 * @param url - URL to call
+	 * @param headers - request headers (or null), e.g. "Accept", "User-Agent", etc.
+	 * @return {@link HttpClientResult}
+	 */
+	public static HttpClientResult apacheHttpGET(String url, Map<String, String> headers) throws Exception {
 		CloseableHttpClient httpclient = HttpClientBuilder.create()
 				.disableRedirectHandling()
 				.disableCookieManagement()
 				.build();
 		//CloseableHttpClient httpclient = HttpClients.createDefault();
 		HttpGet httpGet = new HttpGet(url);
-		if (contentType != null && !contentType.isEmpty()){
-			httpGet.setHeader("content-type", contentType);
+		if (headers != null){
+			for (Map.Entry<String, String> entry : headers.entrySet()){
+				httpGet.setHeader(entry.getKey(), entry.getValue());
+			}
 		}
-		httpGet.addHeader("User-Agent", USER_AGENT);
+		if (headers == null || !headers.containsKey("User-Agent")){
+			httpGet.addHeader("User-Agent", USER_AGENT);
+		}
 		String statusLine = "";
 		int statusCode = 0;
 		String responseData = null;
@@ -238,11 +264,11 @@ public class Connectors {
 		        }
 			    EntityUtils.consume(resEntity);
     		}
-			Map<String, String> headers = new HashMap<>();
+			Map<String, String> responseHeaders = new HashMap<>();
 			for (Header header : response.getAllHeaders()){
-				headers.put(header.getName(), header.getValue());
+				responseHeaders.put(header.getName(), header.getValue());
 			}
-		    return new HttpClientResult(responseData, statusCode, statusLine, headers, charset);
+		    return new HttpClientResult(responseData, statusCode, statusLine, responseHeaders, charset);
 		    
 		}catch (Exception e){
 			if (Is.nullOrEmpty(statusLine)){
@@ -320,6 +346,17 @@ public class Connectors {
 	 * @return JSONObject response of URL call - Note: if response is not JSON it will be placed e.g. as "STRING" field in the result or "JSONARRAY" if it's an array.
 	 */
 	public static JSONObject httpGET(String url, String[] params, Map<String, String> headers) {
+		return httpGET(url, params, headers, CONNECT_TIMEOUT);
+	}
+	/**
+	 * Make HTTP GET request to URL and get JSON response. Check with {@code httpSuccess(...)} for status.
+	 * @param url - URL address to call including none or only some parameters
+	 * @param params - additional parameters added to URL (use e.g. "?q=search_term" or "&type=json" etc.) or null
+	 * @param headers - Map with request properties (keys) and values. Sets only 'User-Agent' header by default.
+	 * @param connectTimeout - max. time to wait for connection (ms)
+	 * @return JSONObject response of URL call - Note: if response is not JSON it will be placed e.g. as "STRING" field in the result or "JSONARRAY" if it's an array.
+	 */
+	public static JSONObject httpGET(String url, String[] params, Map<String, String> headers, int connectTimeout) {
 		int responseCode = -1;
 		String success_str = HTTP_REST_SUCCESS;
 		try{
@@ -333,7 +370,8 @@ public class Connectors {
 	
 			con.setRequestMethod("GET");
 			con.setRequestProperty("User-Agent", USER_AGENT);
-			con.setConnectTimeout(CONNECT_TIMEOUT);
+			//con.setRequestProperty(HEADER_ACCEPT_ENCODING, "gzip");		//TODO: make this common?
+			con.setConnectTimeout(connectTimeout);
 			con.setReadTimeout(READ_TIMEOUT);
 			
 			if (headers != null){
@@ -364,9 +402,7 @@ public class Connectors {
 				JSONObject result = build(res, success_str);
 				return result;
 				*/
-				InputStream stream = con.getInputStream();
-				InputStreamReader isr = new InputStreamReader(stream, Charsets.UTF_8);
-				String content = CharStreams.toString(isr);
+				String content = getStreamContentAsString(con, con.getInputStream());
 				JSONObject result = build(content, success_str);
 				return result;
 		
@@ -398,7 +434,7 @@ public class Connectors {
 	 * @param urlParameters - parameters for x-www-form-urlencoded content-type, e.g. "a=1&b=2&c=3..." 
 	 * @return server answer as JSONObject
 	 */
-	public static JSONObject httpFormPOST(String targetURL, String urlParameters) {
+	public static JSONObject httpFormPOST(String targetURL, String urlParameters){
 		
 		Map<String, String> headers = new HashMap<>();
 		headers.put("Content-Type", "application/x-www-form-urlencoded");
@@ -414,7 +450,18 @@ public class Connectors {
 	 * @param headers - HashMap with request properties (keys) and values. Set by default if null: 'Content-Type' = 'application/json'.
 	 * @return JSONObject with response
 	 */
-	public static JSONObject httpPOST(String targetURL, String data, Map<String, String> headers) {
+	public static JSONObject httpPOST(String targetURL, String data, Map<String, String> headers){
+		return httpPOST(targetURL, data, headers, CONNECT_TIMEOUT);
+	}
+	/**
+	 * Make a HTTP POST request to targetUrl with custom headers. Check {@code httpSuccess(...)} for status.
+	 * @param targetURL - URL of service
+	 * @param data - data in chosen content-type, e.g. url parameter style or JSON string
+	 * @param headers - HashMap with request properties (keys) and values. Set by default if null: 'Content-Type' = 'application/json'.
+	 * @param connectTimeout - max. time to wait for connection (ms)
+	 * @return JSONObject with response
+	 */
+	public static JSONObject httpPOST(String targetURL, String data, Map<String, String> headers, int connectTimeout){
 		URL url;
 		HttpURLConnection connection = null;
 		int responseCode = -1;
@@ -425,7 +472,7 @@ public class Connectors {
 			url = new URL(targetURL);
 			connection = (HttpURLConnection)url.openConnection();
 			connection.setRequestMethod("POST");
-			connection.setConnectTimeout(CONNECT_TIMEOUT);
+			connection.setConnectTimeout(connectTimeout);
 			connection.setReadTimeout(READ_TIMEOUT);
 			//System.out.println("---headers---");
 			if (headers == null){
@@ -472,8 +519,7 @@ public class Connectors {
 			rd.close();
 			String res = response.toString();
 			*/
-			InputStreamReader isr = new InputStreamReader(is, Charsets.UTF_8);
-			String res = CharStreams.toString(isr);
+			String res = getStreamContentAsString(connection, is);
 			
 			if (success){
 				JSONObject result = build(res, success_str);
@@ -550,19 +596,7 @@ public class Connectors {
 			}else{
 				is = connection.getErrorStream();
 			}
-			/*
-			BufferedReader rd = new BufferedReader(new InputStreamReader(is));
-			String line;
-			StringBuffer response = new StringBuffer(); 
-			while((line = rd.readLine()) != null) {
-				response.append(line);
-				//response.append('\r');	//line break messes it all up
-			}
-			rd.close();
-			//String res = response.toString();
-			*/
-			InputStreamReader isr = new InputStreamReader(is, Charsets.UTF_8);
-			String res = CharStreams.toString(isr);
+			String res = getStreamContentAsString(connection, is);
 			
 			if (success){
 				JSONObject result = build(res, success_str);
@@ -630,22 +664,7 @@ public class Connectors {
 	
 			//success?
 			if (responseCode >= 200 && responseCode < 300){		//(responseCode == HttpURLConnection.HTTP_OK){
-				/*
-				BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-				String inputLine;
-				StringBuffer response = new StringBuffer();
-	 
-				while ((inputLine = in.readLine()) != null) {
-					response.append(inputLine);
-				}
-				in.close();
-	
-				//result
-				//System.out.println(response.toString());						//debug
-				String res = response.toString();
-				*/
-				InputStreamReader isr = new InputStreamReader(con.getInputStream(), Charsets.UTF_8);
-				String res = CharStreams.toString(isr);
+				String res = getStreamContentAsString(con, con.getInputStream());
 				JSONObject result = build(res, success_str);
 				return result;
 		
@@ -718,6 +737,27 @@ public class Connectors {
 	 */
 	public static String httpError(JSONObject response){
 		return ("code: " + response.get("code") + ", error: " + response.get("error"));
+	}
+	
+	/**
+	 * Is response GZIP compressed?
+	 */
+	private static boolean isGzipResponse(HttpURLConnection con){
+	    String encodingHeader = con.getHeaderField("Content-Encoding");
+	    return (encodingHeader != null && encodingHeader.toLowerCase().contains("gzip"));
+	}
+	
+	/**
+	 * Get content of stream as string.
+	 */
+	private static String getStreamContentAsString(HttpURLConnection con, InputStream is) throws IOException{
+		if (isGzipResponse(con)){
+			InputStreamReader isr = new InputStreamReader(new GZIPInputStream(is), Charsets.UTF_8);
+			return CharStreams.toString(isr);
+		}else{
+			InputStreamReader isr = new InputStreamReader(is, Charsets.UTF_8);
+			return CharStreams.toString(isr);
+		}
 	}
 	
 	/**

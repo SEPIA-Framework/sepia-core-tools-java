@@ -190,7 +190,7 @@ public class Converters {
 	}
 	
 	/**
-	 * Convert an unknown object to String or return null.
+	 * Convert an unknown object to String or return default value.
 	 * @param in - object to convert
 	 * @param def - default
 	 * @return String or default
@@ -511,19 +511,42 @@ public class Converters {
 	}
 	
 	/**
-	 * Removes HTML code from an answer - no guarantee and no completeness! Plz check carefully!
-	 * I'd prefer to let the specific client do this.
-	 * 
-	 * @param input - string to relieve from HTML code
+	 * Removes HTML tags from an answer - no guarantee and no completeness! Plz use carefully!
+	 * NOTE: Its more about reformatting than security and removes HTML without removing the content. 
+	 * Most useful for e.g.: &lt;span style='color:#f00;'&gt;Text&lt;/span&gt; = Text;
+	 * @param input - string to relieve from HTML tags
 	 * @return
 	 */
 	public static String removeHTML(String input){
 		String out = input;
-		out = out.replaceAll("(<div .*?>|<a .*?>|<p .*?>|<span .*?>|<img .*?>)", "");
-		out = out.replaceAll("(<div>|<a>|<img>|<p>|<span>)", " ");
-		out = out.replaceAll("(</div>|</a>|</img>|<br>|</p>|</span>)", " ");
-		out = out.replaceAll("( )+", " ");
+		out = out.replaceAll("(?i)(<div .*?>|<a .*?>|<p .*?>|<span .*?>|<img .*?>|<script .*?>)", " ");
+		out = out.replaceAll("(?i)(<div>|<a>|<p>|<span>|<img>|<script>)", " ");
+		out = out.replaceAll("(?i)(</div>|</a>|</p>|</span>|</img>|</script>|<br>)", " ");
+		out = out.replaceAll("\\s+", " ").trim();
 		return out;
+	}
+	/**
+	 * A simple HTML escape function to make input safe for insertion into HTML DOM.<br>
+	 * For more advanced stuff see "org.owasp.encoder.Encode".
+	 * @param input - unsafe input string
+	 * @return escaped input string
+	 */
+	public static String escapeHTML(String input){
+		return input.replaceAll("\\&", "&amp;")
+				.replaceAll("<", "&lt;").replaceAll(">", "&gt;")
+				.replaceAll("\"", "&quot;").replaceAll("'", "&#x27;")
+				.replaceAll("/", "&#x2F;");
+	}
+	/**
+	 * Unescape HTML that was previously escaped.
+	 * @param input - escaped input string
+	 * @return unescaped input string
+	 */
+	public static String unescapeHTML(String input){
+		return input.replaceAll("\\&amp;", "&")
+				.replaceAll("\\&lt;", "<").replaceAll("\\&gt;", ">")
+				.replaceAll("\\&quot;|\\&#34;", "\"").replaceAll("\\&#x27;", "'")
+				.replaceAll("\\&#x2F;", "/");
 	}
 	
 	/**

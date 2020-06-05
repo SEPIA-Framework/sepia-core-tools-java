@@ -43,4 +43,19 @@ public class StringTools {
 		}
 		return matches;
 	}
+	
+	/**
+	 * Capitalize first character of a string that has at least 2 characters. 
+	 * @param input - String to capitalize
+	 * @return String with first letter converted to upper-case.
+	 */
+	public static String capitalizeFirstLetter(String input){
+		try{
+			//at least 2 letters
+			return (input.substring(0, 1).toUpperCase() + input.substring(1));
+		}catch (Exception e){
+			//only one letter
+			return input.toUpperCase();
+		}
+	}
 }
