@@ -229,6 +229,7 @@ public class Connectors {
 		CloseableHttpClient httpclient = HttpClientBuilder.create()
 				.disableRedirectHandling()
 				.disableCookieManagement()
+				.setUserAgent(USER_AGENT) 		//NOTE: this is primarily to avoid calls to system.java.version in sandbox
 				.build();
 		//CloseableHttpClient httpclient = HttpClients.createDefault();
 		HttpGet httpGet = new HttpGet(url);
@@ -257,7 +258,7 @@ public class Connectors {
 			    if (resEntity != null){
 			    	ContentType ct = ContentType.getOrDefault(resEntity);
 			    	charset = ct.getCharset();
-			    	if (charset == null) {
+			    	if (charset == null){
 			            charset = StandardCharsets.UTF_8;
 			        }
 		        	responseData = EntityUtils.toString(resEntity, charset);
