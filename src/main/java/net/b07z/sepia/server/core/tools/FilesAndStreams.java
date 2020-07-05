@@ -182,7 +182,8 @@ public class FilesAndStreams {
 	}
 	
 	/**
-	 * Read UTF-8 encoded file and return as list.
+	 * Read UTF-8 encoded file and return as list.<br>
+	 * NOTE: You can use 'String.join("\n", lines)' to return a Sting of the file. 
 	 * @param pathWithName - path to file including file-name
 	 * @return list with file content line-by-line
 	 * @throws IOException
@@ -203,6 +204,25 @@ public class FilesAndStreams {
 		try {
 			Path path = Paths.get(pathWithName);
 			Files.write(path, fileContent, StandardCharsets.UTF_8);
+			return true;
+		
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	/**
+	 * Write an UTF-8 encoded content string to a file. Create all directories along the path. If the file exists overwrite it.
+	 * @param path - path to where the file should be stored
+	 * @param fileName - name of the file (with ending)
+	 * @param utf8Content - content as UTF-8 encoded string
+	 * @return
+	 */
+	public static boolean writeStringToFile(String path, String fileName, String utf8Content){
+		try {
+			Files.createDirectories(Paths.get(path));
+			Files.write(Paths.get(path, fileName), utf8Content.getBytes(StandardCharsets.UTF_8));
 			return true;
 		
 		} catch (IOException e) {

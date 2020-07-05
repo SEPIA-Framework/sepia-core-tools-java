@@ -104,8 +104,7 @@ public class ClassBuilder {
         JavaFileObject file = new SourceCodeFromString(className, classCode);
         compilationUnits.add(file);
         
-        // This sets up the class path that the compiler will use.
-        // I've added the .jar file that contains the DoStuff interface within in it...
+        //This sets up the class path that the compiler will use
         List<String> optionList = new ArrayList<>();
         String folderOrMemory = "MEMORY ONLY";
         if (targetFolder != null){
@@ -123,7 +122,7 @@ public class ClassBuilder {
 	    if (task.call()){
 	    	//Done
 	    	Debugger.println("ClassBuilder - compiled '" + className + "' to '" + folderOrMemory, 3);
-	    	return ""; 			//TODO: if this is MEMORY ONLY how do we get the clas later?
+	    	return ""; 			//TODO: if this is MEMORY ONLY how do we get the class later?
 	    }else{
 	    	//Error(s)
 	    	StringBuilder errors = new StringBuilder("Compile errors: \n");
