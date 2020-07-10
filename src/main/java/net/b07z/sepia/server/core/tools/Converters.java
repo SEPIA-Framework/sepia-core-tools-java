@@ -545,8 +545,8 @@ public class Converters {
 	public static String unescapeHTML(String input){
 		return input.replaceAll("\\&amp;", "&")
 				.replaceAll("\\&lt;", "<").replaceAll("\\&gt;", ">")
-				.replaceAll("\\&quot;|\\&#34;", "\"").replaceAll("\\&#x27;", "'")
-				.replaceAll("\\&#x2F;", "/");
+				.replaceAll("\\&quot;|\\&#34;", "\"").replaceAll("\\&#x27;|\\&#39;", "'")
+				.replaceAll("\\&#x2F;|\\&#47;", "/");
 	}
 	
 	/**
