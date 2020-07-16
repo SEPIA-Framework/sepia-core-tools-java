@@ -96,8 +96,13 @@ public class AuthenticationAssistAPI implements AuthenticationInterface{
 		else{
 			String result = (String) response.get("result");
 			if (result.equals("fail")){
-				log.warn("Authentication failed for user '" + userid + "' - original msg.: " + response);
-				errorCode = 2;		//authentication failed
+				if (JSON.getStringOrDefault(response, "error", "").contains("401")){
+					log.warn("Authentication failed for user '" + userid + "' - original msg.: " + response);
+					errorCode = 2;		//authentication failed
+				}else{
+					log.warn("Authentication ERROR for user '" + userid + "' - original msg.: " + response);
+					errorCode = JSON.getIntegerOrDefault(response, "code", 3);		//authentication ERROR
+				}
 				return false;
 			}
 			//should be fine now - get basic info about user

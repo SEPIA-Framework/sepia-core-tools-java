@@ -172,6 +172,7 @@ public interface AuthenticationInterface {
 	 * 5 - during registration/requestPasswordChange: user existence check failed; during createUser/changePassword: invalid token or time stamp<br>
 	 * 6 - password format invalid<br>
 	 * 7 - UID generation or storing failed<br>
+	 * 10 - during validation: Too many failed login attempts 
 	 * 
 	 * @return integer error code
 	 */
