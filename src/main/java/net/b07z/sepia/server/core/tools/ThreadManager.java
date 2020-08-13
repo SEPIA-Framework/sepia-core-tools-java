@@ -11,6 +11,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
 /**
@@ -167,16 +168,16 @@ public class ThreadManager {
 	}
 	
 	/**
-	 * Schedule a task to run in background after certain delay and then forget about it. Keep in mind that this means you cannot stop it once scheduled.<br>
+	 * Schedule a task to run in background after certain delay and then forget about it (just return the cancel-before-run method).<br>
 	 * <br>
 	 * CAREFUL: The user is responsible for the task ESPECIALLY that it will not get stuck in a loop and does not run FOREVER!<br>
 	 * <br>
 	 * For a more advanced version of this check 'net.b07z.sepia.server.assist.workers.ServiceBackgroundTaskManager#runOnceInBackground'.
 	 * @param delayMs - execute after this time in milliseconds
 	 * @param task - Runnable to run
-	 * @return true if the task was scheduled (NOT executed)
+	 * @return {@link BooleanSupplier} cancel-method that can be used to stop the task BEFORE it runs (before delay expires).
 	 */
-	public static boolean scheduleBackgroundTaskAndForget(long delayMs, Runnable task){
+	public static BooleanSupplier scheduleBackgroundTaskAndForget(long delayMs, Runnable task){
 		String taskId = getNewFutureId();
 		int corePoolSize = 1;
 	    final ScheduledThreadPoolExecutor executor = getNewOrSharedScheduledThreadPool(corePoolSize);
@@ -198,7 +199,22 @@ public class ThreadManager {
 	    }, delayMs, TimeUnit.MILLISECONDS);
 	    //track
 	    addToFutureMap(taskId, future);
-	    return true;
+	    
+	    BooleanSupplier cancelFun = () -> {
+	    	if (future.isDone() || future.isCancelled() || future.cancel(false)){
+	    		removeFromFutureMap(taskId);
+	    		executor.purge();
+		    	executor.shutdown();
+	    		return true;
+	    	}else{
+	    		//TODO: add error?
+	    		executor.purge();
+		    	executor.shutdown();
+	    		return false;
+	    	}
+	    };
+	    
+	    return cancelFun;
 	}
 	
 	/**
