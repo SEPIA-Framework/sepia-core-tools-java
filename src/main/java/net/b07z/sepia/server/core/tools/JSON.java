@@ -19,6 +19,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import net.b07z.sepia.server.core.java.Comparators;
+
 /**
  * This class is supposed to make life easier handling JSON data ^^.
  * 

@@ -1,10 +1,16 @@
-package net.b07z.sepia.server.core.tools;
+package net.b07z.sepia.server.core.java;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Class that implements a Last-Recently-Used (LRU) cache map.
+ *
+ * @param <K>
+ * @param <V>
+ */
 public class LruCache<K, V> extends LinkedHashMap<K, V> {
 	private static final long serialVersionUID = -1541387922963793050L;
 	

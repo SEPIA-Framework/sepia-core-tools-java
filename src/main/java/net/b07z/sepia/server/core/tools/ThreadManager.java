@@ -131,7 +131,7 @@ public class ThreadManager {
 	/**
 	 * Run several (usually short lived, 1-10s) actions in parallel with 'fixedPoolSize' or as many threads as possible.
 	 * @param <T> - item class
-	 * @param customTag - any tag describing this call (handy to find errors)
+	 * @param customTag - any tag describing this call (handy to find errors), e.g. "Class#method"
 	 * @param items - collection of items
 	 * @param action - action to execute for each item
 	 * @param timeout - max. wait until all actions have to complete
