@@ -13,8 +13,8 @@ import javax.crypto.Mac;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
-import javax.xml.bind.DatatypeConverter;
 
+import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 
 /**
@@ -38,9 +38,10 @@ public class Security {
 	 * Convert a hex encoded string of bytes to bytes again. 
 	 * @param s - hex string that was a byte array
 	 * @return - byte array
+	 * @throws DecoderException  
 	 */
-	public static byte[] hexToByteArray(String s) {
-	    return DatatypeConverter.parseHexBinary(s); 		//TODO: can we replace this and get rid of 'javax.xml.bind'?
+	public static byte[] hexToByteArray(String s) throws DecoderException {
+		return Hex.decodeHex(s.toCharArray());
 	}
 	
 	/**

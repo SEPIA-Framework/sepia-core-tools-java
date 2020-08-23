@@ -148,7 +148,7 @@
 		    <version>1.2.2</version>
 		</dependency>
 		
-		<!-- Java 9+ support -->
+		<!-- Java 9+ support - might not be required anymore -->
 		<dependency>
 		    <groupId>javax.xml.bind</groupId>
 		    <artifactId>jaxb-api</artifactId>
