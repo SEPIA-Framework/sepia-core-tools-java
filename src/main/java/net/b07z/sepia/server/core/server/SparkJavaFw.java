@@ -3,6 +3,7 @@ package net.b07z.sepia.server.core.server;
 import static spark.Spark.before;
 import static spark.Spark.exception;
 import static spark.Spark.options;
+import static spark.Spark.staticFiles;
 
 import org.json.simple.JSONObject;
 
@@ -45,6 +46,11 @@ public class SparkJavaFw {
 	        response.header("Access-Control-Request-Method", methods);
 	        response.header("Access-Control-Allow-Headers", headers);
 	    });
+	}
+	public static void enableFileCORS(final String origin, final String methods, final String headers){
+		staticFiles.header("Access-Control-Allow-Origin", origin);
+		staticFiles.header("Access-Control-Request-Method", methods);
+		staticFiles.header("Access-Control-Allow-Headers", headers);
 	}
 	
 	/**
