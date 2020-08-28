@@ -31,6 +31,8 @@ public class ACTIONS {
 	final public static String OPEN_TEACH_UI = "open_teach_ui";			//tell client to open the teach UI, parameters: info (input, suggestion, ...)
 	final public static String BUTTON_TEACH_UI = "button_teach_ui";		//tell client to show the teach UI button, parameters: info (input, suggestion, ...)
 	final public static String OPEN_FRAMES_VIEW = "open_frames_view";		//tell client to open a frames view, parameters: info (frame config)
+	final public static String CLOSE_FRAMES_VIEW = "close_frames_view";		//tell client to close a frames view if open, parameters: -
+	final public static String FRAMES_VIEW_ACTION = "frames_view_action";	//tell client to send the custom action to the open frames view 'actionHandler', parameters: info [custom action] 
 	final public static String BUTTON_FRAMES_VIEW = "button_frames_view";	//tell client to show a frames view button, parameters: title, info (frame config)
 	final public static String PLAY_AUDIO_URL = "play_audio_url";			//tell client to play a single audio file from url, parameters: audio_url
 	final public static String PLAY_AUDIO_STREAM = "play_audio_stream";	//tell client to play a continuous audio stream, parameters: audio_url, audio_title, audio_img, audio_type
@@ -40,6 +42,7 @@ public class ACTIONS {
 	final public static String REMINDER = "reminder";			//tell client to set an reminder, parameters: tbd
 	final public static String APPOINTMENT = "appointment";		//tell client to set an appointment in the calendar, parameters: tbd
 	final public static String SWITCH_LANGUAGE = "switch_language";		//tell client to switch language, parameters: language_code
+	final public static String SWITCH_STT_ENGINE = "switch_stt_engine";	//tell client to switch STT engine, parameters: engine (e.g. 'native' or 'socket'), url (e.g. WebSocket URL to server)
 	
 	//special actions
 	final public static String MOD_EVENTS_START = "events_start";						//tell client that the results of the events endpoint start here
