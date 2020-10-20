@@ -30,6 +30,7 @@ public class CMD {
 	final public static String FEEDBACK_NPS = "feedback_nps";			//parameters: 	yesNo
 	final public static String FLIGHTS = "flights";					//parameters:	location_start, location_end, time
 	final public static String FOOD = "food";							//parameters: 	type (pizza), info (with tomato and cheese), address, time(?)
+	final public static String FRAME_CONTROL = "frame_control";			//parameters:	action, url, data
 	final public static String HOTELS = "hotels";						//parameters:	place, time
 	final public static String INSURANCE = "insurance";				//parameters:	action (<get_offer>, <get_help>), info (insurance object), type (any type like vollkasko)
 	final public static String KNOWLEDGEBASE = "knowledgebase";		//parameters:	search, type

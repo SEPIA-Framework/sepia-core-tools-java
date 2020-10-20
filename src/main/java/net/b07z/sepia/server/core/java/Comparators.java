@@ -1,4 +1,4 @@
-package net.b07z.sepia.server.core.tools;
+package net.b07z.sepia.server.core.java;
 
 import java.util.Comparator;
 

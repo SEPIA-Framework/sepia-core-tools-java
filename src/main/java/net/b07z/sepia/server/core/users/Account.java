@@ -202,6 +202,7 @@ public class Account {
 				return true;
 			}else{
 				//fail
+				//see: getAuthErrorCode for details
 				return false;
 			}
 		}
@@ -247,6 +248,12 @@ public class Account {
 			log.error("AUTHENTICATION FAILED! Due to missing KEY");
 			return false;
 		}
+	}
+	/**
+	 * @return See: {@link AuthenticationInterface#getErrorCode()}
+	 */
+	public int getAuthErrorCode(){
+		return authService.getErrorCode();
 	}
 	
 	/**

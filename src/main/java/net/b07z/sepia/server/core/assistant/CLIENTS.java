@@ -30,6 +30,7 @@ public class CLIENTS {
 	final public static String JAVA_APP = "java_app";			//e.g. VW TTS Client, server client
 	final public static String PYTHON_APP = "python_app";
 	final public static String NODEJS_APP = "nodejs_app";
+	final public static String NODE_RED = "node_red";
 	final public static String CHROME_BROWSER = "chrome_browser";
 	final public static String CHROME_APP = "chrome_app";
 	final public static String SAFARI_BROWSER = "safari_browser";

@@ -8,9 +8,11 @@ import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.b07z.sepia.server.core.server.BasicStatistics;
 import net.b07z.sepia.server.core.server.ConfigDefaults;
 import net.b07z.sepia.server.core.tools.Connectors;
 import net.b07z.sepia.server.core.tools.Converters;
+import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.JSON;
 
 /**
@@ -33,6 +35,8 @@ public class AuthenticationAssistAPI implements AuthenticationInterface{
 	//authenticate user
 	@Override
 	public boolean authenticate(JSONObject info) {
+		long tic = Debugger.tic();
+		
 		//check client - client has influence on the password token that is used
 		String client = (String) info.get("client");
 		if (client == null || client.isEmpty()){
@@ -91,13 +95,27 @@ public class AuthenticationAssistAPI implements AuthenticationInterface{
 		if (!Connectors.httpSuccess(response)){
 			log.warn("Authentication ERROR for user '" + userid + "' - original msg.: " + response);
 			errorCode = 3; 			//connection error, wrong parameters?
+			
+			//statistics
+			BasicStatistics.addOtherApiHit("AssistAPI.authenticate-error");
+			BasicStatistics.addOtherApiTime("AssistAPI.authenticate-error", tic);
+			
 			return false;
 		}
 		else{
 			String result = (String) response.get("result");
 			if (result.equals("fail")){
-				log.warn("Authentication failed for user '" + userid + "' - original msg.: " + response);
-				errorCode = 2;		//authentication failed
+				if (JSON.getStringOrDefault(response, "error", "").contains("401")){
+					log.warn("Authentication failed for user '" + userid + "' - original msg.: " + response);
+					errorCode = 2;		//authentication failed
+				}else{
+					log.warn("Authentication ERROR for user '" + userid + "' - original msg.: " + response);
+					errorCode = JSON.getIntegerOrDefault(response, "code", 3);		//authentication ERROR
+				}
+				//statistics
+				BasicStatistics.addOtherApiHit("AssistAPI.authenticate-fail");
+				BasicStatistics.addOtherApiTime("AssistAPI.authenticate-fail", tic);
+				
 				return false;
 			}
 			//should be fine now - get basic info about user
@@ -105,6 +123,11 @@ public class AuthenticationAssistAPI implements AuthenticationInterface{
 			
 			//DONE - note: basicInfo CAN be null, so check for it if you use it.
 			errorCode = 0; 			//all fine
+			
+			//statistics
+			BasicStatistics.addOtherApiHit("AssistAPI.authenticate");
+			BasicStatistics.addOtherApiTime("AssistAPI.authenticate", tic);
+			
 			return true;
 		}
 	}

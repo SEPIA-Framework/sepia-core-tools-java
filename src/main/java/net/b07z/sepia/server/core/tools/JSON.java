@@ -19,6 +19,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import net.b07z.sepia.server.core.java.Comparators;
+
 /**
  * This class is supposed to make life easier handling JSON data ^^.
  * 
@@ -302,7 +304,7 @@ public final class JSON {
 	/**
 	 * Get a string "value" of JSONObject named "key" or get default value if value is null or EMPTY!
 	 * @param jo - JSONObject to get data from
-	 * @param key - fied in JSON
+	 * @param key - field in JSON
 	 * @param defaultString - default replacement if null or empty
 	 */
 	public static String getStringOrDefault(JSONObject jo, String key, String defaultString){

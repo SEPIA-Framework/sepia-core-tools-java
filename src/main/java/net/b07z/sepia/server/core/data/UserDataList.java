@@ -113,6 +113,12 @@ public class UserDataList {
 	public void setId(String id){
 		this._id = id;
 	}
+	/**
+	 * Get _id.
+	 */
+	public String getId(){
+		return this._id;
+	}
 	
 	/**
 	 * Export this list as JSON

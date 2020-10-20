@@ -169,9 +169,10 @@ public interface AuthenticationInterface {
 	 * 2 - access denied (due to wrong credentials or whatever reason) <br>
 	 * 3 - might be 1 or 2 (where 2 can also be due to wrong parameters)<br>
 	 * 4 - unknown error <br>
-	 * 5 - during registration/requestPasswordChange: user existence check failed; during createUser/changePassword: invalid token or time stamp<br>
+	 * 5 - during validation: token correct but expired; during registration/requestPasswordChange: user existence check failed; during createUser/changePassword: invalid token or time stamp<br>
 	 * 6 - password format invalid<br>
 	 * 7 - UID generation or storing failed<br>
+	 * 10 - during validation: Too many failed login attempts 
 	 * 
 	 * @return integer error code
 	 */

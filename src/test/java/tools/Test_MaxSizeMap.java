@@ -8,6 +8,7 @@ import java.util.Map;
 import net.b07z.sepia.server.core.data.CmdMap;
 import net.b07z.sepia.server.core.java.MaxSizeMap;
 import net.b07z.sepia.server.core.tools.ThreadManager;
+import net.b07z.sepia.server.core.tools.Timer;
 
 public class Test_MaxSizeMap {
 	
@@ -33,13 +34,12 @@ public class Test_MaxSizeMap {
 			cmdm.add(new CmdMap(u + ".anyCmd", new ArrayList<>(), Arrays.asList("all")));
 			data.add(new UserTestData(u, cmdm));
 		}
-		boolean success = ThreadManager.runTasks(3, (Object o) -> {
+		boolean success = ThreadManager.runParallelAndWait("testMaxSizeMap", data, (utd) -> {
 			long slp = Math.round(Math.random() * 100);
-			try{ Thread.sleep(slp); } catch (Exception e) {}
-			UserTestData utd = (UserTestData) o;
+			Timer.threadSleep(slp);
 			map.put(utd.name, utd.map);
 			System.out.println(utd.name + " - " + slp); 		//DEBUG
-		}, data, 5000l);
+		}, 5000l, 3);
 		
 		System.out.println("Success? " + success);
 		System.out.println(map.size());
