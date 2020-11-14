@@ -6,7 +6,9 @@ import java.util.List;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
+import net.b07z.sepia.server.core.tools.RandomGen;
 
 /**
  * A general list for all kinds of stuff like shopping, to-do, alarms, etc. with some common structure.
@@ -186,5 +188,105 @@ public class UserDataList {
 	public void importJSON(String list){
 		JSONObject listJ = JSON.parseStringOrFail(list);
 		importJSON(listJ);
+	}
+	
+	//--- ENTRY BUILDER ---
+	
+	/**
+	 * Create an entry for a user-data list of element type 'alarm'.
+	 * @param targetTimeUnix - Target time as UNIX timestamp (milliseconds)
+	 * @param day - A "speakable" string for the day
+	 * @param time - Time as given by NLU parameter (default format) 
+	 * @param date - A "speakable" string for the date
+	 * @param repeat - Repeat alarm? Client currently supports: "onetime"
+	 * @param name - Any name describing the alarm (e.g. time, date or something like "Wake-Up Monday") 
+	 * @param eventId - An ID to identify this alarm. Has to be unique for a given user. Use 'null' to auto-generate. 
+	 * @param lastChange - Timestamp of last change
+	 * @param activated - Has the alarm been activated already by any client?
+	 * @return
+	 */
+	public static JSONObject createEntryAlarm(long targetTimeUnix, 
+			String day, String time, String date, String repeat, String name, 
+			String eventId, long lastChange, boolean activated){
+		
+		if (Is.nullOrEmpty(eventId)){
+			eventId = getWeakRandomId("alarm");
+		}
+		JSONObject entry = JSON.make(
+				"eleType", UserDataList.EleType.alarm.name(),	//fix
+				"targetTimeUnix", targetTimeUnix,
+				"day", day,
+				"time", time,
+				"date", date,
+				"repeat", repeat
+		);
+		JSON.put(entry, "name", name.trim());
+		JSON.put(entry, "eventId", eventId);
+		JSON.put(entry, "lastChange", lastChange);
+		JSON.put(entry, "activated", activated);
+		
+		return entry;
+	}
+	/**
+	 * Create an entry for a user-data list of element type 'timer'.
+	 * @param targetTimeUnix - Target time as UNIX timestamp (milliseconds)
+	 * @param name - Any name describing the timer (e.g. time, date or something like "Pizza in oven") 
+	 * @param eventId - An ID to identify this timer. Has to be unique for a given user. Use 'null' to auto-generate. 
+	 * @param lastChange - Timestamp of last change
+	 * @param activated - Has the timer been activated already by any client?
+	 * @return
+	 */
+	public static JSONObject createEntryTimer(long targetTimeUnix, String name, 
+			String eventId, long lastChange, boolean activated){
+		
+		if (Is.nullOrEmpty(eventId)){
+			eventId = getWeakRandomId("timer");
+		}
+		JSONObject entry = JSON.make(
+				"eleType", UserDataList.EleType.timer.name(),	//fix
+				"targetTimeUnix", targetTimeUnix,
+				"name", name.trim(),
+				"eventId", eventId,
+				"lastChange", lastChange,
+				"activated", activated
+		);
+		
+		return entry;
+	}
+	/**
+	 * Create an entry for a user-data list of element type 'checkable'.
+	 * @param name - Any name describing the entry, e.g. "Butter" for a shopping list etc.
+	 * @param lastChange - Timestamp of last change 
+	 * @param hasMoreThanTwoStates - Is this a simple entry with just 2 states (checked/unchecked) or does it have more? (e.g. open, inProgress, done)
+	 * @return
+	 */
+	public static JSONObject createEntryCheckable(String name, long lastChange, boolean hasMoreThanTwoStates){
+		JSONObject entry = JSON.make(
+			"eleType", UserDataList.EleType.checkable.name()
+		);
+		String state = null;
+		if (hasMoreThanTwoStates){
+			state = UserDataList.EleState.open.name();		//e.g. to-do lists have a state (open, inProgress, ...) in addition to 'checked'
+		}
+		//TODO: add ID?
+		JSON.put(entry, "name", name.trim());
+		JSON.put(entry, "lastChange", lastChange);
+		JSON.put(entry, "checked", Boolean.FALSE);			//initialized with FALSE and 'open'
+		if (state != null){
+			JSON.put(entry, "state", state);
+		}
+		//JSON.put(item, "metaData", new JSONObject());
+		
+		return entry;
+	}
+	
+	/**
+	 * A a relatively weak (but sufficient if the scope is OK) random ID with custom prefix.
+	 * @param prefix - e.g. "timer" or "alarm"
+	 * @return
+	 */
+	public static String getWeakRandomId(String prefix){
+		String eventIdSuffix = System.currentTimeMillis() + "-" + RandomGen.getInt(100, 999);
+		return (prefix + "-" + eventIdSuffix);
 	}
 }
