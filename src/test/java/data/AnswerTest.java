@@ -1,9 +1,7 @@
 package data;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-
-import com.google.common.base.Charsets;
-import com.google.common.io.CharStreams;
 
 import net.b07z.sepia.server.core.data.Answer;
 import net.b07z.sepia.server.core.data.Language;
@@ -11,6 +9,7 @@ import net.b07z.sepia.server.core.data.Language;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.core.Is.*;
 import static org.junit.Assert.assertFalse;
@@ -22,7 +21,7 @@ public class AnswerTest {
 	@Test
 	public void testImportJSON() throws IOException {
 		try (InputStream is = AnswerTest.class.getResourceAsStream("/answer.json")) {
-			String exampleJson = CharStreams.toString(new InputStreamReader(is, Charsets.UTF_8));
+			String exampleJson = IOUtils.toString(new InputStreamReader(is, StandardCharsets.UTF_8));
 			
 			Answer answer = Answer.importAnswerJSON(exampleJson);
 			//System.out.println("testImportJSON: " + answer.toJsonString()); 			//debug

@@ -15,9 +15,7 @@ import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.SSLContext;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.CharStreams;
-
+import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -133,9 +131,8 @@ public class Connectors {
 			}
 			int responseCode = con.getResponseCode();
 			if (responseCode == HttpURLConnection.HTTP_OK){
-				try (InputStream stream = con.getInputStream();
-						InputStreamReader isr = new InputStreamReader(stream, Charsets.UTF_8)) {
-					String content = CharStreams.toString(isr);
+				try (InputStream stream = con.getInputStream()) {
+					String content = getStreamContentAsString(con, stream);
 					return JSON.parseStringOrFail(content);
 				}
 			} else {
@@ -160,9 +157,8 @@ public class Connectors {
 			con.setReadTimeout(READ_TIMEOUT);
 			int responseCode = con.getResponseCode();
 			if (responseCode == HttpURLConnection.HTTP_OK){
-				try (InputStream stream = con.getInputStream();
-						 InputStreamReader isr = new InputStreamReader(stream, Charsets.UTF_8)) {
-					String content = CharStreams.toString(isr);
+				try (InputStream stream = con.getInputStream()) {
+					String content = getStreamContentAsString(con, stream);
 					return content;
 				}
 			} else {
@@ -751,13 +747,13 @@ public class Connectors {
 	/**
 	 * Get content of stream as string.
 	 */
-	private static String getStreamContentAsString(HttpURLConnection con, InputStream is) throws IOException{
+	private static String getStreamContentAsString(HttpURLConnection con, InputStream is) throws IOException {
 		if (isGzipResponse(con)){
-			InputStreamReader isr = new InputStreamReader(new GZIPInputStream(is), Charsets.UTF_8);
-			return CharStreams.toString(isr);
+			InputStreamReader isr = new InputStreamReader(new GZIPInputStream(is), StandardCharsets.UTF_8);
+			return IOUtils.toString(isr);
 		}else{
-			InputStreamReader isr = new InputStreamReader(is, Charsets.UTF_8);
-			return CharStreams.toString(isr);
+			InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+			return IOUtils.toString(isr);
 		}
 	}
 	

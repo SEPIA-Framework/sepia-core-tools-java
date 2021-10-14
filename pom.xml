@@ -1,28 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-    <groupId>net.b07z.sepia.server.core</groupId>
-    <artifactId>sepia-core-tools</artifactId>
-    <version>2.2.9</version>
-    <name>SEPIA Core-Tools</name>
-    <description>The Core-Tools repository contains classes and methods that are shared by all SEPIA servers and other tools like the SDK.</description>
-    <url>https://github.com/SEPIA-Framework/sepia-core-tools-java</url>
-    <packaging>jar</packaging>
-    
-    <licenses>
-  		<license>
-    		<name>MIT License</name>
-    		<url>http://www.opensource.org/licenses/mit-license.php</url>
-  		</license>
+	<groupId>net.b07z.sepia.server.core</groupId>
+	<artifactId>sepia-core-tools</artifactId>
+	<version>2.2.9</version>
+	<name>SEPIA Core-Tools</name>
+	<description>The Core-Tools repository contains classes and methods that are shared by all SEPIA servers and other tools like the SDK.</description>
+	<url>https://github.com/SEPIA-Framework/sepia-core-tools-java</url>
+	<packaging>jar</packaging>
+
+	<licenses>
+		<license>
+			<name>MIT License</name>
+			<url>http://www.opensource.org/licenses/mit-license.php</url>
+		</license>
 	</licenses>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-    </properties>
-    
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+	</properties>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -67,7 +69,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>3.0.0-M3</version>
 			</plugin>
-			
+
 			<!-- Java docs, use with: mvn javadoc:jar -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -81,102 +83,94 @@
 		</plugins>
 	</build>
 
-    <dependencies>
-	    <dependency>
-	  		<groupId>com.sparkjava</groupId>
-	  		<artifactId>spark-core</artifactId>
-	  		<version>2.9.3</version>
-	  	</dependency>
-	  	<!-- <dependency>
-		    <groupId>org.slf4j</groupId>
-		    <artifactId>slf4j-log4j12</artifactId>
-		    <version>1.7.21</version>
-		</dependency> -->
+	<dependencies>
 		<dependency>
-	        <groupId>org.slf4j</groupId>
-	        <artifactId>slf4j-simple</artifactId>
-	        <version>1.7.21</version>
-	    </dependency>
-        <dependency>
-            <groupId>com.googlecode.json-simple</groupId>
-            <artifactId>json-simple</artifactId>
-            <version>1.1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>[2.10.5,2.10.6)</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>2.6</version>
-        </dependency>
-        <dependency>
-		    <groupId>commons-io</groupId>
-		    <artifactId>commons-io</artifactId>
-		    <version>2.8.0</version>
+			<groupId>com.sparkjava</groupId>
+			<artifactId>spark-core</artifactId>
+			<version>2.9.3</version>
 		</dependency>
-        <dependency>
-  			<groupId>commons-codec</groupId>
-  			<artifactId>commons-codec</artifactId>
-  			<version>1.10</version>
-  		</dependency>
-  		<dependency>
-  			<groupId>com.googlecode.soundlibs</groupId>
-  			<artifactId>mp3spi</artifactId>
-  			<version>1.9.5.4</version>
-  		</dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>19.0</version>
-        </dependency>
-        <dependency>
-		    <groupId>org.apache.httpcomponents</groupId>
-		    <artifactId>httpclient</artifactId>
-		    <version>4.5.3</version>
+		<!-- <dependency> <groupId>org.slf4j</groupId> <artifactId>slf4j-log4j12</artifactId> 
+			<version>1.7.21</version> </dependency> -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>1.7.21</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.apache.httpcomponents</groupId>
-		    <artifactId>httpmime</artifactId>
-		    <version>[4.5.13,4.6.0)</version>
+			<groupId>com.googlecode.json-simple</groupId>
+			<artifactId>json-simple</artifactId>
+			<version>1.1.1</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.owasp.encoder</groupId>
-		    <artifactId>encoder</artifactId>
-		    <version>1.2.2</version>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>[2.10.5,2.10.6)</version>
 		</dependency>
-		
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.8.0</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.10</version>
+		</dependency>
+		<dependency>
+			<groupId>com.googlecode.soundlibs</groupId>
+			<artifactId>mp3spi</artifactId>
+			<version>1.9.5.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>[4.5.13,4.6.0)</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpmime</artifactId>
+			<version>[4.5.13,4.6.0)</version>
+		</dependency>
+		<dependency>
+			<groupId>org.owasp.encoder</groupId>
+			<artifactId>encoder</artifactId>
+			<version>1.2.2</version>
+		</dependency>
+
 		<!-- Java 9+ support - might not be required anymore -->
 		<dependency>
-		    <groupId>javax.xml.bind</groupId>
-		    <artifactId>jaxb-api</artifactId>
-		    <version>2.3.1</version>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+			<version>2.3.1</version>
 		</dependency>
-		
+
 		<!-- Testing -->
 		<dependency>
-      		<groupId>junit</groupId>
-      		<artifactId>junit</artifactId>
-      		<version>4.13.1</version>
-      		<scope>test</scope>
-    	</dependency>
-    </dependencies>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.13.1</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 
 	<developers>
-    	<developer>
-      		<name>Florian Quirin</name>
-      		<email>info@bytemind.de</email>
-      		<organization>bytemind.de</organization>
-      		<organizationUrl>http://bytemind.de</organizationUrl>
-    	</developer>
+		<developer>
+			<name>Florian Quirin</name>
+			<email>info@bytemind.de</email>
+			<organization>bytemind.de</organization>
+			<organizationUrl>http://bytemind.de</organizationUrl>
+		</developer>
 	</developers>
-	
+
 	<scm>
-    	<connection>scm:git:git://github.com/SEPIA-Framework/sepia-core-tools-java.git</connection>
-    	<developerConnection>scm:git:ssh://github.com:SEPIA-Framework/sepia-core-tools-java.git</developerConnection>
-    	<url>https://github.com/SEPIA-Framework/sepia-core-tools-java/tree/master</url>
+		<connection>scm:git:git://github.com/SEPIA-Framework/sepia-core-tools-java.git</connection>
+		<developerConnection>scm:git:ssh://github.com:SEPIA-Framework/sepia-core-tools-java.git</developerConnection>
+		<url>https://github.com/SEPIA-Framework/sepia-core-tools-java/tree/master</url>
 	</scm>
-	
+
 </project>
