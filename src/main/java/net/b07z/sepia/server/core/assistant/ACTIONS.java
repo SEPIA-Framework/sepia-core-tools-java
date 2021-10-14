@@ -21,7 +21,7 @@ public class ACTIONS {
 	final public static String SHOW_HTML_RESULT = "show_html_result";			//tell client to show a block of simple, plain HTML data in a result window, parameters: data
 	final public static String SHOW_HTML_SANDBOX = "show_html_sandbox";			//tell client to show a block of complex HTML data in a result window BUT in a sandbox (e.g. iframe), parameters: data
 	final public static String BUTTON_CUSTOM_FUN = "button_custom_fun";		//tell client to show a custom button that executes a function, parameters: title, fun
-	final public static String CLIENT_CONTROL_FUN = "client_control_fun";	//tell client to run a control function (pre-defined in client), parameters: fun
+	final public static String CLIENT_CONTROL_FUN = "client_control_fun";	//tell client to run a control function (pre-defined in client), parameters: fun, controlData, delayUntilIdle
 	final public static String TRIGGER_CUSTOM_EVENT = "trigger_custom_event";	//tell client to trigger an event (with prefix 'sepia-action-custom-event-...'), parameters: name (event), data
 	final public static String BUTTON_CUSTOM_EVENT = "button_custom_event";		//tell client to show a custom button that triggers an event (with prefix 'sepia-action-custom-event-...'), parameters: title (button), name (event), data
 	final public static String SCHEDULE_MSG = "schedule_msg";			//tell client to schedule a message (like a push message but locally triggered)
