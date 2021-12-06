@@ -10,10 +10,14 @@ import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import net.b07z.sepia.server.core.server.ConfigDefaults;
 import net.b07z.sepia.server.core.server.RequestParameters;
 import net.b07z.sepia.server.core.tools.ClassBuilder;
 import net.b07z.sepia.server.core.tools.Converters;
+import net.b07z.sepia.server.core.tools.Debugger;
 import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 import net.b07z.sepia.server.core.tools.Security;
@@ -43,6 +47,7 @@ public class Account {
 	private String language = "en";				//user account language (ISO-639 code)
 	private String userBirth = "";				//user birth date
 	private List<String> userRoles;			//user roles managing certain access rights
+	private Map<String, List<SharedAccessItem>> sharedAccess;
 	//more
 	private Map<String, Object> info = new HashMap<>(); 	//info for everything that's not in the basics
 	
@@ -124,7 +129,7 @@ public class Account {
 	}
 
 	/**
-	 * User's access permissions.
+	 * User's roles.
 	 */
 	public List<String> getUserRoles() {
 		return userRoles;
@@ -132,6 +137,16 @@ public class Account {
 
 	public boolean hasRole(String roleName){
 		return userRoles != null && userRoles.contains(roleName);
+	}
+	
+	/**
+	 * Get shared access permissions.
+	 */
+	public Map<String, List<SharedAccessItem>> getSharedAccess(){
+		return sharedAccess;
+	}
+	public void setSharedAccess(Map<String, List<SharedAccessItem>> sharedAccess){
+		this.sharedAccess = sharedAccess;
 	}
 	
 	/**
@@ -290,6 +305,22 @@ public class Account {
 		}else{
 			userRoles = new ArrayList<>();
 		}
+		
+		//Shared access
+		if (info.containsKey("shared_access")){
+			JSONObject sharedAcc = (JSONObject) info.get("shared_access");
+			if (Is.notNullOrEmpty(sharedAcc)){
+				ObjectMapper objectMapper = new ObjectMapper();
+				try{
+					sharedAccess = objectMapper.readValue(sharedAcc.toString(), new TypeReference<Map<String, List<SharedAccessItem>>>(){});
+				}catch (Exception e){
+					Debugger.println("Failed to parse user account 'shared_access' field during 'copyBasicInfo'!", 1);
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		//NOTE: if you add stuff here check the authentication interface instance as well (it usually needs to be added there as well)
 	}
 	
 	/**
@@ -300,13 +331,24 @@ public class Account {
 		JSON.add(account, "userId", userId);
 		JSON.add(account, "email", email);
 		JSON.add(account, "phone", phone);
-		JSON.add(account, "userName", userName.toJSONString());
+		JSON.add(account, "userName", userName);
 		JSON.add(account, "accessLevel", accessLevel);
 		if (userRoles != null && !userRoles.isEmpty()){
 			JSON.add(account, "userRoles", JSON.stringListToJSONArray(userRoles));
 		}
 		JSON.add(account, "prefLanguage", language);
 		JSON.add(account, "userBirth", userBirth);
+		if (sharedAccess != null){
+			JSONObject sa = new JSONObject();
+			for (String key : sharedAccess.keySet()){
+				JSONArray ja = new JSONArray();
+				for (SharedAccessItem sai : sharedAccess.get(key)){
+					JSON.add(ja, sai.toJson());
+				}
+				JSON.put(sa, key, ja);
+			}
+			JSON.add(account, "sharedAccess", sa);
+		}
 		return account;
 	}
 	/**
@@ -323,6 +365,7 @@ public class Account {
 		JSONObject uname = (JSONObject) account.get("userName");
 		if (uname != null){
 			userName = uname;
+			userNameShort = getShortUserName();
 		}
 		//pref. LANG
 		String pl = (String) account.get("prefLanguage");
@@ -342,6 +385,17 @@ public class Account {
 				allRoles.add(((String) o).toLowerCase());
 			}
 			userRoles = allRoles;
+		}
+		//SHARED ACCESS
+		JSONObject sharedAcc = (JSONObject) account.get("sharedAccess");
+		if (Is.notNullOrEmpty(sharedAcc)){
+			ObjectMapper objectMapper = new ObjectMapper();
+			try{
+				sharedAccess = objectMapper.readValue(sharedAcc.toString(), new TypeReference<Map<String, List<SharedAccessItem>>>(){});
+			}catch (Exception e){
+				Debugger.println("Failed to parse user account 'shared_access' field during 'importJSON'!", 1);
+				e.printStackTrace();
+			}
 		}
 	}
 

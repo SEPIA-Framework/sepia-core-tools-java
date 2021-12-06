@@ -2,7 +2,6 @@ package net.b07z.sepia.server.core.users;
 
 import java.util.Collection;
 import java.util.HashMap;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -158,6 +157,11 @@ public class AuthenticationAssistAPI implements AuthenticationInterface{
 		Object roles_o = response.get("user_roles");
 		if (roles_o != null){
 			this.basicInfo.put("user_roles", roles_o);
+		}
+		
+		//SHARED ACCESS
+		if (response.containsKey("shared_access")){
+			this.basicInfo.put("shared_access", response.get("shared_access"));
 		}
 	}
 	
