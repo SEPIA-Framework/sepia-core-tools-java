@@ -13,16 +13,16 @@ import net.b07z.sepia.server.core.tools.JSON;
 public class SharedAccessItem {
 	
 	private String user;			//user to share with
-	private String device;			//device of sharing client
+	private String device;			//device of target (sharing client)
 	private JSONObject details;		//specific data for parent type
 	
 	public SharedAccessItem(){}
 	
 	/**
 	 * Create item.
-	 * @param user - user ID to share with
-	 * @param device - device ID of sharing client
-	 * @param details - specific JSON data for parent type (granular permissions)
+	 * @param user - user ID to share with (who wants access?)
+	 * @param device - target device ID (where to execute?)
+	 * @param details - specific JSON data depending on parent data-type (granular permissions, e.g. action 'type' of 'remoteAction' etc.)
 	 */
 	public SharedAccessItem(String user, String device, JSONObject details){
 		this.user = user;
