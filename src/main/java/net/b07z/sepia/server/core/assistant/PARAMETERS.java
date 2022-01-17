@@ -12,7 +12,7 @@ public class PARAMETERS {
 	//		PARAMETERS CAN HEAVILY INFLUENCE THE RESPONSE HANDLER
 	//		IF YOU CHANGE A NAME YOU HAVE TO CHECK ALL CLIENTS, ACTIONS AND SERVICES IF ANY IS USING OLD NAME STILL ^^
 	
-	//--------- unsorted list / not fully implemented or deprecated ----------
+	//--------- unsorted list / some are not fully implemented or deprecated (check assist-server ParameterConfig) ----------
 	
 	final public static String SEARCH = "search";			//general search, web search 		- included in response tweaking
 	final public static String TYPE = "type";				//a type of something depending on context
@@ -35,6 +35,7 @@ public class PARAMETERS {
 	final public static String URL = "url"; 				//a link for different purposes
 	final public static String FUNCTION = "function"; 		//a function for calculations etc.
 	final public static String SENTENCES = "sentences"; 	//one or more sentences returned as parameter
+	
 	//FLIGHTS
 	final public static String ADULTS = "adults";					//number of adult persons
 	final public static String FLIGHT_CLASS = "flight_class";		//economy? first class?
@@ -51,6 +52,7 @@ public class PARAMETERS {
 	final public static String CLOCK = "clock";			//child parameter of TIME that only takes the date_time, useful if you need to check for date and time separately
 	final public static String GENDER = "gender"; 		//male, female, unisex
 	final public static String COLOR = "color";			//colors ...
+	final public static String GENERAL_VALUE = "general_value";		//a general, unspecifc value like in "the value is X" - NOTE: Don't mix with 'values' above
 	
 	//------------ service specific -------------
 	
