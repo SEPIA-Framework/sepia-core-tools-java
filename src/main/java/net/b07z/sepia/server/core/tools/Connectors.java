@@ -18,6 +18,8 @@ import javax.net.ssl.SSLContext;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
+import org.apache.http.client.HttpRequestRetryHandler;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -32,6 +34,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContexts;
 import org.apache.http.util.EntityUtils;
 import org.json.simple.JSONArray;
@@ -217,16 +220,42 @@ public class Connectors {
 	 * NOTE: If the URL was redirected it will produce a ERROR log message and NOT follow the link.<br>
 	 * NOTE2: Cookie management is disabled<br>
 	 * NOTE3: Content encoding is read from HttpEntity and defaults to UTF-8
+	 * NOTE4: Timeouts are: 5s (socketTimeout) and 8s (connect, connectionRequest). Retry is 2.
 	 * @param url - URL to call
 	 * @param headers - request headers (or null), e.g. "Accept", "User-Agent", etc.
 	 * @return {@link HttpClientResult}
 	 */
 	public static HttpClientResult apacheHttpGET(String url, Map<String, String> headers) throws Exception {
+		RequestConfig config = RequestConfig.custom()
+				.setConnectTimeout(8000)
+				.setConnectionRequestTimeout(8000)
+				.setSocketTimeout(5000)
+				.build();
 		CloseableHttpClient httpclient = HttpClientBuilder.create()
+				.setDefaultRequestConfig(config)
+				.setRetryHandler(new HttpRequestRetryHandler(){
+			        @Override
+			        public boolean retryRequest(IOException exception, int executionCount, HttpContext context) {
+			            return executionCount <= 2 ;
+			        }
+			    })
 				.disableRedirectHandling()
 				.disableCookieManagement()
 				.setUserAgent(USER_AGENT) 		//NOTE: this is primarily to avoid calls to system.java.version in sandbox
 				.build();
+		return apacheHttpGET(url, httpclient, headers);
+	}
+	/**
+	 * Apache HTTP client wit custom settings. Compare: {@link #apacheHttpGET(String, Map)}.<br>
+	 * NOTE: If the URL was redirected it will produce a ERROR log message and NOT follow the link.<br>
+	 * NOTE2: Cookie management is disabled<br>
+	 * NOTE3: Content encoding is read from HttpEntity and defaults to UTF-8
+	 * @param url - URL to call
+	 * @param httpclient - custom {@link CloseableHttpClient}. Use this if you need to change default properties like redirect or timeout.
+	 * @param headers - request headers (or null), e.g. "Accept", "User-Agent", etc.
+	 * @return {@link HttpClientResult}
+	 */
+	public static HttpClientResult apacheHttpGET(String url, CloseableHttpClient httpclient, Map<String, String> headers) throws Exception {
 		//CloseableHttpClient httpclient = HttpClients.createDefault();
 		HttpGet httpGet = new HttpGet(url);
 		if (headers != null){
