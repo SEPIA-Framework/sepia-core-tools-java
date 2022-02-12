@@ -149,7 +149,7 @@ public class Connectors {
 	 * Sends a GET and returns result as string. NOTE: sets content-type to: 'text/html'.
 	 * Throws a RuntimeException on fail.
 	 */
-	public static String simpleHtmlGet(String url) {
+	public static String simpleHtmlGet(String url){
 		try {
 			URL urlObj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) urlObj.openConnection();
@@ -164,10 +164,10 @@ public class Connectors {
 					String content = getStreamContentAsString(con, stream);
 					return content;
 				}
-			} else {
+			}else{
 				throw new RuntimeException(DateTime.getLogDate() + " ERROR - Could not get '" + url + "': response code " + responseCode);
 			}
-		} catch (Exception e) {
+		}catch (Exception e){
 			throw new RuntimeException(DateTime.getLogDate() + " ERROR - Could not get '" + url + "', error: " + e.getMessage(), e);
 		}
 	}
@@ -175,26 +175,19 @@ public class Connectors {
 	 * Simple HTTP GET. Basically the same as "simpleJsonGet" just realized with Apache HTTP client.
 	 * Uses UTF-8 encoding and 'application/json' content-type.
 	 * @param url - URL to call
-	 * @return JSONObject
+	 * @return JSONObject (status code 200) or throw error
 	 */
-	public static JSONObject apacheHttpGETjson(String url) throws Exception{
-		CloseableHttpClient httpclient = HttpClients.createDefault();
-		HttpGet httpGet = new HttpGet(url);
-		httpGet.setHeader("Accept", "application/json");
-		httpGet.addHeader("User-Agent", USER_AGENT);
-		CloseableHttpResponse response = httpclient.execute(httpGet);
-		try {
-		    //System.out.println(response.getStatusLine());
-		    HttpEntity resEntity = response.getEntity();
-		    String responseData = null;
-		    if (resEntity != null){
-	        	responseData = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
-	        }
-		    EntityUtils.consume(resEntity);
-		    return JSON.parseStringOrFail(responseData);
-		    
-		} finally {
-		    response.close();
+	public static JSONObject apacheHttpGETjson(String url) throws Exception {
+		String contentType = "application/json";
+		HttpClientResult result = apacheHttpGET(url, contentType);
+		if (result.statusCode == 200){
+			try {
+				return JSON.parseStringOrFail(result.content);
+			}catch (Exception e){
+				throw new RuntimeException("Failed to GET '" + url + "' - Error: " + e.getMessage());
+			}
+		}else{
+			throw new RuntimeException("Failed to GET '" + url + "' - response code: " + result.statusCode + " - Error: " + result.statusLine);
 		}
 	}
 	/**
