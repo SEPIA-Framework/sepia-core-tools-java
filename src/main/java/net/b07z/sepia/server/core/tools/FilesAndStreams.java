@@ -365,7 +365,8 @@ public class FilesAndStreams {
 	}
 
 	/**
-	 * Load settings from properties file (UTF-8) and return Properties.
+	 * Load settings from properties file (UTF-8) and return Properties.<br>
+	 * NOTE: Use {@link PropertiesReader} for some convenience methods and if you need to track read values.
 	 * @param configFile - path and file
 	 */
 	public static Properties loadSettings(String configFile) throws Exception{
