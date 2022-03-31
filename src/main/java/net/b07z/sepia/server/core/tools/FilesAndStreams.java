@@ -3,11 +3,13 @@ package net.b07z.sepia.server.core.tools;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.RandomAccessFile;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -210,6 +212,24 @@ public class FilesAndStreams {
 			e.printStackTrace();
 			return false;
 		}
+	}
+	
+	/**
+	 * Read a range of bytes from file.
+	 * @param filePath - path of file
+	 * @param startingOffset - starting byte
+	 * @param length - length of bytes to read
+	 * @return
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	public static byte[] readByteRange(String filePath, long startingOffset, int length) throws FileNotFoundException, IOException {
+	    try (RandomAccessFile randomAccessFile = new RandomAccessFile(filePath, "r")){
+	        byte[] buffer = new byte[length];
+	        randomAccessFile.seek(startingOffset);
+	        randomAccessFile.readFully(buffer);
+	        return buffer;
+	    }
 	}
 	
 	/**

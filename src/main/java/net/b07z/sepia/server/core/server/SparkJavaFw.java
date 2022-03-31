@@ -5,9 +5,16 @@ import static spark.Spark.exception;
 import static spark.Spark.options;
 import static spark.Spark.staticFiles;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import javax.servlet.ServletOutputStream;
+
 import org.json.simple.JSONObject;
 
 import net.b07z.sepia.server.core.tools.Debugger;
+import net.b07z.sepia.server.core.tools.FilesAndStreams;
+import net.b07z.sepia.server.core.tools.Is;
 import net.b07z.sepia.server.core.tools.JSON;
 import net.b07z.sepia.server.core.tools.Security;
 import spark.Request;
@@ -170,6 +177,26 @@ public class SparkJavaFw {
 				"error", "404 path invalid"
 		).toJSONString(), 404);
 	}
+	
+	/**
+	 * Return simple "internal error" message.
+	 */
+	public static String returnInternalError(Request request, Response response){
+		return returnResult(request, response, JSON.make(
+				"result", "fail",
+				"error", "500 internal error"
+		).toJSONString(), 500);
+	}
+	
+	/**
+	 * Return simple "internal error" message.
+	 */
+	public static String returnNotAcceptable(Request request, Response response){
+		return returnResult(request, response, JSON.make(
+				"result", "fail",
+				"error", "406 not acceptable"
+		).toJSONString(), 406);
+	}
 
 	/**
 	 * Get request body or throw error.
@@ -221,5 +248,61 @@ public class SparkJavaFw {
 			return true;
 		}
 	}
+	
+	//---------- File Stream -----------
+	
+	public static void streamFile(Request req, Response res, File file, String mimeType, int maxChunkSize) 
+			throws FileNotFoundException, IOException {
+		String range = req.headers("Range");
+		int[] fromToLength = fromTo(file, range, maxChunkSize);
+		int length = fromToLength[2];
+		byte[] bytes = FilesAndStreams.readByteRange(file.getPath(), fromToLength[0], length);
 
+		res.header("Accept-Ranges", "bytes"); 
+		res.header("Content-Range", "bytes " + fromToLength[0] + "-" + fromToLength[1] + "/" + fromToLength[3]);
+		res.header("Content-Length", String.valueOf(length));
+		//res.header("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
+		//res.header("Connection", "Keep-Alive");
+		//res.header("Keep-Alive", "timeout=15, max=100");
+		//res.header("Etag", Security.bytearrayToHexString(...getMD5(bytes));
+		res.header("Cache-Control", "no-cache, private");
+		res.header("Expires", "0");
+		res.header("Content-Transfer-Encoding", "binary");
+		res.header("Transfer-Encoding", "chunked");
+		res.type(mimeType);
+		res.status(206);
+		
+		try (final ServletOutputStream os = res.raw().getOutputStream()){
+			os.write(bytes);
+			os.close();
+		}
+	}
+	private static int[] fromTo(File file, String range, int maxChunkSize){
+		int[] data = new int[4];
+		int fileLength = (int) file.length();
+		int from;
+		int to;
+		int length;
+		if (Is.nullOrEmpty(range)){
+			//serve all
+			from = 0;
+			to = fileLength - 1;
+			length = fileLength;
+		}else{
+			String[] ranges = range.split("=")[1].split("-");
+			from = Integer.parseInt(ranges[0]);
+			if (ranges.length == 2){
+				to = Math.min(fileLength - 1, Integer.parseInt(ranges[1]));
+			}else{
+				int fallbackChunkSize = Math.max(153600, Math.min(maxChunkSize, Math.round(fileLength/10f)));
+				to = Math.min(fileLength - 1, from + fallbackChunkSize);
+			}
+			length = to - from + 1;
+		}
+		data[0] = from;			//start
+		data[1] = to;			//stop
+		data[2] = length;		//bytes length
+		data[3] = fileLength;	//full file length
+		return data;
+	}
 }
