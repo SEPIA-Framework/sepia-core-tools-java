@@ -13,14 +13,21 @@ import java.io.RandomAccessFile;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
+
+import com.fasterxml.jackson.core.exc.StreamReadException;
+import com.fasterxml.jackson.databind.DatabindException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 /**
  * Handles file read/write/edit etc.
@@ -250,6 +257,20 @@ public class FilesAndStreams {
 			return false;
 		}
 	}
+	/**
+	 * Append an UTF-8 encoded content string as new line to a file.
+	 * Create all directories along the path. If the file does not exist create it.
+	 * @param path - path to where the file should be stored
+	 * @param fileName - name of the file (with ending)
+	 * @param utf8Content - content as UTF-8 encoded string
+	 * @throws IOException
+	 */
+	public static void appendLineToFile(String path, String fileName, String utf8Content) throws IOException {
+		Files.createDirectories(Paths.get(path));
+		OpenOption oo1 = StandardOpenOption.CREATE;
+		OpenOption oo2 = StandardOpenOption.APPEND;
+		Files.write(Paths.get(path, fileName), utf8Content.getBytes(StandardCharsets.UTF_8), oo1, oo2);
+	}
 	
 	/**
 	 * Read UTF-8 encoded file line-by-line, do optional operation on each line and merge everything to one string.
@@ -367,6 +388,23 @@ public class FilesAndStreams {
 			e.printStackTrace();
 			return false;
 		}
+	}
+	
+	/**
+	 * Read a YAML file and map to class.
+	 * @param <T> - return type
+	 * @param filePath - path to YAML file
+	 * @param clazz - class to map file to and return
+	 * @return
+	 * @throws IOException 
+	 * @throws DatabindException 
+	 * @throws StreamReadException 
+	 */
+	public static <T> T readYamlFile(String filePath, Class<T> clazz) 
+			throws StreamReadException, DatabindException, IOException {
+		File file = new File(filePath);
+		ObjectMapper om = new ObjectMapper(new YAMLFactory());
+		return om.readValue(file, clazz);
 	}
 
 	/**
