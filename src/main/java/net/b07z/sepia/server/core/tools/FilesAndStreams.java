@@ -269,6 +269,8 @@ public class FilesAndStreams {
 		Files.createDirectories(Paths.get(path));
 		OpenOption oo1 = StandardOpenOption.CREATE;
 		OpenOption oo2 = StandardOpenOption.APPEND;
+		//add line-break
+		utf8Content = "\n" + utf8Content;
 		Files.write(Paths.get(path, fileName), utf8Content.getBytes(StandardCharsets.UTF_8), oo1, oo2);
 	}
 	
