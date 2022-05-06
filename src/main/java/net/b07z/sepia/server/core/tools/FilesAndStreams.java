@@ -12,6 +12,7 @@ import java.io.OutputStreamWriter;
 import java.io.RandomAccessFile;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
@@ -266,7 +267,14 @@ public class FilesAndStreams {
 	 * @throws IOException
 	 */
 	public static void appendLineToFile(String path, String fileName, String utf8Content) throws IOException {
-		Files.createDirectories(Paths.get(path));
+		Path pathStr = Paths.get(path);
+		try {
+			Files.createDirectories(pathStr);		//NOTE: can still fail if path is symlink!
+		}catch (FileAlreadyExistsException e) {
+			if (!Files.isSymbolicLink(pathStr)){
+				throw e;
+			}
+		}
 		OpenOption oo1 = StandardOpenOption.CREATE;
 		OpenOption oo2 = StandardOpenOption.APPEND;
 		//add line-break
