@@ -6,8 +6,13 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.security.spec.KeySpec;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKeyFactory;
@@ -51,6 +56,52 @@ public class Security {
 	public static String getRandomUUID(){
 		return UUID.randomUUID().toString();
 	}
+	
+	/**
+	 * Create a random string by randomly selecting 'count' number of random characters 
+	 * of a given string (baseChars.charAt(i)).
+	 * @param count - length of the random string
+	 * @param baseChars - base characters to choose from (or null for {@link #selectedPasswdChars})
+	 */
+	public static String createRandomString(int count, String baseChars){
+		if (baseChars == null){
+			baseChars = selectedPasswdChars;
+		}
+		List<Character> charList = Stream.concat(
+			//we use it twice and shuffle ... because ... why not ^^
+			getRandomCharacters(count, baseChars), getRandomCharacters(count, baseChars)
+		).collect(Collectors.toList());
+	    Collections.shuffle(charList);
+	    String password = charList.stream()
+	        .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
+	        .toString();
+	    return password.substring(0, count);
+	}
+	/**
+	 * Shuffle a string keeping all characters and length.
+	 * @param inputString - string to shuffle
+	 */
+	public static String shuffleString(String inputString){
+		List<Integer> intList = inputString.chars().boxed().collect(Collectors.toList());
+		Collections.shuffle(intList);
+		return intList.stream().map(i -> (char) i.intValue())
+			.collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
+	        .toString();
+	}
+	private static Stream<Character> getRandomCharacters(int count, String baseChars){
+		int from = 0;
+		int to = baseChars.length();
+		Random random = new SecureRandom();
+	    IntStream specialChars = random.ints(count, from, to);
+	    //return specialChars.mapToObj(i -> (char) i);
+	    return specialChars.mapToObj(i -> (char) baseChars.charAt(i));
+	}
+	public static final String charsLatinAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+	public static final String charsNumbers = "0123456789";
+	public static final String charsSelectedSpecials = "_-+!?&%$#*/.;()<>[]@=";
+	public static final String charsSimpleSpecials = "_-+!?&%$#*@";
+	public static final String selectedPasswdChars = charsLatinAlphabet + charsNumbers + charsSelectedSpecials;
+	public static final String simplePasswdChars = charsLatinAlphabet + charsNumbers + charsSimpleSpecials;
 	
 	/**
 	 * Simply hash a string with md5 algorithm.

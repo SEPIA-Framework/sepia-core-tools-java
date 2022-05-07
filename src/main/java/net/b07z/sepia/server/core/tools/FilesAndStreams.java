@@ -3,22 +3,32 @@ package net.b07z.sepia.server.core.tools;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.RandomAccessFile;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
+import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
+
+import com.fasterxml.jackson.core.exc.StreamReadException;
+import com.fasterxml.jackson.databind.DatabindException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 /**
  * Handles file read/write/edit etc.
@@ -213,6 +223,24 @@ public class FilesAndStreams {
 	}
 	
 	/**
+	 * Read a range of bytes from file.
+	 * @param filePath - path of file
+	 * @param startingOffset - starting byte
+	 * @param length - length of bytes to read
+	 * @return
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	public static byte[] readByteRange(String filePath, long startingOffset, int length) throws FileNotFoundException, IOException {
+	    try (RandomAccessFile randomAccessFile = new RandomAccessFile(filePath, "r")){
+	        byte[] buffer = new byte[length];
+	        randomAccessFile.seek(startingOffset);
+	        randomAccessFile.readFully(buffer);
+	        return buffer;
+	    }
+	}
+	
+	/**
 	 * Write an UTF-8 encoded content string to a file. Create all directories along the path. If the file exists overwrite it.
 	 * @param path - path to where the file should be stored
 	 * @param fileName - name of the file (with ending)
@@ -229,6 +257,29 @@ public class FilesAndStreams {
 			e.printStackTrace();
 			return false;
 		}
+	}
+	/**
+	 * Append an UTF-8 encoded content string as new line to a file.
+	 * Create all directories along the path. If the file does not exist create it.
+	 * @param path - path to where the file should be stored
+	 * @param fileName - name of the file (with ending)
+	 * @param utf8Content - content as UTF-8 encoded string
+	 * @throws IOException
+	 */
+	public static void appendLineToFile(String path, String fileName, String utf8Content) throws IOException {
+		Path pathStr = Paths.get(path);
+		try {
+			Files.createDirectories(pathStr);		//NOTE: can still fail if path is symlink!
+		}catch (FileAlreadyExistsException e) {
+			if (!Files.isSymbolicLink(pathStr)){
+				throw e;
+			}
+		}
+		OpenOption oo1 = StandardOpenOption.CREATE;
+		OpenOption oo2 = StandardOpenOption.APPEND;
+		//add line-break
+		utf8Content = "\n" + utf8Content;
+		Files.write(Paths.get(path, fileName), utf8Content.getBytes(StandardCharsets.UTF_8), oo1, oo2);
 	}
 	
 	/**
@@ -348,6 +399,23 @@ public class FilesAndStreams {
 			return false;
 		}
 	}
+	
+	/**
+	 * Read a YAML file and map to class.
+	 * @param <T> - return type
+	 * @param filePath - path to YAML file
+	 * @param clazz - class to map file to and return
+	 * @return
+	 * @throws IOException 
+	 * @throws DatabindException 
+	 * @throws StreamReadException 
+	 */
+	public static <T> T readYamlFile(String filePath, Class<T> clazz) 
+			throws StreamReadException, DatabindException, IOException {
+		File file = new File(filePath);
+		ObjectMapper om = new ObjectMapper(new YAMLFactory());
+		return om.readValue(file, clazz);
+	}
 
 	/**
 	 * Save settings to properties file (UTF-8).
@@ -365,7 +433,8 @@ public class FilesAndStreams {
 	}
 
 	/**
-	 * Load settings from properties file (UTF-8) and return Properties.
+	 * Load settings from properties file (UTF-8) and return Properties.<br>
+	 * NOTE: Use {@link PropertiesReader} for some convenience methods and if you need to track read values.
 	 * @param configFile - path and file
 	 */
 	public static Properties loadSettings(String configFile) throws Exception{
