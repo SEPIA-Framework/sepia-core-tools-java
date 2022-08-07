@@ -217,7 +217,7 @@ public class Security {
 		//clean-up host string
 		host = host.trim().replaceAll("^http(s|)://", "");
 		host = host.trim().replaceAll("/.*", "");
-		if (host.matches("^localhost($|:\\d+$)|.*\\.local$")){
+		if (host.matches("^(localhost|[a-zA-Z0-9-_]+\\.(local|localhost))($|:\\d+$)")){
 			return true;
 		}
 		if (host.contains(".")){

@@ -82,25 +82,30 @@ public class ToolsTest {
 		boolean isPrivate;
 		try {			isPrivate = Security.isPrivateNetwork(null);	assertTrue(false);
 		}catch (Exception e){}
+		isPrivate = isPrivateAddress("localhost");					assertTrue(isPrivate);
+		isPrivate = isPrivateAddress("http://localhost:20721");		assertTrue(isPrivate);
+		isPrivate = isPrivateAddress("http://localhost:20721/test");		assertTrue(isPrivate);
+		isPrivate = isPrivateAddress("raspberrypi.local");			assertTrue(isPrivate);
+		isPrivate = isPrivateAddress("raspberrypi.localhost");		assertTrue(isPrivate);
+		isPrivate = isPrivateAddress("raspberrypi.local:20727");				assertTrue(isPrivate);
+		isPrivate = isPrivateAddress("https://raspberrypi.local:20726/sepia");	assertTrue(isPrivate);
+		isPrivate = isPrivateAddress("raspberrypi.local/index.html");	assertTrue(isPrivate);
+		isPrivate = isPrivateAddress("raspberrypi.local.de");	assertFalse(isPrivate);
+		isPrivate = isPrivateAddress("comPLEX-stuff_01.local");		assertTrue(isPrivate);
+		isPrivate = isPrivateAddress("weird-stuff{}.local");	assertFalse(isPrivate);
 		isPrivate = isPrivateAddress("192.168.0.2");				assertTrue(isPrivate);
 		isPrivate = isPrivateAddress("https://192.168.0.2");		assertTrue(isPrivate);
 		isPrivate = isPrivateAddress("http://192.168.0.2:20721");	assertTrue(isPrivate);
-		isPrivate = isPrivateAddress("193.0.0.2");					assertFalse(isPrivate);
-		isPrivate = isPrivateAddress("https://193.0.0.2:20721");	assertFalse(isPrivate);
+		isPrivate = isPrivateAddress("193.0.0.2");				assertFalse(isPrivate);
+		isPrivate = isPrivateAddress("https://193.0.0.2:20721");assertFalse(isPrivate);
 		isPrivate = isPrivateAddress("192.168.0.2:20721");			assertTrue(isPrivate);
-		isPrivate = isPrivateAddress("localhost");					assertTrue(isPrivate);
 		isPrivate = isPrivateAddress("http://172.31.255.255");		assertTrue(isPrivate);
-		isPrivate = isPrivateAddress("http://172.32.255.255");		assertFalse(isPrivate);
-		isPrivate = isPrivateAddress("http://localhost:20721");	assertTrue(isPrivate);
+		isPrivate = isPrivateAddress("http://172.32.255.255");	assertFalse(isPrivate);
 		isPrivate = isPrivateAddress("2001:db8:0:8d3:0:8a2e:70:7344");		assertFalse(isPrivate);
 		//isPrivate = isPrivateAddress("fd9e:21a7:a92c:2323::2"); assertTrue(isPrivate); 	//what are private IPv6 addresses??
 		isPrivate = isPrivateAddress("http://example.com/index.html");		assertFalse(isPrivate);
-		isPrivate = isPrivateAddress("example.com");				assertFalse(isPrivate);
-		isPrivate = isPrivateAddress("raspberrypi.local");			assertTrue(isPrivate);
-		isPrivate = isPrivateAddress("raspberrypi.local/index.html");	assertTrue(isPrivate);
-		isPrivate = isPrivateAddress("raspberrypi.local.de");			assertFalse(isPrivate);
-		
-		//TODO: what about things like "my-pc.localhost" ?
+		isPrivate = isPrivateAddress("example.com");			assertFalse(isPrivate);
+		isPrivate = isPrivateAddress("https://example.com:20727/sepia");	assertFalse(isPrivate);
 	}
 	private boolean isPrivateAddress(String address){
 		try {
