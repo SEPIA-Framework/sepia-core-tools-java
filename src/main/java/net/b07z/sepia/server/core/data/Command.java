@@ -3,7 +3,7 @@ package net.b07z.sepia.server.core.data;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import net.b07z.sepia.server.core.tools.JSON;
@@ -47,7 +47,7 @@ public class Command {
 	public static Command importAnswerJSON(String json) {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
-			mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
+			mapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
 			return mapper.readValue(json, Command.class);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -337,7 +337,7 @@ public class Command {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.enable(SerializationFeature.INDENT_OUTPUT);
 		mapper.enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
-		mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
+		mapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
 		try {
 			return mapper.writeValueAsString(this);
 		} catch (JsonProcessingException e) {

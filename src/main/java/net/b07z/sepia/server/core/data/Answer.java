@@ -2,8 +2,7 @@ package net.b07z.sepia.server.core.data;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import net.b07z.sepia.server.core.server.ConfigDefaults;
 import net.b07z.sepia.server.core.tools.JSON;
 
@@ -284,7 +283,7 @@ public class Answer {
 	 */
 	public static Answer importAnswerJSON(String json) throws IOException{
 		ObjectMapper mapper = new ObjectMapper();
-		mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
+		mapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
 		Answer answer = mapper.readValue(json, Answer.class);
 		return answer;
 	}
@@ -303,7 +302,7 @@ public class Answer {
 	public String toJsonString() {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
-			mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
+			mapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
 			return mapper.writeValueAsString(this);
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException("Error serializing " + this + " to JSON", e);
