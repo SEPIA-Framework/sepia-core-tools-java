@@ -68,7 +68,7 @@ public class UserDataList {
 	public String group;		//a group that can be used to cluster the data (somehow)
 	public JSONObject moreInfo;	//anything else (that you don't want to write on top-level)
 	
-	public JSONArray data;		//list entries, usually each is a JSONObject
+	public JSONArray data;		//list entries, usually each is a JSONObject (see createEntry.. methods below)
 	
 	public long lastEdit;		//when was the list last modified? 
 	
