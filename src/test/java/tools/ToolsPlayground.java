@@ -1,5 +1,7 @@
 package tools;
 
+import java.util.Arrays;
+
 import net.b07z.sepia.server.core.tools.Converters;
 import net.b07z.sepia.server.core.tools.Security;
 
@@ -117,6 +119,14 @@ public class ToolsPlayground {
 		System.out.println("30 (000.0#) --> " + Converters.numberToString(Converters.stringToNumber("30"), "000.0#"));
 		System.out.println("30 (0.0) --> " + Converters.numberToString(Converters.stringToNumber("30"), "0.0"));
 		System.out.println("1.57689 (0.0) --> " + Converters.numberToString(Converters.stringToNumber("1.57689"), "00.0"));
+		
+		/* -- Cast or convert objects to collections -- */
+		System.out.println("Casting collections and string lists:\n");
+		System.out.println("a --> " + Converters.stringOrCollection2ListStr("a"));
+		System.out.println("a, b, c --> " + Converters.stringOrCollection2ListStr("a, b, c"));
+		System.out.println("ab,cd,ef --> " + Converters.stringOrCollection2ListStr("ab,cd,ef"));
+		Object testObj = Arrays.asList("eins", "zwei");
+		System.out.println(testObj + " --> " + Converters.stringOrCollection2ListStr(testObj));
 	}
 	
 	/* -- Password client hash -- */

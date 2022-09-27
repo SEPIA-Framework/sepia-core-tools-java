@@ -16,14 +16,13 @@ public class SandboxClassLoader extends URLClassLoader {
     //black-list classes
 	private List<String> blackList;
 	
-	/*
-	public SandboxClassLoader(URL fileUrl) {
-        super(new URL[] {fileUrl});
-    }
-    public SandboxClassLoader(File fileOrDir) throws MalformedURLException {
-        super(new URL[]{fileOrDir.toURI().toURL()});
-    }
-    */
+	/**
+	 * Create a sandboxed class loader for a jar-file or folder with a blacklist of classes
+	 * and packages that are restricted.
+	 * @param fileOrDir - jar-file or directory
+	 * @param blackList - list of class names and packages that this class loader is not allowed to open
+	 * @throws MalformedURLException
+	 */
     public SandboxClassLoader(File fileOrDir, List<String> blackList) throws MalformedURLException {
         super(new URL[]{fileOrDir.toURI().toURL()});
         this.blackList = blackList;
