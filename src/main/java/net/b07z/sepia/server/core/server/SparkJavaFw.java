@@ -75,6 +75,15 @@ public class SparkJavaFw {
 			response.body(returnResult(request, response, result.toJSONString(), 200)); 	//code 500 always creates client timeout :/ TODO: check again
 		});
 	}
+	
+	/**
+	 * Redirect to new path.
+	 */
+	public static String redirect(Request request, Response response, String redirectPath){
+		//response.status(301);
+		response.redirect(redirectPath);
+		return null;
+	}
 
 	/**
 	 * Return result as requested content (plain-text, javascript, json, etc...)

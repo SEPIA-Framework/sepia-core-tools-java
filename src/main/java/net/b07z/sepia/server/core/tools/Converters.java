@@ -7,6 +7,8 @@ import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -482,28 +484,50 @@ public class Converters {
 		}
 	}
 	/**
-	 * Makes an unchecked (cause you can't check it, can you?) cast from Object to ArrayList&#60Object&#62.
+	 * Makes an unchecked (cause you can't check it, can you?) cast from Object to List&#60Object&#62.
 	 * @param input - object that is supposed to be the expected ArrayList 
-	 * @return ArrayList or null
+	 * @return List or null
 	 */
 	@SuppressWarnings("unchecked")
 	public static List<Object> object2ArrayListObj(Object input){
 		try {
-			return (ArrayList<Object>) input;
+			return (List<Object>) input;
 		}catch(Exception e){
 			e.printStackTrace();
 			return null;
 		}
 	}
 	/**
-	 * Makes an unchecked (cause you can't check it, can you?) cast from Object to ArrayList&#60String&#62.
+	 * Makes an unchecked (cause you can't check it, can you?) cast from Object to List&#60String&#62.
 	 * @param input - object that is supposed to be the expected ArrayList 
-	 * @return ArrayList or null
+	 * @return List or null
 	 */
 	@SuppressWarnings("unchecked")
 	public static List<String> object2ArrayListStr(Object input){
 		try {
-			return (ArrayList<String>) input;
+			return (List<String>) input;
+		}catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+	}
+	/**
+	 * Convert an object to a list of strings. Checks if the object is a collection first
+	 * and if not splits the string at each comma(!). If any of the type casts or processing fails
+	 * returns null.
+	 * @param stringOrCollection - String with comma separated list elements (optional) or Collection 
+	 * @return List or null
+	 */
+	@SuppressWarnings("unchecked")
+	public static List<String> stringOrCollection2ListStr(Object stringOrCollection){
+		try {
+			if (stringOrCollection instanceof Collection<?>){
+				return (List<String>) stringOrCollection;
+			}else if (stringOrCollection.getClass().equals(String.class)){
+				return Arrays.asList(stringOrCollection.toString().split("\\s*,\\s*"));
+			}else{
+				return null;
+			}
 		}catch(Exception e){
 			e.printStackTrace();
 			return null;

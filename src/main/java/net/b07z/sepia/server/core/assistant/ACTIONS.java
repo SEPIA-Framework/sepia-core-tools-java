@@ -41,7 +41,7 @@ public class ACTIONS {
 	final public static String ALARM = "alarm";					//tell client to set an alarm, parameters: tbd
 	final public static String REMINDER = "reminder";			//tell client to set an reminder, parameters: tbd
 	final public static String APPOINTMENT = "appointment";		//tell client to set an appointment in the calendar, parameters: tbd
-	final public static String SWITCH_LANGUAGE = "switch_language";		//tell client to switch language, parameters: language_code
+	final public static String SWITCH_LANGUAGE = "switch_language";		//tell client to switch language, parameters: language_code, skip_save
 	final public static String SWITCH_STT_ENGINE = "switch_stt_engine";	//tell client to switch STT engine, parameters: engine (e.g. 'native' or 'socket'), url (e.g. WebSocket URL to server)
 	
 	//special actions
